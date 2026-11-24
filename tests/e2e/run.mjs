@@ -507,6 +507,7 @@ async function selfTest() {
 }
 
 // ------------------------------------------------------------------ 1. sito pubblico
+const APPROVED_ADDRESS = { street: 'Lukasstrasse 18', city: '9008 St. Gallen' };
 const ADDRESS_PATTERNS = [
   [/\bIBAN\b/i, 'IBAN'],
   [/\bCH\d{2}[ ]?\d{4}[ ]?\d{4}/, 'numero IBAN CH'],
@@ -514,7 +515,7 @@ const ADDRESS_PATTERNS = [
   [/\bCHE-?\d{3}\.?\d{3}\.?\d{3}\b/, 'numero UID'],
   [/\b(via|viale|piazza|strasse|gasse|weg|platz|rue|avenue|chemin|street|road)\s+[A-ZÄÖÜa-zäöüéè.'-]+\s+\d{1,4}[a-z]?\b/i, 'indirizzo (via + numero)'],
   [/\b[A-ZÄÖÜa-zäöü]+(strasse|gasse|weg)\s+\d{1,4}\b/i, 'indirizzo (…strasse N)'],
-  [/\b(CH-)?[1-9]\d{3}\s+(Zürich|Zurich|Bern|Berne|Basel|Bâle|Luzern|Lucerne|Lugano|Bellinzona|Locarno|Chur|Coira|St\.?\s?Gallen|Genève|Geneva|Lausanne|Winterthur|Zug|Aarau|Olten|Thun|Biel|Sion|Fribourg|Neuchâtel|Davos)\b/, 'CAP + città'],
+  [/\b(CH-)?[1-9]\d{3}\s+(Zürich|Zurich|Bern|Berne|Basel|Bâle|Luzern|Lucerne|Lugano|Bellinzona|Locarno|Chur|Coira|St\.?\s?Gallen|St-Gall|Saint-Gall|San Gallo|Genève|Geneva|Lausanne|Winterthur|Zug|Aarau|Olten|Thun|Biel|Sion|Fribourg|Neuchâtel|Davos)\b/, 'CAP + città'],
   [/google\.[a-z.]+\/maps|maps\.app\.goo\.gl|openstreetmap/i, 'mappa'],
 ];
 
@@ -551,8 +552,11 @@ async function publicSite() {
         check(`${label}: hreflang it/de/fr/en/x-default corretti`, hlBad.length === 0, hlBad.join(', '));
         if (info.canonical) check(`${label}: canonical punta alla pagina della lingua`, new URL(info.canonical).pathname === L.path, info.canonical);
         check(`${label}: pulsante WhatsApp → https://wa.me/41799450000`, info.fab === 'https://wa.me/41799450000' && info.wa.every((h) => h === 'https://wa.me/41799450000'), `fab=${info.fab} altri=${info.wa.join(',')}`);
-        const addr = ADDRESS_PATTERNS.filter(([re]) => re.test(info.text)).map(([re, name]) => `${name}: "${(info.text.match(re) || [''])[0]}"`);
-        check(`${label}: nessun indirizzo/IBAN/P.IVA/mappa nel testo`, addr.length === 0, addr.join('; '));
+        // L'unico indirizzo pubblicabile (approvato il 24.11.2026) viene tolto prima del controllo:
+        // qualsiasi altro indirizzo, CAP + città, IBAN, UID o mappa fa ancora fallire il test.
+        const textNoApproved = info.text.split(APPROVED_ADDRESS.street).join('').split(APPROVED_ADDRESS.city).join('');
+        const addr = ADDRESS_PATTERNS.filter(([re]) => re.test(textNoApproved)).map(([re, name]) => `${name}: "${(textNoApproved.match(re) || [''])[0]}"`);
+        check(`${label}: nessun indirizzo non approvato/IBAN/P.IVA/mappa nel testo`, addr.length === 0, addr.join('; '));
         if (L.lang === 'de') check(`${label}: tedesco svizzero senza "ß"`, !info.text.includes('ß'), (info.text.match(/.{0,20}ß.{0,20}/) || [''])[0]);
 
         const over = await horizontalOverflow(page);
@@ -1221,6 +1225,21 @@ async function staticPages() {
       });
       await context.close();
     }
+  }
+  // Informative privacy: contengono l'indirizzo approvato, nessun altro indirizzo/IBAN/UID/mappa
+  for (const L of LANGS) {
+    const p = `${L.path}privacy.html`;
+    const { context, page } = await openPage({});
+    await guard(p, async () => {
+      const resp = await page.goto(BASE + p);
+      check(`${p}: risponde 200`, resp.status() === 200, resp.status());
+      const text = await page.evaluate(() => document.body.innerText);
+      check(`${p}: contiene l'indirizzo approvato`, text.includes(APPROVED_ADDRESS.street) && text.includes(APPROVED_ADDRESS.city), '');
+      const rest = text.split(APPROVED_ADDRESS.street).join('').split(APPROVED_ADDRESS.city).join('');
+      const addr = ADDRESS_PATTERNS.filter(([re]) => re.test(rest)).map(([re, name]) => `${name}: "${(rest.match(re) || [''])[0]}"`);
+      check(`${p}: nessun indirizzo non approvato/IBAN/P.IVA/mappa nel testo`, addr.length === 0, addr.join('; '));
+    });
+    await context.close();
   }
   // 404.html servita da Netlify per un percorso annidato inesistente: le risorse devono avere percorsi assoluti
   {

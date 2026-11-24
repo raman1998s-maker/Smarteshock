@@ -111,6 +111,7 @@
     "lead": "Remplissez le formulaire : nous vous répondrons avec une proposition sur mesure, sans engagement.",
     "phone": "Téléphone",
     "whatsapp": "Écrivez-nous sur WhatsApp",
+    "address": "Adresse",
     "langs": "Nous parlons italien, allemand, français et anglais."
   },
   "whatsapp": { "label": "Écrivez-nous sur WhatsApp" },
@@ -140,7 +141,7 @@
         "p": [
           "Responsable du traitement : Meekon Displays, Arul Mayuran.",
           "Pour toute question sur la protection des données, écrivez-nous à info@meekondisplay.ch.",
-          "Sur demande par e-mail, nous vous communiquons aussi notre adresse postale."
+          "Adresse : Lukasstrasse 18, 9008 St. Gallen, Suisse."
         ]
       },
       {

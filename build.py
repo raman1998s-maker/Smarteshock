@@ -371,6 +371,14 @@ def jsonld(lang, t):
         "description": t["meta"]["description"],
         "telephone": "+41799450000",
         "email": "info@meekondisplay.ch",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Lukasstrasse 18",
+            "postalCode": "9008",
+            "addressLocality": "St. Gallen",
+            "addressRegion": "SG",
+            "addressCountry": "CH",
+        },
         "sameAs": ["https://www.instagram.com/meekon_display/"],
         "areaServed": [{"@type": "Country", "name": n} for n in ["Switzerland", "Italy", "Germany", "France"]],
         "knowsLanguage": LANGS,
@@ -560,7 +568,7 @@ PRIVACY_PAGE = """<!doctype html>
       <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246" loading="lazy">
       <p class="footer__claim">{claim}</p>
       <nav class="lang lang--footer" aria-label="{lang_label}">{langlinks}</nav>
-      <p class="footer__small">© {year} Meekon Displays · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
+      <p class="footer__small">© {year} Meekon Displays · Lukasstrasse 18, 9008 St. Gallen · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
     </div>
   </footer>
 </body>
