@@ -5,7 +5,7 @@
   "hint_link": "Zur deutschen Version",
   "meta": {
     "title": "Meekon Displays — Eventtechnik: LED-Wände, Licht, Ton, Streaming",
-    "description": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich: Hochzeiten, Geburtstage, traditionelle Feste, Firmenanlässe und das WEF in Davos. LED-Wände, Beamer, Licht, Traversen, Ton, DJ-Anlagen, Live-Kamera, Streaming und Spezialeffekte."
+    "description": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich: Hochzeiten, Geburtstage, traditionelle Feste, Firmenanlässe und das WEF in Davos. LED-Wände, Beamer, Licht, Traversen, Ton, DJ-Anlagen, Live-Kamera, Streaming, Spezialeffekte und Dance floor."
   },
   "a11y": { "skip": "Zum Inhalt", "nav": "Hauptnavigation", "lang": "Sprache", "menu": "Menü öffnen", "close": "Menü schliessen" },
   "nav": { "events": "Anlässe", "services": "Leistungen", "work": "Referenzen", "venues": "Locations", "djs": "DJs", "method": "Ablauf", "contact": "Kontakt", "cta": "Offerte anfragen" },
@@ -44,6 +44,7 @@
   "s4": { "t": "DJ-Anlagen", "d": "Komplette DJ-Anlagen und Vorbereitung des DJ-Pults, abgestimmt auf Licht und Bildschirme.", "list": ["Tonanlagen für DJs", "Vorbereitung des DJ-Pults", "DJ-Monitor", "Abstimmung mit Licht und LED-Wand"] },
   "s5": { "t": "Live-Kamera und Streaming", "d": "Wir bringen den Moment live auf die Bildschirme und übertragen ihn zu allen, die nicht dabei sein können.", "list": ["Live-Bilder auf der LED-Wand", "Unterstützung bei Kameraaufnahmen vor Ort", "Live-Streaming online", "Anbindung an Bildschirme und Beamer"] },
   "s6": { "t": "Spezialeffekte", "d": "Der Effekt im richtigen Moment: der Einzug des Brautpaars, der Tortenanschnitt, der Auftakt der Show.", "list": ["Kaltfunken (Spark)", "Nebelmaschinen", "Bodennebel", "Nebelkanonen"] },
+  "s7": { "t": "Dance floor", "d": "Eine Tanzfläche, passend zu Ihrem Saal aufgebaut, für den Eröffnungstanz und das ganze Fest.", "list": ["Modulare Tanzfläche", "Grösse passend zum Saal", "Auf- und Abbau", "Abgestimmt auf Licht und Effekte"] },
   "davos": {
     "eyebrow": "WEF Davos · Corporate",
     "title": "Technischer Support für Delegationen und Unternehmen",
@@ -122,7 +123,7 @@
     "sending": "Wird gesendet…",
     "error": "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es in einem Moment erneut oder schreiben Sie uns auf WhatsApp.",
     "types": ["Hochzeit", "Geburtstag / Privatfest", "Traditionelles Fest", "Firmenanlass", "WEF Davos", "Bühnenevent", "Anderes"],
-    "chips": ["LED-Wände", "TV / Beamer", "Licht", "Traversen", "Ton", "DJ-Anlage", "Live-Kamera", "Streaming", "Kaltfunken / Nebel"]
+    "chips": ["LED-Wände", "TV / Beamer", "Licht", "Traversen", "Ton", "DJ-Anlage", "Live-Kamera", "Streaming", "Kaltfunken / Nebel", "Dance floor"]
   },
   "privacy": { "note": "Wir verwenden Ihre Daten, um Ihre Anfrage zu beantworten und, wenn Sie es wünschen, die Offerte vorzubereiten und den Anlass zu organisieren; wir verkaufen sie nie und nutzen sie nicht für Werbung.", "link": "Datenschutzerklärung lesen" },
   "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich.", "privacy": "Datenschutz" },

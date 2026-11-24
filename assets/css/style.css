@@ -489,7 +489,16 @@ p { margin: 0; text-wrap: pretty; }
 }
 .service__list li { padding-left: 22px; position: relative; color: var(--color-text-2); }
 .service__list li::before { content: ""; position: absolute; left: 0; top: .78em; width: 4px; height: 4px; border-radius: var(--radius-round); background: var(--color-accent); }
-@media (max-width: 960px) { .services { grid-template-columns: 1fr 1fr; } }
+/* se l'ultima card resterebbe sola nella sua riga, occupa tutta la larghezza: testo a sinistra, elenco a destra su due colonne */
+.service:last-child:nth-child(3n+1) { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--sp-7); align-items: start; }
+.service:last-child:nth-child(3n+1) .service__n { grid-column: 1 / -1; justify-self: start; }
+.service:last-child:nth-child(3n+1) .service__list { margin-top: 0; grid-template-columns: 1fr 1fr; }
+@media (max-width: 960px) {
+  .services { grid-template-columns: 1fr 1fr; }
+  .service:last-child:nth-child(3n+1) { grid-column: auto; display: block; }
+  .service:last-child:nth-child(3n+1) .service__list { margin-top: var(--sp-5); grid-template-columns: none; }
+  .service:last-child:nth-child(2n+1) { grid-column: 1 / -1; }
+}
 @media (max-width: 600px) { .services { grid-template-columns: 1fr; } .service { padding: var(--sp-5); } }
 
 /* ---------- Feature (Davos) ---------- */

@@ -427,7 +427,7 @@ def build_context(lang, t, all_t, data):
         "partners.list": partners_html(data["partner"], lang, t),
         "whatsapp.label": E(t["whatsapp"]["label"]),
     }
-    for k in ["s1", "s2", "s3", "s4", "s5", "s6"]:
+    for k in ["s1", "s2", "s3", "s4", "s5", "s6", "s7"]:
         ctx[f"{k}.list"] = items(t[k]["list"])
     ctx["davos.list"] = items(t["davos"]["list"])
     return ctx
