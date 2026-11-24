@@ -481,6 +481,17 @@ p { margin: 0; text-wrap: pretty; }
   font: 500 var(--fs-xs)/30px var(--font-text); letter-spacing: .2em; font-variant-numeric: tabular-nums;
   border-radius: var(--radius-round); background: var(--color-accent-soft); color: var(--color-accent);
 }
+/* riga in alto: icona lineare a sinistra, numero a destra */
+.service__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-4); }
+.service__top .service__n { margin-bottom: 0; }
+.service__icon {
+  width: 36px; height: 36px; color: var(--color-accent);
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .service__icon { transition: transform 240ms var(--ease-out); }
+  .service:hover .service__icon { transform: translateY(-2px) scale(1.06); }
+}
 .service h3 { font-size: clamp(26px, 2.2vw, 32px); }
 .service p { margin-top: var(--sp-3); color: var(--color-text-2); max-width: 46ch; }
 .service__list {
