@@ -672,6 +672,8 @@ p { margin: 0; text-wrap: pretty; }
 .form input:hover, .form select:hover, .form textarea:hover { border-color: var(--color-text-3); }
 .form input:focus, .form select:focus, .form textarea:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 1px 0 var(--color-accent); }
 .form input:user-invalid, .form textarea:user-invalid { border-color: var(--c-danger); }
+.form input[aria-invalid="true"], .form select[aria-invalid="true"], .form textarea[aria-invalid="true"],
+.form input[aria-invalid="true"]:focus, .form select[aria-invalid="true"]:focus, .form textarea[aria-invalid="true"]:focus { border-color: var(--c-danger); box-shadow: 0 1px 0 var(--c-danger); }
 .form textarea { resize: vertical; }
 .form input[type="date"] { color-scheme: dark; }
 .form__chips { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); }
