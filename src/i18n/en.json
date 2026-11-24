@@ -124,7 +124,7 @@
     "chips": ["LED screens", "TV / projector", "Lighting", "Truss", "Sound", "DJ system", "Live camera", "Streaming", "Sparks / fog"]
   },
   "privacy": { "note": "We use your details to respond to your request and, if you wish, to prepare a quote and organise your event; they are never sold or used for advertising.", "link": "Read the privacy notice" },
-  "footer": { "claim": "Event technology across Switzerland and, on request, in Italy, Germany and France.", "privacy": "Privacy" },
+  "footer": { "claim": "Bringing your vision to life with precision.", "privacy": "Privacy" },
   "thanks": { "title": "Thank you!", "eyebrow": "Request sent", "text": "We have received your request and will be in touch shortly with a proposal.", "back": "Back to the website" },
   "notfound": { "title": "Page not found", "text": "The page you are looking for does not exist or has been moved.", "back": "Back to the website" },
   "privacy_page": {

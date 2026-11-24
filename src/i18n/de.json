@@ -124,7 +124,7 @@
     "chips": ["LED-Wände", "TV / Beamer", "Licht", "Traversen", "Ton", "DJ-Anlage", "Live-Kamera", "Streaming", "Kaltfunken / Nebel"]
   },
   "privacy": { "note": "Wir verwenden Ihre Daten, um Ihre Anfrage zu beantworten und, wenn Sie es wünschen, die Offerte vorzubereiten und den Anlass zu organisieren; wir verkaufen sie nie und nutzen sie nicht für Werbung.", "link": "Datenschutzerklärung lesen" },
-  "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich.", "privacy": "Datenschutz" },
+  "footer": { "claim": "Ihre Vision, präzise umgesetzt.", "privacy": "Datenschutz" },
   "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.", "back": "Zurück zur Website" },
   "notfound": { "title": "Seite nicht gefunden", "text": "Die gesuchte Seite existiert nicht oder wurde verschoben.", "back": "Zurück zur Website" },
   "privacy_page": {
