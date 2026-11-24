@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="{{lang}}" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{meta.title}}</title>
+  <meta name="description" content="{{meta.description}}">
+  <link rel="canonical" href="https://meekondisplay.ch{{path}}">
+{{hreflang}}
+  <meta name="theme-color" content="#07080a">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="{{locale}}">
+  <meta property="og:title" content="{{meta.title}}">
+  <meta property="og:description" content="{{meta.description}}">
+  <meta property="og:image" content="https://meekondisplay.ch/assets/img/og-image.jpg">
+  <meta property="og:url" content="https://meekondisplay.ch{{path}}">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Meekon Displays",
+    "url": "https://meekondisplay.ch{{path}}",
+    "image": "https://meekondisplay.ch/assets/img/og-image.jpg",
+    "description": "{{meta.description}}",
+    "areaServed": "CH",
+    "knowsLanguage": ["it", "de", "fr", "en"]
+  }
+  </script>
+</head>
+<body data-lang="{{lang}}">
+  <a class="skip" href="#main">{{a11y.skip}}</a>
+
+  <header class="nav" id="top">
+    <div class="nav__inner wrap">
+      <a class="nav__brand" href="{{path}}" aria-label="Meekon Displays">
+        <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246">
+      </a>
+      <nav class="nav__menu" id="menu" aria-label="{{a11y.nav}}">
+        <a href="#eventi">{{nav.events}}</a>
+        <a href="#servizi">{{nav.services}}</a>
+        <a href="#lavori">{{nav.work}}</a>
+        <a href="#metodo">{{nav.method}}</a>
+        <a href="#contatti">{{nav.contact}}</a>
+        <div class="lang" aria-label="{{a11y.lang}}">{{langlinks}}</div>
+        <a class="btn btn--sm" href="#contatti">{{nav.cta}}</a>
+      </nav>
+      <button class="nav__toggle" aria-expanded="false" aria-controls="menu" aria-label="{{a11y.menu}}" data-open="{{a11y.menu}}" data-close="{{a11y.close}}">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <video class="hero__video" autoplay muted loop playsinline preload="metadata" poster="/assets/img/hero-poster.jpg" aria-hidden="true">
+        <source src="/assets/video/hero.mp4" type="video/mp4">
+      </video>
+      <div class="hero__shade"></div>
+      <div class="hero__content wrap">
+        <p class="eyebrow">{{hero.eyebrow}}</p>
+        <h1>{{hero.title}}</h1>
+        <p class="hero__lead">{{hero.lead}}</p>
+        <div class="hero__cta">
+          <a class="btn" href="#contatti">{{hero.cta1}}</a>
+          <a class="link-arrow" href="#lavori">{{hero.cta2}}</a>
+        </div>
+      </div>
+      <div class="hero__foot wrap">
+        <span>{{hero.foot1}}</span><span>{{hero.foot2}}</span><span>{{hero.foot3}}</span>
+      </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="intro section">
+      <div class="wrap wrap--narrow">
+        <p class="intro__text reveal">{{intro.text}}</p>
+        <p class="intro__sign reveal">{{intro.sign}}</p>
+      </div>
+    </section>
+
+    <!-- EVENTI -->
+    <section class="section section--alt" id="eventi">
+      <div class="wrap">
+        <header class="head">
+          <p class="eyebrow">{{events.eyebrow}}</p>
+          <h2>{{events.title}}</h2>
+          <p class="head__lead">{{events.lead}}</p>
+        </header>
+        <div class="events">
+          <article class="event event--lg reveal">
+            <img src="/assets/img/event-wedding.jpg" alt="" loading="lazy">
+            <div class="event__body"><span class="event__n">01</span><h3>{{events.e1.t}}</h3><p>{{events.e1.d}}</p></div>
+          </article>
+          <article class="event reveal">
+            <img src="/assets/img/event-party.jpg" alt="" loading="lazy">
+            <div class="event__body"><span class="event__n">02</span><h3>{{events.e2.t}}</h3><p>{{events.e2.d}}</p></div>
+          </article>
+          <article class="event reveal">
+            <img src="/assets/img/event-led-closeup.jpg" alt="" loading="lazy">
+            <div class="event__body"><span class="event__n">03</span><h3>{{events.e3.t}}</h3><p>{{events.e3.d}}</p></div>
+          </article>
+          <article class="event reveal">
+            <img src="/assets/img/event-stage.jpg" alt="" loading="lazy">
+            <div class="event__body"><span class="event__n">04</span><h3>{{events.e4.t}}</h3><p>{{events.e4.d}}</p></div>
+          </article>
+          <article class="event reveal">
+            <img src="/assets/img/event-beams.jpg" alt="" loading="lazy">
+            <div class="event__body"><span class="event__n">05</span><h3>{{events.e5.t}}</h3><p>{{events.e5.d}}</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVIZI -->
+    <section class="section" id="servizi">
+      <div class="wrap">
+        <header class="head head--split">
+          <div>
+            <p class="eyebrow">{{services.eyebrow}}</p>
+            <h2>{{services.title}}</h2>
+          </div>
+          <p class="head__lead">{{services.lead}}</p>
+        </header>
+
+        <div class="services">
+          <article class="service reveal">
+            <span class="service__n">01</span>
+            <div class="service__main"><h3>{{s1.t}}</h3><p>{{s1.d}}</p></div>
+            <ul class="service__list">{{s1.list}}</ul>
+          </article>
+          <article class="service reveal">
+            <span class="service__n">02</span>
+            <div class="service__main"><h3>{{s2.t}}</h3><p>{{s2.d}}</p></div>
+            <ul class="service__list">{{s2.list}}</ul>
+          </article>
+          <article class="service reveal">
+            <span class="service__n">03</span>
+            <div class="service__main"><h3>{{s3.t}}</h3><p>{{s3.d}}</p></div>
+            <ul class="service__list">{{s3.list}}</ul>
+          </article>
+          <article class="service reveal">
+            <span class="service__n">04</span>
+            <div class="service__main"><h3>{{s4.t}}</h3><p>{{s4.d}}</p></div>
+            <ul class="service__list">{{s4.list}}</ul>
+          </article>
+          <article class="service reveal">
+            <span class="service__n">05</span>
+            <div class="service__main"><h3>{{s5.t}}</h3><p>{{s5.d}}</p></div>
+            <ul class="service__list">{{s5.list}}</ul>
+          </article>
+          <article class="service reveal">
+            <span class="service__n">06</span>
+            <div class="service__main"><h3>{{s6.t}}</h3><p>{{s6.d}}</p></div>
+            <ul class="service__list">{{s6.list}}</ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAVOS -->
+    <section class="feature">
+      <div class="feature__media" aria-hidden="true">
+        <img src="/assets/img/event-ledwall.jpg" alt="" loading="lazy">
+      </div>
+      <div class="feature__body reveal">
+        <p class="eyebrow">{{davos.eyebrow}}</p>
+        <h2>{{davos.title}}</h2>
+        <p>{{davos.text}}</p>
+        <ul class="ticks">{{davos.list}}</ul>
+        <a class="btn btn--line" href="#contatti">{{davos.cta}}</a>
+      </div>
+    </section>
+
+    <!-- LAVORI / GALLERIA -->
+    <section class="section section--alt" id="lavori">
+      <div class="wrap">
+        <header class="head">
+          <p class="eyebrow">{{work.eyebrow}}</p>
+          <h2>{{work.title}}</h2>
+          <p class="head__lead">{{work.lead}}</p>
+        </header>
+        <div class="gallery">
+          <figure class="gallery__item gallery__item--reel reveal">
+            <video muted loop playsinline preload="none" poster="/assets/img/reel-poster.jpg" data-autoplay aria-label="{{work.video}}">
+              <source src="/assets/video/reel.mp4" type="video/mp4">
+            </video>
+          </figure>
+          <figure class="gallery__item gallery__item--wide reveal"><img src="/assets/img/event-party.jpg" alt="{{work.a1}}" loading="lazy" width="1280" height="720"></figure>
+          <figure class="gallery__item reveal"><img src="/assets/img/event-ledwall.jpg" alt="{{work.a2}}" loading="lazy" width="720" height="1280"></figure>
+          <figure class="gallery__item reveal"><img src="/assets/img/event-wedding.jpg" alt="{{work.a3}}" loading="lazy" width="406" height="720"></figure>
+          <figure class="gallery__item gallery__item--wide reveal"><img src="/assets/img/event-beams.jpg" alt="{{work.a4}}" loading="lazy" width="1280" height="720"></figure>
+          <figure class="gallery__item reveal"><img src="/assets/img/event-led-closeup.jpg" alt="{{work.a5}}" loading="lazy" width="406" height="720"></figure>
+          <figure class="gallery__item reveal"><img src="/assets/img/event-stage.jpg" alt="{{work.a6}}" loading="lazy" width="406" height="720"></figure>
+          <figure class="gallery__item gallery__item--wide gallery__item--m-tall reveal"><img src="/assets/img/event-dance.jpg" alt="{{work.a7}}" loading="lazy" width="1280" height="720"></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- METODO -->
+    <section class="section" id="metodo">
+      <div class="wrap split">
+        <header class="head head--left">
+          <p class="eyebrow">{{method.eyebrow}}</p>
+          <h2>{{method.title}}</h2>
+          <p class="head__lead">{{method.lead}}</p>
+        </header>
+        <ol class="steps">
+          <li class="step reveal"><span class="step__n">I</span><div><h3>{{method.p1.t}}</h3><p>{{method.p1.d}}</p></div></li>
+          <li class="step reveal"><span class="step__n">II</span><div><h3>{{method.p2.t}}</h3><p>{{method.p2.d}}</p></div></li>
+          <li class="step reveal"><span class="step__n">III</span><div><h3>{{method.p3.t}}</h3><p>{{method.p3.d}}</p></div></li>
+          <li class="step reveal"><span class="step__n">IV</span><div><h3>{{method.p4.t}}</h3><p>{{method.p4.d}}</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section--alt" id="faq">
+      <div class="wrap wrap--narrow">
+        <header class="head">
+          <p class="eyebrow">{{faq.eyebrow}}</p>
+          <h2>{{faq.title}}</h2>
+        </header>
+        <div class="faq">{{faq.items}}</div>
+      </div>
+    </section>
+
+    <!-- CONTATTI -->
+    <section class="section" id="contatti">
+      <div class="wrap split split--form">
+        <header class="head head--left">
+          <p class="eyebrow">{{contact.eyebrow}}</p>
+          <h2>{{contact.title}}</h2>
+          <p class="head__lead">{{contact.lead}}</p>
+          <ul class="contact">
+            <!-- TODO: inserire i contatti reali -->
+            <li><span>{{contact.phone}}</span><a href="tel:+41000000000">+41 00 000 00 00</a></li>
+            <li><span>WhatsApp</span><a href="https://wa.me/41000000000" rel="noopener" target="_blank">{{contact.whatsapp}}</a></li>
+            <li><span>E-mail</span><a href="mailto:info@meekondisplay.ch">info@meekondisplay.ch</a></li>
+          </ul>
+          <p class="contact__langs">{{contact.langs}}</p>
+        </header>
+
+        <form class="form" name="preventivo" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="{{thanks}}">
+          <input type="hidden" name="form-name" value="preventivo">
+          <input type="hidden" name="lingua" value="{{lang}}">
+          <p class="hidden"><label>bot <input name="bot-field"></label></p>
+
+          <div class="form__row">
+            <label>{{form.name}}<input name="nome" autocomplete="name" required></label>
+            <label>{{form.phone}}<input name="telefono" type="tel" autocomplete="tel"></label>
+          </div>
+          <label>{{form.email}}<input name="email" type="email" autocomplete="email" required></label>
+          <div class="form__row">
+            <label>{{form.type}}
+              <select name="tipo">{{form.types}}</select>
+            </label>
+            <label>{{form.date}}<input name="data" type="date"></label>
+          </div>
+          <div class="form__row">
+            <label>{{form.place}}<input name="localita" placeholder="{{form.place_ph}}"></label>
+            <label>{{form.guests}}<input name="ospiti" type="number" min="1" inputmode="numeric"></label>
+          </div>
+          <fieldset class="form__chips">
+            <legend>{{form.needs}}</legend>
+            {{form.chips}}
+          </fieldset>
+          <label>{{form.msg}}<textarea name="messaggio" rows="4" placeholder="{{form.msg_ph}}"></textarea></label>
+          <button class="btn btn--block" type="submit">{{form.submit}}</button>
+          <p class="form__note">{{form.note}}</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246" loading="lazy">
+      <p class="footer__claim">{{footer.claim}}</p>
+      <div class="lang lang--footer">{{langlinks}}</div>
+      <p class="footer__small">© <span id="year">2026</span> Meekon Displays · meekondisplay.ch</p>
+    </div>
+  </footer>
+
+  <div class="langhint" hidden>
+    <p></p>
+    <a href="#"></a>
+    <button type="button" aria-label="×">×</button>
+  </div>
+
+  <script>window.MEEKON_LANGHINTS = {{langhints}};</script>
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

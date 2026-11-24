@@ -1,0 +1,96 @@
+{
+  "locale": "en_GB",
+  "label": "English",
+  "hint": "This website is also available in English.",
+  "hint_link": "Switch to English",
+  "meta": {
+    "title": "Meekon Displays — Event technology: LED screens, lighting, sound, streaming",
+    "description": "Technical installations for weddings, birthdays, traditional celebrations, corporate events and the WEF in Davos: LED walls, projectors, lighting, truss, sound, DJ systems, live camera, streaming and special effects across Switzerland."
+  },
+  "a11y": { "skip": "Skip to content", "nav": "Main navigation", "lang": "Language", "menu": "Open menu", "close": "Close menu" },
+  "nav": { "events": "Events", "services": "Services", "work": "Work", "method": "Approach", "contact": "Contact", "cta": "Request a quote" },
+  "hero": {
+    "eyebrow": "LED screens · Lighting · Sound · Live & Streaming",
+    "title": "The technology that makes your event <em>unforgettable</em>.",
+    "lead": "We design, install and run the entire technical side: from weddings to traditional celebrations, from the stage to the WEF in Davos.",
+    "cta1": "Request a quote",
+    "cta2": "See our work",
+    "foot1": "All of Switzerland",
+    "foot2": "Set-up and on-site technician",
+    "foot3": "IT · DE · FR · EN"
+  },
+  "intro": {
+    "text": "A great event is remembered for its emotions, not its cables. That is why we take care of every technical detail, from the stage layout to the last microphone, with <em>discretion and precision</em>.",
+    "sign": "— Meekon Displays"
+  },
+  "events": {
+    "eyebrow": "Events",
+    "title": "For every occasion",
+    "lead": "Every event has its own rhythm. We tailor the technology, look and organisation to your moment.",
+    "e1": { "t": "Weddings", "d": "Ambient lighting for dinner, an LED wall for photos and videos, low fog for the first dance." },
+    "e2": { "t": "Birthdays and private parties", "d": "Sound system, dance-floor lighting and a screen with your own content." },
+    "e3": { "t": "Traditional celebrations", "d": "Set-ups for cultural and family celebrations, even with large guest lists and long programmes." },
+    "e4": { "t": "Corporate and WEF Davos", "d": "Screens, projectors and sound for presentations, conferences and receptions." },
+    "e5": { "t": "Concerts and stage events", "d": "Truss, beams, line arrays and show control for bands, DJs and performances." }
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "All the technology for your event, from one partner",
+    "lead": "We supply, install and operate the complete system. One point of contact, no surprises."
+  },
+  "s1": { "t": "LED screens and video", "d": "LED walls in various types and sizes, indoor and outdoor, plus TVs and projectors for presentations.", "list": ["Modular indoor and outdoor LED walls", "TVs and monitors on stands", "Projectors and projection screens", "Content and graphics management"] },
+  "s2": { "t": "Lighting and truss", "d": "From warm dinner lighting to a full dance-floor show, with custom truss structures.", "list": ["Beams and moving heads", "LED wash and uplighting", "Truss structures and towers", "Lighting show programming"] },
+  "s3": { "t": "Sound", "d": "Systems sized to the venue: from microphones for speeches to flown speakers for large spaces.", "list": ["Wired and wireless microphones", "Speakers, subwoofers and flown line arrays", "Mixing desks and stage monitors", "Dedicated sound engineer"] },
+  "s4": { "t": "DJ and stage", "d": "Complete DJ systems and a fully prepared DJ booth, coordinated with stage and show control.", "list": ["DJ sound systems", "DJ booth set-up", "Coordination with bands and artists", "Stages and risers"] },
+  "s5": { "t": "Live camera and streaming", "d": "We put the moment live on the screens and stream it to everyone who can't be there.", "list": ["Live feed on the LED walls", "Multi-camera video direction", "Live online streaming", "Event recording"] },
+  "s6": { "t": "Special effects", "d": "The right effect at the right moment: the couple's entrance, cutting the cake, the opening of the show.", "list": ["Cold spark fountains", "Smoke machines and hazers", "Low fog", "Handheld fog guns"] },
+  "davos": {
+    "eyebrow": "WEF Davos · Corporate",
+    "title": "Technical support for delegations and companies",
+    "text": "During the World Economic Forum in Davos and at corporate events, we support delegations, representatives and companies with reliable technology and discreet service, in four languages.",
+    "list": ["Screens, TVs and projectors for presentations", "Microphones and sound for conferences and panels", "Live camera and streaming", "Fast set-up, technician always on site"],
+    "cta": "Plan your event"
+  },
+  "work": {
+    "eyebrow": "Work",
+    "title": "Live, on our installations",
+    "lead": "A few moments from events we have equipped.",
+    "video": "Video of an event equipped by Meekon Displays",
+    "a1": "Dance floor with light beams and LED wall", "a2": "LED wall with logo above the dance floor", "a3": "Reception hall lit in blue and purple", "a4": "Moving heads projecting light beams", "a5": "LED wall with personalised wedding content", "a6": "Stage with LED wall and DJ booth", "a7": "Guests dancing under the lights"
+  },
+  "method": {
+    "eyebrow": "Approach",
+    "title": "Precision in every detail",
+    "lead": "Technical requirements, stage layout, equipment planning: we prepare everything in advance so you don't have to think about it on the day.",
+    "p1": { "t": "Listening", "d": "Tell us about your event: venue, guests, programme and the atmosphere you want." },
+    "p2": { "t": "Design and quote", "d": "A clear technical proposal, with a site visit when needed." },
+    "p3": { "t": "Installation", "d": "Transport, set-up and full testing before your guests arrive." },
+    "p4": { "t": "Operation and get-out", "d": "A technician runs the whole event; afterwards we dismantle and leave the venue tidy." }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Frequently asked questions",
+    "items": [
+      ["How far in advance should I book?", "As early as possible, especially for summer weekends and the WEF period. For smaller events a few weeks is often enough: get in touch and we'll check availability."],
+      ["Are set-up and a technician included?", "Yes. We handle transport, set-up, testing and dismantling, and one of our technicians runs the event on site."],
+      ["Can I show my own photos and videos on the screens?", "Of course. Send us photos, videos or logos before the event: we prepare the content and run it during the evening, including live camera feeds."],
+      ["Do you work outdoors and throughout Switzerland?", "Yes, with outdoor-rated equipment. We review the venue, power supply and weather cover together."],
+      ["Are cold sparks and fog safe indoors?", "Yes: cold spark machines produce no flame and we use professional equipment only. We always check venue rules and smoke detectors in advance."]
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Tell us about your event",
+    "lead": "Fill in the form and we'll reply with a tailored, no-obligation proposal.",
+    "phone": "Phone",
+    "whatsapp": "Message us on WhatsApp",
+    "langs": "We speak Italian, German, French and English."
+  },
+  "form": {
+    "name": "Full name", "phone": "Phone", "email": "Email", "type": "Type of event", "date": "Date", "place": "Location", "place_ph": "e.g. Zurich, Geneva, Davos", "guests": "Number of guests", "needs": "What do you need?", "msg": "Message", "msg_ph": "Tell us a little more about your event…", "submit": "Send request", "note": "By submitting this form you agree to be contacted about your request.",
+    "types": ["Wedding", "Birthday / private party", "Traditional celebration", "Corporate event", "WEF Davos", "Concert / stage event", "Other"],
+    "chips": ["LED screens", "TV / projector", "Lighting", "Truss", "Sound", "DJ system", "Live camera", "Streaming", "Sparks / fog"]
+  },
+  "footer": { "claim": "Technical installations for events across Switzerland." },
+  "thanks": { "title": "Thank you!", "eyebrow": "Request sent", "text": "We've received your request and will get back to you shortly with a proposal.", "back": "Back to the website" }
+}

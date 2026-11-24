@@ -1,0 +1,96 @@
+{
+  "locale": "it_CH",
+  "label": "Italiano",
+  "hint": "Questo sito è disponibile anche in italiano.",
+  "hint_link": "Passa all'italiano",
+  "meta": {
+    "title": "Meekon Displays — Tecnica per eventi: schermi LED, luci, audio, streaming",
+    "description": "Installazioni tecniche per matrimoni, compleanni, feste tradizionali, eventi aziendali e WEF di Davos: schermi LED, beamer, luci, strutture, audio, impianti DJ, riprese live, streaming ed effetti speciali in tutta la Svizzera."
+  },
+  "a11y": { "skip": "Vai al contenuto", "nav": "Navigazione principale", "lang": "Lingua", "menu": "Apri il menu", "close": "Chiudi il menu" },
+  "nav": { "events": "Eventi", "services": "Servizi", "work": "Lavori", "method": "Metodo", "contact": "Contatti", "cta": "Richiedi un'offerta" },
+  "hero": {
+    "eyebrow": "Schermi LED · Luci · Audio · Live & Streaming",
+    "title": "La tecnica che rende <em>unico</em> il tuo evento.",
+    "lead": "Progettiamo, installiamo e gestiamo tutta la parte tecnica: dal matrimonio alla festa tradizionale, dal palco al WEF di Davos.",
+    "cta1": "Richiedi un'offerta",
+    "cta2": "Guarda i nostri lavori",
+    "foot1": "Tutta la Svizzera",
+    "foot2": "Montaggio e tecnico in sala",
+    "foot3": "IT · DE · FR · EN"
+  },
+  "intro": {
+    "text": "Un evento riuscito si ricorda per le emozioni, non per i cavi. Per questo curiamo ogni dettaglio tecnico, dalla disposizione del palco all'ultimo microfono, con <em>discrezione e precisione</em>.",
+    "sign": "— Meekon Displays"
+  },
+  "events": {
+    "eyebrow": "Eventi",
+    "title": "Per ogni occasione",
+    "lead": "Ogni evento ha il suo ritmo. Adattiamo tecnica, estetica e organizzazione al vostro momento.",
+    "e1": { "t": "Matrimoni", "d": "Luci d'atmosfera per la cena, ledwall per foto e video, nebbia bassa per il primo ballo." },
+    "e2": { "t": "Compleanni e feste private", "d": "Impianto audio, luci per la pista e uno schermo con i vostri contenuti." },
+    "e3": { "t": "Feste tradizionali", "d": "Allestimenti per celebrazioni culturali e familiari, anche con molti ospiti e programmi lunghi." },
+    "e4": { "t": "Aziende e WEF Davos", "d": "Schermi, beamer e audio per presentazioni, conferenze e ricevimenti di rappresentanza." },
+    "e5": { "t": "Concerti ed eventi da palco", "d": "Strutture, beam, line array e regia per band, DJ e spettacoli." }
+  },
+  "services": {
+    "eyebrow": "Servizi",
+    "title": "Tutta la tecnica di un evento, da un unico partner",
+    "lead": "Forniamo, montiamo e gestiamo l'intero impianto. Un solo interlocutore, nessuna sorpresa."
+  },
+  "s1": { "t": "Schermi LED e video", "d": "Ledwall di vario tipo e formato, per interni ed esterni, oltre a TV e beamer per presentazioni.", "list": ["Ledwall modulari indoor e outdoor", "TV e monitor su stativo", "Beamer e schermi di proiezione", "Gestione contenuti e grafiche"] },
+  "s2": { "t": "Luci e strutture", "d": "Dalla luce calda di una cena allo show sulla pista, con strutture americane (truss) su misura.", "list": ["Beam e teste mobili", "LED wash e uplight", "Strutture americane e torri", "Programmazione show luci"] },
+  "s3": { "t": "Audio", "d": "Impianti dimensionati sulla location: dai microfoni per i discorsi alle casse appese per i grandi spazi.", "list": ["Microfoni a filo e radiomicrofoni", "Casse, subwoofer e line array appesi", "Mixer e monitor da palco", "Tecnico audio dedicato"] },
+  "s4": { "t": "DJ e palco", "d": "Impianti completi per DJ e predisposizione della console, con palco e regia coordinati.", "list": ["Impianti per DJ", "Predisposizione console", "Coordinamento con band e artisti", "Palco e pedane"] },
+  "s5": { "t": "Riprese live e streaming", "d": "Portiamo il momento sugli schermi in diretta e lo trasmettiamo a chi non può esserci.", "list": ["Riprese live sui ledwall", "Regia video multicamera", "Streaming live online", "Registrazione dell'evento"] },
+  "s6": { "t": "Effetti speciali", "d": "L'effetto al momento giusto: ingresso degli sposi, taglio della torta, apertura dello show.", "list": ["Spark (fontane fredde)", "Macchine del fumo e hazer", "Nebbia bassa", "Pistole a nebbia"] },
+  "davos": {
+    "eyebrow": "WEF Davos · Corporate",
+    "title": "Supporto tecnico per rappresentanti e aziende",
+    "text": "Durante il World Economic Forum di Davos e in occasione di eventi aziendali, affianchiamo delegazioni, rappresentanti e aziende con tecnica affidabile e un servizio discreto, in quattro lingue.",
+    "list": ["Schermi, TV e beamer per presentazioni", "Microfoni e audio per conferenze e panel", "Riprese e streaming live", "Montaggio rapido e tecnico sempre presente"],
+    "cta": "Pianifica il tuo evento"
+  },
+  "work": {
+    "eyebrow": "Lavori",
+    "title": "Dal vivo, sulle nostre installazioni",
+    "lead": "Alcuni momenti degli eventi che abbiamo allestito.",
+    "video": "Video di un evento allestito da Meekon Displays",
+    "a1": "Pista da ballo con fasci di luce e ledwall", "a2": "Ledwall con logo sopra la pista", "a3": "Sala ricevimento illuminata di blu e viola", "a4": "Teste mobili che proiettano fasci di luce", "a5": "Ledwall con contenuti personalizzati per un matrimonio", "a6": "Palco con ledwall e consolle del DJ", "a7": "Ospiti che ballano sotto le luci"
+  },
+  "method": {
+    "eyebrow": "Metodo",
+    "title": "Precisione in ogni dettaglio",
+    "lead": "Requisiti tecnici, disposizione del palco, organizzazione degli strumenti: pianifichiamo tutto prima, perché il giorno dell'evento tu non debba pensarci.",
+    "p1": { "t": "Ascolto", "d": "Ci racconti l'evento: location, ospiti, programma e atmosfera desiderata." },
+    "p2": { "t": "Progetto e offerta", "d": "Proposta tecnica chiara, con sopralluogo quando serve." },
+    "p3": { "t": "Installazione", "d": "Trasporto, montaggio e test completi prima dell'arrivo degli ospiti." },
+    "p4": { "t": "Regia e smontaggio", "d": "Un tecnico segue tutto l'evento; a fine serata smontiamo e lasciamo la location in ordine." }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Domande frequenti",
+    "items": [
+      ["Con quanto anticipo devo prenotare?", "Il prima possibile, soprattutto per i weekend estivi e per il periodo del WEF. Per eventi piccoli bastano spesso poche settimane: contattaci e verifichiamo la disponibilità."],
+      ["Montaggio e tecnico sono inclusi?", "Sì. Ci occupiamo di trasporto, montaggio, test e smontaggio, e un nostro tecnico segue l'evento sul posto."],
+      ["Posso mostrare foto e video personali sugli schermi?", "Certo. Inviaci foto, video o loghi prima dell'evento: prepariamo i contenuti e li gestiamo durante la serata, anche con riprese in diretta."],
+      ["Lavorate anche all'aperto e in tutta la Svizzera?", "Sì, con attrezzatura adatta agli esterni. Valutiamo insieme location, alimentazione elettrica e coperture."],
+      ["Gli effetti spark e la nebbia sono sicuri al chiuso?", "Sì: le fontane fredde non producono fiamme e usiamo solo macchine professionali. Verifichiamo sempre in anticipo le regole della location e i rilevatori di fumo."]
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contatti",
+    "title": "Raccontaci il tuo evento",
+    "lead": "Compila il modulo: ti rispondiamo con una proposta su misura, senza impegno.",
+    "phone": "Telefono",
+    "whatsapp": "Scrivici su WhatsApp",
+    "langs": "Parliamo italiano, tedesco, francese e inglese."
+  },
+  "form": {
+    "name": "Nome e cognome", "phone": "Telefono", "email": "E-mail", "type": "Tipo di evento", "date": "Data", "place": "Località", "place_ph": "Es. Lugano, Zurigo, Davos", "guests": "Numero di ospiti", "needs": "Di cosa hai bisogno?", "msg": "Messaggio", "msg_ph": "Raccontaci qualcosa in più sull'evento…", "submit": "Invia la richiesta", "note": "Inviando il modulo accetti di essere ricontattato in merito alla tua richiesta.",
+    "types": ["Matrimonio", "Compleanno / festa privata", "Festa tradizionale", "Evento aziendale", "WEF Davos", "Concerto / evento da palco", "Altro"],
+    "chips": ["Schermi LED", "TV / beamer", "Luci", "Strutture", "Audio", "Impianto DJ", "Riprese live", "Streaming", "Effetti spark / fumo"]
+  },
+  "footer": { "claim": "Installazioni tecniche per eventi in tutta la Svizzera." },
+  "thanks": { "title": "Grazie, a presto!", "eyebrow": "Richiesta inviata", "text": "Abbiamo ricevuto la tua richiesta e ti ricontatteremo al più presto con una proposta.", "back": "Torna al sito" }
+}

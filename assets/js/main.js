@@ -12,7 +12,7 @@
   // Mobile menu
   const setMenu = (open) => {
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Chiudi il menu' : 'Apri il menu');
+    toggle.setAttribute('aria-label', open ? toggle.dataset.close : toggle.dataset.open);
     menu.classList.toggle('is-open', open);
     nav.classList.toggle('menu-open', open);
   };
@@ -50,10 +50,40 @@
     vids.forEach((v) => vio.observe(v));
   }
 
-  // Respect reduced motion for the hero video
   const hero = document.querySelector('.hero__video');
   if (hero && reduceMotion) { hero.removeAttribute('autoplay'); hero.pause(); }
 
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
+
+  // Language: remember choice, suggest the visitor's browser language (no forced redirect)
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+  document.querySelectorAll('.lang a').forEach((a) => {
+    a.addEventListener('click', () => store.set('meekon-lang', a.getAttribute('hreflang')));
+  });
+
+  const hints = window.MEEKON_LANGHINTS || {};
+  const current = document.body.dataset.lang;
+  const preferred = (navigator.languages || [navigator.language || ''])
+    .map((l) => (l || '').slice(0, 2).toLowerCase())
+    .find((l) => hints[l]);
+  const chosen = store.get('meekon-lang');
+  const box = document.querySelector('.langhint');
+  if (box && preferred && preferred !== current && !chosen && hints[preferred]) {
+    const h = hints[preferred];
+    box.querySelector('p').textContent = h.text;
+    const link = box.querySelector('a');
+    link.textContent = h.link;
+    link.href = h.href;
+    link.lang = preferred;
+    link.addEventListener('click', () => store.set('meekon-lang', preferred));
+    box.querySelector('button').addEventListener('click', () => {
+      store.set('meekon-lang', current);
+      box.hidden = true;
+    });
+    setTimeout(() => { box.hidden = false; }, 1200);
+  }
 })();
