@@ -5,7 +5,7 @@
   "hint_link": "Passa all'italiano",
   "meta": {
     "title": "Meekon Displays — Tecnica per eventi: schermi LED, luci, audio, streaming",
-    "description": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia: matrimoni, compleanni, feste tradizionali, eventi aziendali e WEF di Davos. Schermi LED, beamer, luci, strutture, audio, impianti DJ, riprese live, streaming, effetti speciali e dance floor."
+    "description": "Tecnica per eventi in Svizzera e, su richiesta, in Italia, Germania e Francia: schermi LED, digital banner, luci, audio, DJ, streaming, effetti e dance floor."
   },
   "a11y": { "skip": "Vai al contenuto", "nav": "Navigazione principale", "lang": "Lingua", "menu": "Apri il menu", "close": "Chiudi il menu" },
   "nav": { "events": "Eventi", "services": "Servizi", "work": "Lavori", "venues": "Location", "djs": "DJ", "method": "Metodo", "contact": "Contatti", "cta": "Richiedi un'offerta" },
@@ -45,6 +45,7 @@
   "s5": { "t": "Riprese live e streaming", "d": "Portiamo il momento sugli schermi in diretta e lo trasmettiamo a chi non può esserci.", "list": ["Riprese live sui ledwall", "Assistenza alle riprese in sala", "Streaming live online", "Collegamento a schermi e beamer"] },
   "s6": { "t": "Effetti speciali", "d": "L'effetto al momento giusto: l'ingresso degli sposi, il taglio della torta, l'apertura dello show.", "list": ["Spark (fontane fredde)", "Macchine del fumo", "Nebbia bassa", "Pistole a nebbia"] },
   "s7": { "t": "Dance floor", "d": "Una pista da ballo montata su misura per la vostra sala, per il primo ballo e per tutta la festa.", "list": ["Pista da ballo modulare", "Dimensioni adattate alla sala", "Montaggio e smontaggio", "Coordinamento con luci ed effetti"] },
+  "s8": { "t": "Digital banner", "d": "Schermi verticali per accogliere gli ospiti all'ingresso o dare vita alle vetrine, con i contenuti che volete voi.", "list": ["Totem digitali per l'ingresso", "Schermi per vetrine", "Benvenuto, programma e indicazioni", "Caricamento dei contenuti"] },
   "davos": {
     "eyebrow": "WEF Davos · Corporate",
     "title": "Supporto tecnico per rappresentanti e aziende",
@@ -123,7 +124,7 @@
     "sending": "Invio in corso…",
     "error": "Non è stato possibile inviare la richiesta. Riprovate tra qualche istante oppure scriveteci su WhatsApp.",
     "types": ["Matrimonio", "Compleanno / festa privata", "Festa tradizionale", "Evento aziendale", "WEF Davos", "Evento da palco", "Altro"],
-    "chips": ["Schermi LED", "TV / beamer", "Luci", "Strutture", "Audio", "Impianto DJ", "Riprese live", "Streaming", "Effetti spark / nebbia", "Dance floor"]
+    "chips": ["Schermi LED", "Digital banner", "TV / beamer", "Luci", "Strutture", "Audio", "Impianto DJ", "Riprese live", "Streaming", "Effetti spark / nebbia", "Dance floor"]
   },
   "privacy": { "note": "Usiamo i vostri dati per rispondere alla richiesta e, se lo desiderate, per preparare l'offerta e organizzare l'evento: mai venduti né usati per pubblicità.", "link": "Leggi l'informativa privacy" },
   "footer": { "claim": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia.", "privacy": "Privacy" },

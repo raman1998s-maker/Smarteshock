@@ -372,10 +372,10 @@
    "it": "Di un evento riuscito si ricordano le emozioni, non i cavi. Per questo curiamo ogni dettaglio tecnico, dalla disposizione del palco all'ultimo microfono, con <em>discrezione e precisione</em>."
   },
   "meta.description": {
-   "de": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich: Hochzeiten, Geburtstage, traditionelle Feste, Firmenanlässe und das WEF in Davos. LED-Wände, Beamer, Licht, Traversen, Ton, DJ-Anlagen, Live-Kamera, Streaming, Spezialeffekte und Dance floor.",
-   "en": "Event technology across Switzerland and, on request, in Italy, Germany and France: weddings, birthdays, traditional celebrations, corporate events and the WEF in Davos. LED walls, projectors, lighting, truss, sound, DJ systems, live camera, streaming, special effects and a dance floor.",
-   "fr": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France : mariages, anniversaires, fêtes traditionnelles, événements d'entreprise et WEF de Davos. Murs LED, projecteurs, lumière, structures, son, sonorisation DJ, captation live, streaming, effets spéciaux et dance floor.",
-   "it": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia: matrimoni, compleanni, feste tradizionali, eventi aziendali e WEF di Davos. Schermi LED, beamer, luci, strutture, audio, impianti DJ, riprese live, streaming, effetti speciali e dance floor."
+   "de": "Eventtechnik in der ganzen Schweiz, auf Anfrage in Italien, Deutschland und Frankreich: LED-Wände, Digital banner, Licht, Ton, DJ, Streaming und Dance floor.",
+   "en": "Event technology across Switzerland and, on request, Italy, Germany and France: LED walls, digital banners, lighting, sound, DJ, streaming and dance floors.",
+   "fr": "Technique événementielle en Suisse et, sur demande, en Italie, Allemagne et France : écrans LED, digital banner, lumière, son, DJ, streaming et dance floor.",
+   "it": "Tecnica per eventi in Svizzera e, su richiesta, in Italia, Germania e Francia: schermi LED, digital banner, luci, audio, DJ, streaming, effetti e dance floor."
   },
   "meta.title": {
    "de": "Meekon Displays — Eventtechnik: LED-Wände, Licht, Ton, Streaming",
@@ -688,6 +688,18 @@
    "en": "Dance floor",
    "fr": "Dance floor",
    "it": "Dance floor"
+  },
+  "s8.d": {
+   "de": "Hochformatige Bildschirme, die Ihre Gäste am Eingang empfangen oder Schaufenster beleben, mit den Inhalten, die Sie möchten.",
+   "en": "Portrait screens to welcome guests at the entrance or bring shop windows to life, with the content you choose.",
+   "fr": "Des écrans verticaux pour accueillir les invités à l'entrée ou animer les vitrines, avec les contenus de votre choix.",
+   "it": "Schermi verticali per accogliere gli ospiti all'ingresso o dare vita alle vetrine, con i contenuti che volete voi."
+  },
+  "s8.t": {
+   "de": "Digital banner",
+   "en": "Digital banner",
+   "fr": "Digital banner",
+   "it": "Digital banner"
   },
   "services.eyebrow": {
    "de": "Leistungen",
