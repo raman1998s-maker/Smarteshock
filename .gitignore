@@ -1,0 +1,11 @@
+# Segreti e configurazione locale
+.env
+.env.*
+!.env.example
+
+# Dipendenze e strumenti
+node_modules/
+.netlify/
+
+# Sistema
+.DS_Store

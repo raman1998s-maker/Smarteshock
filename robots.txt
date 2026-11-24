@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /area-riservata/
+Disallow: /api/
+
+Sitemap: https://meekondisplay.ch/sitemap.xml
