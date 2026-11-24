@@ -370,7 +370,7 @@ def jsonld(lang, t):
         "logo": SITE + "/assets/img/logo.png",
         "description": t["meta"]["description"],
         "telephone": "+41799450000",
-        "email": "meekon.display@gmail.com",
+        "email": "info@meekondisplay.ch",
         "sameAs": ["https://www.instagram.com/meekon_display/"],
         "areaServed": [{"@type": "Country", "name": n} for n in ["Switzerland", "Italy", "Germany", "France"]],
         "knowsLanguage": LANGS,

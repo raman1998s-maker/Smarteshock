@@ -29,11 +29,11 @@ Vedi `docs/architettura.md` (stack, modello dati, API, flusso di autenticazione)
 
 ## Contatti pubblici (approvati dal titolare)
 - Telefono e WhatsApp: **079 945 00 00** → `tel:+41799450000`, `https://wa.me/41799450000`
-- E-mail: **meekon.display@gmail.com**
+- E-mail: **info@meekondisplay.ch** (Google Workspace sul dominio, configurata il 24.11.2026; il vecchio indirizzo Gmail non si usa più sul sito)
 - Instagram: **@meekon_display** → `https://www.instagram.com/meekon_display/` (motto usato sul profilo: "Bringing your vision to life with precision.")
 - Nessun indirizzo.
 
 ## Persone
-- **Titolare dell'azienda** (e titolare del trattamento dei dati per la privacy): **Arul Mayuran** — Meekon Displays. Contatto per la privacy: meekon.display@gmail.com.
+- **Titolare dell'azienda** (e titolare del trattamento dei dati per la privacy): **Arul Mayuran** — Meekon Displays. Contatto per la privacy: info@meekondisplay.ch.
 - **Account dei servizi** (Supabase, Netlify, dominio): vanno creati con i dati d'accesso di **Meekon Displays**, NON con gli account di Smart E Shock collegati a questa sessione. Supabase: regione **UE, Francoforte (eu-central-1)**, scelta dal referente il 24.11.2026.
 - **Referente del sito**: la persona che segue il progetto con Claude (non pubblicare il suo nome o la sua e-mail).
