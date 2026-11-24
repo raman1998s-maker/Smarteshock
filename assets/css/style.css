@@ -708,23 +708,9 @@ p { margin: 0; text-wrap: pretty; }
 .faq details p { padding: 0 var(--sp-7) 28px 0; color: var(--color-text-2); }
 
 /* ---------- Chi siamo ---------- */
-/* grande foto arrotondata; il testo su vetro fumé sta in alto a sinistra, sopra il muro e non sulle persone */
-.team__inner { position: relative; }
+/* titolo e frase sopra la foto (come le altre sezioni): la foto resta intera e nessun testo copre le persone */
 .team__photo { margin: 0; border-radius: var(--radius-panel); overflow: hidden; }
-.team__photo img { width: 100%; height: auto; aspect-ratio: 2000 / 1126; object-fit: cover; }
-.team__text {
-  position: absolute; z-index: 1; left: 24px; top: 24px; margin: 0; max-width: 440px;
-  padding: var(--sp-6); border-radius: var(--radius-card);
-  background: var(--color-glass-2); border: 1px solid rgb(var(--c-ivory-rgb) / .12);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-}
-.team__text h2 { font-size: clamp(30px, 3vw, 44px); }
-.team__text .head__lead { margin-top: var(--sp-3); }
-/* sotto 1280 px la foto si rimpicciolisce e il riquadro coprirebbe i volti: il testo va sotto la foto */
-@media (max-width: 1279px) {
-  .team__inner { display: grid; }
-  .team__text { position: static; order: 2; max-width: none; margin-top: var(--sp-4); background: var(--color-surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
-}
+.team__photo img { width: 100%; height: auto; aspect-ratio: 2000 / 1126; }
 @media (max-width: 860px) { .team__photo { border-radius: var(--radius-card); } }
 
 /* ---------- Contatti e modulo ---------- */
