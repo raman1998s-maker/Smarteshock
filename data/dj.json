@@ -1,0 +1,23 @@
+[
+  {
+    "nome": "Nome del DJ — da inserire (esempio 1)",
+    "genere": { "it": "Open format, matrimoni", "de": "Open Format, Hochzeiten", "fr": "Open format, mariages", "en": "Open format, weddings" },
+    "foto": null,
+    "link": null,
+    "approvato": false
+  },
+  {
+    "nome": "Nome del DJ — da inserire (esempio 2)",
+    "genere": { "it": "House e dance", "de": "House und Dance", "fr": "House et dance", "en": "House and dance" },
+    "foto": null,
+    "link": null,
+    "approvato": false
+  },
+  {
+    "nome": "Nome del DJ — da inserire (esempio 3)",
+    "genere": { "it": "Musica internazionale e tradizionale", "de": "Internationale und traditionelle Musik", "fr": "Musique internationale et traditionnelle", "en": "International and traditional music" },
+    "foto": null,
+    "link": null,
+    "approvato": false
+  }
+]

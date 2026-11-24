@@ -5,92 +5,132 @@
   "hint_link": "Zur deutschen Version",
   "meta": {
     "title": "Meekon Displays — Eventtechnik: LED-Wände, Licht, Ton, Streaming",
-    "description": "Technische Installationen für Hochzeiten, Geburtstage, traditionelle Feste, Firmenanlässe und das WEF in Davos: LED-Wände, Beamer, Licht, Traversen, Ton, DJ-Anlagen, Live-Kamera, Streaming und Spezialeffekte in der ganzen Schweiz."
+    "description": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich: Hochzeiten, Geburtstage, traditionelle Feste, Firmenanlässe und das WEF in Davos. LED-Wände, Beamer, Licht, Traversen, Ton, DJ-Anlagen, Live-Kamera, Streaming und Spezialeffekte."
   },
   "a11y": { "skip": "Zum Inhalt", "nav": "Hauptnavigation", "lang": "Sprache", "menu": "Menü öffnen", "close": "Menü schliessen" },
-  "nav": { "events": "Anlässe", "services": "Leistungen", "work": "Referenzen", "method": "Ablauf", "contact": "Kontakt", "cta": "Offerte anfragen" },
+  "nav": { "events": "Anlässe", "services": "Leistungen", "work": "Referenzen", "venues": "Locations", "djs": "DJs", "method": "Ablauf", "contact": "Kontakt", "cta": "Offerte anfragen" },
   "hero": {
     "eyebrow": "LED-Wände · Licht · Ton · Live & Streaming",
     "title": "Eventtechnik, die Ihren Anlass <em>einzigartig</em> macht.",
     "lead": "Wir planen, installieren und betreuen die gesamte Technik: von der Hochzeit bis zum traditionellen Fest, von der Bühne bis zum WEF in Davos.",
     "cta1": "Offerte anfragen",
-    "cta2": "Unsere Referenzen",
-    "foot1": "Ganze Schweiz",
-    "foot2": "Aufbau und Techniker vor Ort",
-    "foot3": "IT · DE · FR · EN"
+    "cta2": "Unsere Referenzen ansehen",
+    "foot1": "Ganze Schweiz · auf Anfrage Italien, Deutschland, Frankreich",
+    "foot2": "Aufbau, Betreuung und Abbau",
+    "foot3": "Italiano · Deutsch · Français · English"
   },
   "intro": {
-    "text": "Ein gelungener Anlass bleibt wegen der Emotionen in Erinnerung, nicht wegen der Kabel. Deshalb kümmern wir uns um jedes technische Detail, von der Bühnenplanung bis zum letzten Mikrofon, mit <em>Diskretion und Präzision</em>.",
+    "text": "Von einem gelungenen Anlass bleiben die Emotionen in Erinnerung, nicht die Kabel. Deshalb kümmern wir uns um jedes technische Detail, von der Bühnenplanung bis zum letzten Mikrofon, mit <em>Diskretion und Präzision</em>.",
     "sign": "— Meekon Displays"
   },
   "events": {
     "eyebrow": "Anlässe",
     "title": "Für jeden Anlass",
-    "lead": "Jeder Anlass hat seinen eigenen Rhythmus. Wir passen Technik, Ästhetik und Organisation Ihrem Moment an.",
-    "e1": { "t": "Hochzeiten", "d": "Stimmungslicht fürs Dinner, LED-Wand für Fotos und Videos, Bodennebel für den ersten Tanz." },
-    "e2": { "t": "Geburtstage und Privatfeste", "d": "Tonanlage, Licht für die Tanzfläche und ein Bildschirm mit Ihren Inhalten." },
+    "lead": "Jeder Anlass hat seinen eigenen Rhythmus. Wir stimmen Technik, Ästhetik und Organisation auf Ihren Moment ab.",
+    "e1": { "t": "Hochzeiten", "d": "Stimmungsvolles Licht zum Dinner, LED-Wand für Fotos und Videos, Bodennebel für den ersten Tanz." },
+    "e2": { "t": "Geburtstage und private Feste", "d": "Klarer Sound, Licht für die Tanzfläche und ein Bildschirm mit Ihren Erinnerungen." },
     "e3": { "t": "Traditionelle Feste", "d": "Technik für kulturelle und familiäre Feiern, auch mit vielen Gästen und langen Programmen." },
     "e4": { "t": "Firmen und WEF Davos", "d": "Bildschirme, Beamer und Ton für Präsentationen, Konferenzen und Empfänge." },
-    "e5": { "t": "Konzerte und Bühnenevents", "d": "Traversen, Beams, Line-Arrays und Regie für Bands, DJs und Shows." }
+    "e5": { "t": "Bühnenevents", "d": "Traversen, Beam-Licht, Ton und Regie für DJs, Künstler und Shows." }
   },
   "services": {
     "eyebrow": "Leistungen",
     "title": "Die gesamte Eventtechnik aus einer Hand",
-    "lead": "Wir liefern, montieren und betreuen die komplette Anlage. Ein Ansprechpartner, keine Überraschungen."
+    "lead": "Wir liefern, bauen auf und betreuen die ganze Anlage. Ein Ansprechpartner, von der ersten Idee bis zum letzten Applaus."
   },
-  "s1": { "t": "LED-Wände und Video", "d": "LED-Wände in verschiedenen Ausführungen und Grössen für innen und aussen, dazu TV-Geräte und Beamer für Präsentationen.", "list": ["Modulare LED-Wände indoor und outdoor", "TV und Monitore auf Ständern", "Beamer und Projektionsleinwände", "Content- und Grafikbetreuung"] },
-  "s2": { "t": "Licht und Traversen", "d": "Vom warmen Licht beim Dinner bis zur Show auf der Tanzfläche, mit Traversen nach Mass.", "list": ["Beams und Moving Heads", "LED-Wash und Uplights", "Traversen und Türme", "Programmierung der Lichtshow"] },
-  "s3": { "t": "Ton", "d": "Anlagen passend zur Location: von Mikrofonen für Reden bis zu geflogenen Lautsprechern für grosse Räume.", "list": ["Kabel- und Funkmikrofone", "Lautsprecher, Subwoofer und geflogene Line-Arrays", "Mischpulte und Bühnenmonitore", "Eigener Tontechniker"] },
-  "s4": { "t": "DJ und Bühne", "d": "Komplette DJ-Anlagen und vorbereitete DJ-Pulte, abgestimmt mit Bühne und Regie.", "list": ["DJ-Anlagen", "Vorbereitung des DJ-Pults", "Koordination mit Bands und Künstlern", "Bühnen und Podeste"] },
-  "s5": { "t": "Live-Kamera und Streaming", "d": "Wir bringen den Moment live auf die Bildschirme und übertragen ihn an alle, die nicht dabei sein können.", "list": ["Live-Bilder auf den LED-Wänden", "Mehrkamera-Videoregie", "Live-Streaming online", "Aufzeichnung des Anlasses"] },
-  "s6": { "t": "Spezialeffekte", "d": "Der Effekt im richtigen Moment: Einzug des Brautpaars, Anschneiden der Torte, Showbeginn.", "list": ["Sparkular (Kaltfunken)", "Nebel- und Hazer-Maschinen", "Bodennebel", "Nebelpistolen"] },
+  "s1": { "t": "LED-Wände und Video", "d": "LED-Wände in verschiedenen Ausführungen und Grössen, dazu TV-Geräte und Beamer für Präsentationen und Projektionen.", "list": ["Modulare LED-Wände in verschiedenen Formaten", "TV-Geräte und Monitore auf Stativ", "Beamer und Projektionsleinwände", "Inhaltssteuerung während des Anlasses"] },
+  "s2": { "t": "Licht und Traversen", "d": "Vom warmen Licht beim Dinner bis zur Show auf der Tanzfläche, mit verschiedenen Systemen und massgeschneiderten Traversen.", "list": ["Beam-Licht und Moving Heads", "LED-Scheinwerfer und Uplights", "Traversen (Truss)", "Lichtprogrammierung"] },
+  "s3": { "t": "Ton", "d": "Anlagen passend zu jeder Location: vom Mikrofon für die Rede bis zu geflogenen Lautsprechern für grosse Räume.", "list": ["Kabel- und Funkmikrofone", "Lautsprecher und Subwoofer, auch geflogen", "Mischpulte", "Technische Betreuung während des Anlasses"] },
+  "s4": { "t": "DJ-Anlagen", "d": "Komplette DJ-Anlagen und Vorbereitung des DJ-Pults, abgestimmt auf Licht und Bildschirme.", "list": ["Tonanlagen für DJs", "Vorbereitung des DJ-Pults", "DJ-Monitor", "Abstimmung mit Licht und LED-Wand"] },
+  "s5": { "t": "Live-Kamera und Streaming", "d": "Wir bringen den Moment live auf die Bildschirme und übertragen ihn zu allen, die nicht dabei sein können.", "list": ["Live-Bilder auf der LED-Wand", "Unterstützung bei Kameraaufnahmen vor Ort", "Live-Streaming online", "Anbindung an Bildschirme und Beamer"] },
+  "s6": { "t": "Spezialeffekte", "d": "Der Effekt im richtigen Moment: der Einzug des Brautpaars, der Tortenanschnitt, der Auftakt der Show.", "list": ["Kaltfunken (Spark)", "Nebelmaschinen", "Bodennebel", "Nebelkanonen"] },
   "davos": {
     "eyebrow": "WEF Davos · Corporate",
     "title": "Technischer Support für Delegationen und Unternehmen",
     "text": "Während des World Economic Forum in Davos und bei Firmenanlässen begleiten wir Delegationen, Vertreter und Unternehmen mit zuverlässiger Technik und diskretem Service, in vier Sprachen.",
-    "list": ["Bildschirme, TV und Beamer für Präsentationen", "Mikrofone und Ton für Konferenzen und Panels", "Live-Kamera und Streaming", "Schneller Aufbau, Techniker immer vor Ort"],
-    "cta": "Anlass planen"
+    "list": ["Bildschirme, TV-Geräte und Beamer für Präsentationen", "Mikrofone und Ton für Konferenzen und Panels", "Live-Kamera und Streaming", "Diskreter Aufbau und Betreuung vor Ort"],
+    "cta": "Ihren Anlass planen"
   },
   "work": {
     "eyebrow": "Referenzen",
     "title": "Live, mit unseren Installationen",
-    "lead": "Einige Momente von Anlässen, die wir ausgestattet haben.",
+    "lead": "Einige Momente aus Anlässen, die wir technisch begleitet haben.",
     "video": "Video eines Anlasses mit Technik von Meekon Displays",
-    "a1": "Tanzfläche mit Lichtstrahlen und LED-Wand", "a2": "LED-Wand mit Logo über der Tanzfläche", "a3": "Festsaal in Blau und Violett beleuchtet", "a4": "Moving Heads mit Lichtstrahlen", "a5": "LED-Wand mit persönlichen Inhalten an einer Hochzeit", "a6": "Bühne mit LED-Wand und DJ-Pult", "a7": "Tanzende Gäste unter der Lichtshow"
+    "a1": "Gäste auf der Tanzfläche zwischen Lichtstrahlen, im Hintergrund eine LED-Wand",
+    "a2": "Weisse Lichtstrahlen über der Tanzfläche, mit beleuchteten Traversen",
+    "a3": "Festsaal in blauem und violettem Licht, mit Moving Heads an der Traverse",
+    "a4": "Moving Heads zeichnen Lichtstrahlen über die Gäste",
+    "a5": "Porträt der Braut auf der LED-Wand, über dem DJ-Pult",
+    "a6": "Bühne mit Bildschirm und beleuchtetem DJ-Pult",
+    "a7": "Lichtstrahlen und LED-Wand über der Tanzfläche",
+    "filters": { "all": "Alle", "matrimoni": "Hochzeiten", "aziende": "Firmen", "feste": "Feste", "palco": "Bühne" }
+  },
+  "regions": {
+    "eyebrow": "Einsatzgebiet",
+    "title": "In der ganzen Schweiz und darüber hinaus",
+    "lead": "Wir sind in allen Regionen der Schweiz für Sie da. Auf Anfrage bringen wir unsere Technik auch nach Italien, Deutschland und Frankreich.",
+    "main": { "label": "Schweiz", "text": "Alle Kantone, von der Stadt bis in die Berge." },
+    "onrequest": "auf Anfrage",
+    "countries": { "ch": "Schweiz", "it": "Italien", "de": "Deutschland", "fr": "Frankreich" }
+  },
+  "venues": {
+    "eyebrow": "Locations",
+    "title": "Säle und Locations, in denen wir gearbeitet haben",
+    "lead": "Jeder Raum hat seinen eigenen Charakter. Wer ihn kennt, kann ihn zur Geltung bringen.",
+    "empty": "Die Liste der Locations ist in Vorbereitung."
+  },
+  "djs": {
+    "eyebrow": "DJs",
+    "title": "DJs, mit denen wir zusammenarbeiten",
+    "lead": "Künstler, mit denen wir Bühne, Rhythmus und den Blick fürs Detail teilen.",
+    "empty": "Die Liste der DJs ist in Vorbereitung.",
+    "listen": "Anhören / Instagram"
+  },
+  "partners": {
+    "eyebrow": "Partner",
+    "title": "Unsere Partner",
+    "lead": "Vertrauenswürdige Profis, die jeden Anlass noch vollständiger machen.",
+    "empty": "Die Liste der Partner ist in Vorbereitung."
   },
   "method": {
     "eyebrow": "Ablauf",
     "title": "Präzision in jedem Detail",
-    "lead": "Technische Anforderungen, Bühnenaufbau, Organisation der Geräte: Wir planen alles im Voraus, damit Sie am Tag des Anlasses nicht daran denken müssen.",
+    "lead": "Technische Anforderungen, Bühnenplanung, Materialorganisation: Wir planen alles im Voraus, damit Sie sich am Tag des Anlasses ganz Ihren Gästen widmen können.",
     "p1": { "t": "Zuhören", "d": "Sie erzählen uns von Ihrem Anlass: Location, Gäste, Programm und gewünschte Stimmung." },
-    "p2": { "t": "Konzept und Offerte", "d": "Ein klares technisches Angebot, bei Bedarf mit Besichtigung vor Ort." },
-    "p3": { "t": "Installation", "d": "Transport, Aufbau und vollständige Tests vor dem Eintreffen der Gäste." },
-    "p4": { "t": "Betreuung und Abbau", "d": "Ein Techniker begleitet den ganzen Anlass; danach bauen wir ab und hinterlassen die Location aufgeräumt." }
+    "p2": { "t": "Konzept und Offerte", "d": "Ein klares technisches Konzept, bei Bedarf mit Besichtigung vor Ort." },
+    "p3": { "t": "Installation", "d": "Transport, Aufbau und Tests, bevor die Gäste eintreffen." },
+    "p4": { "t": "Betreuung und Abbau", "d": "Wir begleiten den Anlass und bauen am Ende ab, die Location bleibt aufgeräumt zurück." }
   },
   "faq": {
     "eyebrow": "FAQ",
     "title": "Häufige Fragen",
     "items": [
-      ["Wie früh sollte ich buchen?", "So früh wie möglich, besonders für Sommerwochenenden und die WEF-Zeit. Für kleinere Anlässe reichen oft wenige Wochen: Kontaktieren Sie uns, wir prüfen die Verfügbarkeit."],
-      ["Sind Aufbau und Techniker inbegriffen?", "Ja. Wir übernehmen Transport, Aufbau, Tests und Abbau, und ein Techniker betreut den Anlass vor Ort."],
-      ["Kann ich eigene Fotos und Videos auf den Bildschirmen zeigen?", "Selbstverständlich. Senden Sie uns Fotos, Videos oder Logos vorab: Wir bereiten die Inhalte vor und steuern sie während des Anlasses, auch mit Live-Kamerabildern."],
-      ["Arbeiten Sie auch im Freien und in der ganzen Schweiz?", "Ja, mit Material für den Aussenbereich. Location, Stromversorgung und Überdachung klären wir gemeinsam."],
-      ["Sind Kaltfunken und Nebel in Innenräumen sicher?", "Ja: Kaltfunkengeräte erzeugen keine Flammen, und wir verwenden nur professionelle Maschinen. Die Vorschriften der Location und die Rauchmelder klären wir immer im Voraus."]
+      ["Wie früh sollte ich buchen?", "So früh wie möglich, besonders für Sommerwochenenden und die Zeit des WEF. Für kleinere Anlässe reichen oft wenige Wochen: Schreiben Sie uns, wir prüfen die Verfügbarkeit."],
+      ["Sind Auf- und Abbau inbegriffen?", "Ja. Wir übernehmen Transport, Aufbau, Tests und Abbau. Die Betreuung vor Ort während des Anlasses legen wir gemeinsam in der Offerte fest."],
+      ["Können wir eigene Fotos und Videos auf den Bildschirmen zeigen?", "Selbstverständlich. Senden Sie uns Fotos, Videos oder Logos vor dem Anlass: Wir bereiten sie vor und steuern sie während des Abends, auch zusammen mit Live-Bildern."],
+      ["Wo sind Sie tätig?", "In der ganzen Schweiz und auf Anfrage auch in Italien, Deutschland und Frankreich. Bei Anlässen im Freien klären wir gemeinsam Location, Stromversorgung und Wetterschutz."],
+      ["Dürfen Kaltfunken und Nebel in Innenräumen eingesetzt werden?", "In den meisten Sälen ja: Kaltfunken arbeiten ohne offene Flamme, und wir verwenden ausschliesslich professionelle Geräte. Die Vorgaben der Location und die Rauchmelder klären wir immer im Voraus."]
     ]
   },
   "contact": {
     "eyebrow": "Kontakt",
     "title": "Erzählen Sie uns von Ihrem Anlass",
-    "lead": "Füllen Sie das Formular aus: Sie erhalten von uns ein unverbindliches, massgeschneidertes Angebot.",
+    "lead": "Füllen Sie das Formular aus: Wir antworten Ihnen mit einer massgeschneiderten, unverbindlichen Offerte.",
     "phone": "Telefon",
     "whatsapp": "Schreiben Sie uns auf WhatsApp",
     "langs": "Wir sprechen Italienisch, Deutsch, Französisch und Englisch."
   },
+  "whatsapp": { "label": "Schreiben Sie uns auf WhatsApp" },
   "form": {
-    "name": "Vor- und Nachname", "phone": "Telefon", "email": "E-Mail", "type": "Art des Anlasses", "date": "Datum", "place": "Ort", "place_ph": "z. B. Zürich, Lugano, Davos", "guests": "Anzahl Gäste", "needs": "Was benötigen Sie?", "msg": "Nachricht", "msg_ph": "Erzählen Sie uns mehr über Ihren Anlass…", "submit": "Anfrage senden", "note": "Mit dem Absenden erklären Sie sich einverstanden, bezüglich Ihrer Anfrage kontaktiert zu werden.",
-    "types": ["Hochzeit", "Geburtstag / Privatfest", "Traditionelles Fest", "Firmenanlass", "WEF Davos", "Konzert / Bühnenevent", "Anderes"],
+    "name": "Vor- und Nachname", "phone": "Telefon", "email": "E-Mail", "type": "Art des Anlasses", "date": "Datum", "place": "Ort oder Saal", "place_ph": "Ort oder Name der Location", "guests": "Anzahl Gäste", "needs": "Was brauchen Sie?", "msg": "Nachricht", "msg_ph": "Erzählen Sie uns mehr über Ihren Anlass…", "submit": "Anfrage senden", "note": "Mit dem Absenden erklären Sie sich einverstanden, dass wir Sie zu Ihrer Anfrage kontaktieren.",
+    "country": "Land",
+    "countries": ["Schweiz", "Italien", "Deutschland", "Frankreich"],
+    "sending": "Wird gesendet…",
+    "error": "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es in einem Moment erneut oder schreiben Sie uns auf WhatsApp.",
+    "types": ["Hochzeit", "Geburtstag / Privatfest", "Traditionelles Fest", "Firmenanlass", "WEF Davos", "Bühnenevent", "Anderes"],
     "chips": ["LED-Wände", "TV / Beamer", "Licht", "Traversen", "Ton", "DJ-Anlage", "Live-Kamera", "Streaming", "Kaltfunken / Nebel"]
   },
-  "footer": { "claim": "Technische Installationen für Anlässe in der ganzen Schweiz." },
-  "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einem Angebot.", "back": "Zurück zur Website" }
+  "privacy": { "note": "Wir verwenden Ihre Daten ausschliesslich zur Beantwortung Ihrer Anfrage, gemäss dem Schweizer Datenschutzgesetz (DSG)." },
+  "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich." },
+  "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.", "back": "Zurück zur Website" }
 }

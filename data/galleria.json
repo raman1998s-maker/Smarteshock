@@ -1,0 +1,120 @@
+[
+  {
+    "file": "assets/video/reel.mp4",
+    "tipo": "video",
+    "poster": "assets/img/reel-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video di un evento allestito da Meekon Displays: ospiti in pista sotto luci e ledwall",
+      "de": "Video eines Anlasses mit Technik von Meekon Displays: Gäste auf der Tanzfläche unter Licht und LED-Wand",
+      "fr": "Vidéo d'un événement équipé par Meekon Displays : invités sur la piste sous les lumières et le mur LED",
+      "en": "Video of an event equipped by Meekon Displays: guests on the dance floor beneath lights and an LED wall"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-party.jpg",
+    "tipo": "foto",
+    "categoria": "feste",
+    "formato": "wide",
+    "alt": {
+      "it": "Ospiti in pista tra fasci di luce, con ledwall sullo sfondo",
+      "de": "Gäste auf der Tanzfläche zwischen Lichtstrahlen, im Hintergrund eine LED-Wand",
+      "fr": "Invités sur la piste entre des faisceaux lumineux, mur LED en arrière-plan",
+      "en": "Guests on the dance floor among light beams, with an LED wall behind"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-ledwall.jpg",
+    "tipo": "foto",
+    "categoria": "feste",
+    "formato": "tall",
+    "alt": {
+      "it": "Fasci di luce bianca sopra la pista da ballo, con strutture illuminate",
+      "de": "Weisse Lichtstrahlen über der Tanzfläche, mit beleuchteten Traversen",
+      "fr": "Faisceaux de lumière blanche au-dessus de la piste, avec structures éclairées",
+      "en": "White light beams above the dance floor, with illuminated truss"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-wedding.jpg",
+    "tipo": "foto",
+    "categoria": "matrimoni",
+    "formato": "tall",
+    "alt": {
+      "it": "Sala ricevimento in luce blu e viola, con teste mobili su struttura",
+      "de": "Festsaal in blauem und violettem Licht, mit Moving Heads an der Traverse",
+      "fr": "Salle de réception en lumière bleue et violette, lyres asservies sur structure",
+      "en": "Reception hall in blue and violet light, with moving heads on truss"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-beams.jpg",
+    "tipo": "foto",
+    "categoria": "feste",
+    "formato": "wide",
+    "alt": {
+      "it": "Teste mobili che disegnano fasci di luce sopra gli ospiti",
+      "de": "Moving Heads zeichnen Lichtstrahlen über die Gäste",
+      "fr": "Lyres asservies dessinant des faisceaux au-dessus des invités",
+      "en": "Moving heads drawing light beams above the guests"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-led-closeup.jpg",
+    "tipo": "foto",
+    "categoria": "matrimoni",
+    "formato": "tall",
+    "alt": {
+      "it": "Ritratto della sposa su ledwall, sopra la console del DJ",
+      "de": "Porträt der Braut auf der LED-Wand, über dem DJ-Pult",
+      "fr": "Portrait de la mariée sur mur LED, au-dessus de la console du DJ",
+      "en": "Portrait of the bride on an LED wall, above the DJ booth"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-stage.jpg",
+    "tipo": "foto",
+    "categoria": "palco",
+    "formato": "tall",
+    "alt": {
+      "it": "Palco con schermo e console del DJ illuminata",
+      "de": "Bühne mit Bildschirm und beleuchtetem DJ-Pult",
+      "fr": "Scène avec écran et console DJ éclairée",
+      "en": "Stage with a screen and an illuminated DJ booth"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-dance.jpg",
+    "tipo": "foto",
+    "categoria": "palco",
+    "formato": "wide",
+    "alt": {
+      "it": "Fasci di luce e ledwall sopra la pista",
+      "de": "Lichtstrahlen und LED-Wand über der Tanzfläche",
+      "fr": "Faisceaux lumineux et mur LED au-dessus de la piste",
+      "en": "Light beams and LED wall above the dance floor"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/img/event-lights.jpg",
+    "tipo": "foto",
+    "categoria": "feste",
+    "formato": "tall",
+    "alt": {
+      "it": "Pista da ballo in luce viola, con ledwall e fasci blu",
+      "de": "Tanzfläche in violettem Licht, mit LED-Wand und blauen Lichtstrahlen",
+      "fr": "Piste de danse en lumière violette, avec mur LED et faisceaux bleus",
+      "en": "Dance floor in violet light, with an LED wall and blue beams"
+    },
+    "approvato": true
+  }
+]

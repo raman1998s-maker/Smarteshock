@@ -1,0 +1,30 @@
+[
+  {
+    "nome": "Nome della sala — da inserire (esempio 1)",
+    "luogo": "Località — da inserire",
+    "paese": "CH",
+    "tipo": { "it": "Sala per banchetti", "de": "Bankettsaal", "fr": "Salle de banquet", "en": "Banqueting hall" },
+    "approvato": false
+  },
+  {
+    "nome": "Nome della location — da inserire (esempio 2)",
+    "luogo": "Località — da inserire",
+    "paese": "CH",
+    "tipo": { "it": "Hotel e centro congressi", "de": "Hotel und Kongresszentrum", "fr": "Hôtel et centre de congrès", "en": "Hotel and conference centre" },
+    "approvato": false
+  },
+  {
+    "nome": "Nome della sala — da inserire (esempio 3)",
+    "luogo": "Località — da inserire",
+    "paese": "CH",
+    "tipo": { "it": "Sala polivalente", "de": "Mehrzweckhalle", "fr": "Salle polyvalente", "en": "Multi-purpose hall" },
+    "approvato": false
+  },
+  {
+    "nome": "Nome della location — da inserire (esempio 4)",
+    "luogo": "Località — da inserire",
+    "paese": "IT",
+    "tipo": { "it": "Villa per eventi", "de": "Eventvilla", "fr": "Villa événementielle", "en": "Event villa" },
+    "approvato": false
+  }
+]

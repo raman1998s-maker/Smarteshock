@@ -5,92 +5,132 @@
   "hint_link": "Voir la version française",
   "meta": {
     "title": "Meekon Displays — Technique événementielle : écrans LED, lumière, son, streaming",
-    "description": "Installations techniques pour mariages, anniversaires, fêtes traditionnelles, événements d'entreprise et le WEF de Davos : écrans LED, projecteurs, lumière, structures, son, sonorisation DJ, captation live, streaming et effets spéciaux dans toute la Suisse."
+    "description": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France : mariages, anniversaires, fêtes traditionnelles, événements d'entreprise et WEF de Davos. Murs LED, projecteurs, lumière, structures, son, sonorisation DJ, captation live, streaming et effets spéciaux."
   },
   "a11y": { "skip": "Aller au contenu", "nav": "Navigation principale", "lang": "Langue", "menu": "Ouvrir le menu", "close": "Fermer le menu" },
-  "nav": { "events": "Événements", "services": "Prestations", "work": "Réalisations", "method": "Méthode", "contact": "Contact", "cta": "Demander une offre" },
+  "nav": { "events": "Événements", "services": "Prestations", "work": "Réalisations", "venues": "Lieux", "djs": "DJ", "method": "Méthode", "contact": "Contact", "cta": "Demander une offre" },
   "hero": {
-    "eyebrow": "Écrans LED · Lumière · Son · Live & Streaming",
+    "eyebrow": "Murs LED · Lumière · Son · Live & Streaming",
     "title": "La technique qui rend votre événement <em>unique</em>.",
-    "lead": "Nous concevons, installons et gérons toute la partie technique : du mariage à la fête traditionnelle, de la scène au WEF de Davos.",
+    "lead": "Nous concevons, installons et suivons toute la partie technique : du mariage à la fête traditionnelle, de la scène au WEF de Davos.",
     "cta1": "Demander une offre",
     "cta2": "Voir nos réalisations",
-    "foot1": "Toute la Suisse",
-    "foot2": "Montage et technicien sur place",
-    "foot3": "IT · DE · FR · EN"
+    "foot1": "Toute la Suisse · sur demande Italie, Allemagne, France",
+    "foot2": "Montage, régie et démontage",
+    "foot3": "Italiano · Deutsch · Français · English"
   },
   "intro": {
-    "text": "Un événement réussi reste dans les mémoires pour ses émotions, pas pour ses câbles. C'est pourquoi nous soignons chaque détail technique, de l'agencement de la scène au dernier micro, avec <em>discrétion et précision</em>.",
+    "text": "D'un événement réussi, on retient les émotions, pas les câbles. C'est pourquoi nous soignons chaque détail technique, de l'agencement de la scène au dernier micro, avec <em>discrétion et précision</em>.",
     "sign": "— Meekon Displays"
   },
   "events": {
     "eyebrow": "Événements",
     "title": "Pour chaque occasion",
-    "lead": "Chaque événement a son rythme. Nous adaptons la technique, l'esthétique et l'organisation à votre moment.",
+    "lead": "Chaque événement a son propre rythme. Nous adaptons la technique, l'esthétique et l'organisation à votre moment.",
     "e1": { "t": "Mariages", "d": "Lumière d'ambiance pour le dîner, mur LED pour photos et vidéos, fumée lourde pour la première danse." },
-    "e2": { "t": "Anniversaires et fêtes privées", "d": "Sonorisation, lumières pour la piste et un écran avec vos contenus." },
-    "e3": { "t": "Fêtes traditionnelles", "d": "Installations pour célébrations culturelles et familiales, même avec beaucoup d'invités et de longs programmes." },
-    "e4": { "t": "Entreprises et WEF Davos", "d": "Écrans, projecteurs et son pour présentations, conférences et réceptions." },
-    "e5": { "t": "Concerts et événements scéniques", "d": "Structures, beams, line arrays et régie pour groupes, DJ et spectacles." }
+    "e2": { "t": "Anniversaires et fêtes privées", "d": "Un son soigné, des lumières pour la piste et un écran avec vos souvenirs." },
+    "e3": { "t": "Fêtes traditionnelles", "d": "Installations pour célébrations culturelles et familiales, même avec de nombreux invités et de longs programmes." },
+    "e4": { "t": "Entreprises et WEF Davos", "d": "Écrans, projecteurs et son pour présentations, conférences et réceptions de représentation." },
+    "e5": { "t": "Événements scéniques", "d": "Structures, lumières beam, son et régie pour DJ, artistes et spectacles." }
   },
   "services": {
     "eyebrow": "Prestations",
     "title": "Toute la technique d'un événement, un seul partenaire",
-    "lead": "Nous fournissons, montons et gérons l'ensemble de l'installation. Un seul interlocuteur, aucune surprise."
+    "lead": "Nous fournissons, montons et suivons l'ensemble de l'installation. Un seul interlocuteur, de la première idée au dernier applaudissement."
   },
-  "s1": { "t": "Écrans LED et vidéo", "d": "Murs LED de différents types et formats, en intérieur comme en extérieur, ainsi que TV et vidéoprojecteurs pour les présentations.", "list": ["Murs LED modulaires indoor et outdoor", "TV et moniteurs sur pied", "Vidéoprojecteurs et écrans de projection", "Gestion des contenus et graphismes"] },
-  "s2": { "t": "Lumière et structures", "d": "De la lumière chaleureuse d'un dîner au show sur la piste, avec des structures (truss) sur mesure.", "list": ["Beams et lyres asservies", "Wash LED et uplights", "Structures alu et tours", "Programmation du show lumière"] },
-  "s3": { "t": "Son", "d": "Des systèmes adaptés au lieu : des micros pour les discours aux enceintes suspendues pour les grands espaces.", "list": ["Micros filaires et sans fil", "Enceintes, caissons de basse et line arrays suspendus", "Consoles de mixage et retours de scène", "Technicien son dédié"] },
-  "s4": { "t": "DJ et scène", "d": "Sonorisations complètes pour DJ et préparation de la régie DJ, en coordination avec la scène.", "list": ["Sonorisation DJ", "Préparation de la console", "Coordination avec groupes et artistes", "Scènes et praticables"] },
-  "s5": { "t": "Captation live et streaming", "d": "Nous diffusons le moment en direct sur les écrans et le transmettons à ceux qui ne peuvent pas être là.", "list": ["Images live sur les murs LED", "Régie vidéo multicaméra", "Streaming en direct", "Enregistrement de l'événement"] },
-  "s6": { "t": "Effets spéciaux", "d": "L'effet au bon moment : entrée des mariés, découpe du gâteau, ouverture du show.", "list": ["Étincelles froides (spark)", "Machines à fumée et hazers", "Fumée lourde", "Pistolets à fumée"] },
+  "s1": { "t": "Écrans LED et vidéo", "d": "Murs LED de différents types et formats, téléviseurs et projecteurs pour présentations et projections.", "list": ["Murs LED modulaires de divers formats", "Téléviseurs et moniteurs sur pied", "Projecteurs et écrans de projection", "Gestion des contenus pendant l'événement"] },
+  "s2": { "t": "Lumière et structures", "d": "De la lumière chaleureuse d'un dîner au show sur la piste, avec différents systèmes et des structures (truss) sur mesure.", "list": ["Lumières beam et lyres asservies", "Projecteurs LED et uplights", "Structures (truss)", "Programmation lumière"] },
+  "s3": { "t": "Son", "d": "Des installations pensées pour chaque lieu : du micro pour les discours aux enceintes suspendues pour les grands espaces.", "list": ["Micros filaires et micros sans fil", "Enceintes et caissons de basse, aussi suspendus", "Tables de mixage", "Assistance technique pendant l'événement"] },
+  "s4": { "t": "Sonorisation DJ", "d": "Installations complètes pour DJ et préparation de la console, en harmonie avec la lumière et les écrans.", "list": ["Sonorisation pour DJ", "Préparation de la console", "Retour pour le DJ", "Coordination avec lumière et mur LED"] },
+  "s5": { "t": "Captation live et streaming", "d": "Nous portons l'instant en direct sur les écrans et le partageons avec ceux qui ne peuvent pas être là.", "list": ["Images live sur les murs LED", "Assistance aux prises de vue sur place", "Streaming en direct", "Raccordement aux écrans et projecteurs"] },
+  "s6": { "t": "Effets spéciaux", "d": "L'effet au bon moment : l'entrée des mariés, la découpe du gâteau, l'ouverture du spectacle.", "list": ["Étincelles froides (spark)", "Machines à fumée", "Fumée lourde", "Canons à fumée"] },
   "davos": {
     "eyebrow": "WEF Davos · Corporate",
     "title": "Support technique pour délégations et entreprises",
     "text": "Pendant le World Economic Forum de Davos et lors d'événements d'entreprise, nous accompagnons délégations, représentants et entreprises avec une technique fiable et un service discret, en quatre langues.",
-    "list": ["Écrans, TV et projecteurs pour présentations", "Micros et son pour conférences et panels", "Captation et streaming en direct", "Montage rapide, technicien toujours présent"],
+    "list": ["Écrans, téléviseurs et projecteurs pour présentations", "Micros et son pour conférences et panels", "Captation et streaming en direct", "Montage discret et assistance sur place"],
     "cta": "Planifier votre événement"
   },
   "work": {
     "eyebrow": "Réalisations",
     "title": "En direct, sur nos installations",
-    "lead": "Quelques moments d'événements que nous avons équipés.",
+    "lead": "Quelques moments des événements que nous avons équipés.",
     "video": "Vidéo d'un événement équipé par Meekon Displays",
-    "a1": "Piste de danse avec faisceaux lumineux et mur LED", "a2": "Mur LED avec logo au-dessus de la piste", "a3": "Salle de réception éclairée en bleu et violet", "a4": "Lyres projetant des faisceaux lumineux", "a5": "Mur LED avec contenus personnalisés pour un mariage", "a6": "Scène avec mur LED et régie DJ", "a7": "Invités dansant sous les lumières"
+    "a1": "Invités sur la piste entre des faisceaux lumineux, mur LED en arrière-plan",
+    "a2": "Faisceaux de lumière blanche au-dessus de la piste, avec structures éclairées",
+    "a3": "Salle de réception en lumière bleue et violette, lyres asservies sur structure",
+    "a4": "Lyres asservies dessinant des faisceaux au-dessus des invités",
+    "a5": "Portrait de la mariée sur mur LED, au-dessus de la console du DJ",
+    "a6": "Scène avec écran et console DJ éclairée",
+    "a7": "Faisceaux lumineux et mur LED au-dessus de la piste",
+    "filters": { "all": "Tous", "matrimoni": "Mariages", "aziende": "Entreprises", "feste": "Fêtes", "palco": "Scène" }
+  },
+  "regions": {
+    "eyebrow": "Zone d'intervention",
+    "title": "Dans toute la Suisse, et au-delà",
+    "lead": "Nous intervenons dans toutes les régions de Suisse. Sur demande, nous apportons aussi notre technique en Italie, en Allemagne et en France.",
+    "main": { "label": "Suisse", "text": "Tous les cantons, des villes aux stations de montagne." },
+    "onrequest": "sur demande",
+    "countries": { "ch": "Suisse", "it": "Italie", "de": "Allemagne", "fr": "France" }
+  },
+  "venues": {
+    "eyebrow": "Lieux",
+    "title": "Salles et lieux où nous avons travaillé",
+    "lead": "Chaque espace a son caractère. Le connaître nous permet de le mettre en valeur.",
+    "empty": "La liste des lieux est en préparation."
+  },
+  "djs": {
+    "eyebrow": "DJ",
+    "title": "Les DJ avec qui nous collaborons",
+    "lead": "Des artistes avec qui nous partageons la scène, le rythme et le souci du détail.",
+    "empty": "La liste des DJ est en préparation.",
+    "listen": "Écouter / Instagram"
+  },
+  "partners": {
+    "eyebrow": "Partenaires",
+    "title": "Nos partenaires",
+    "lead": "Des professionnels de confiance qui rendent chaque événement plus complet.",
+    "empty": "La liste des partenaires est en préparation."
   },
   "method": {
     "eyebrow": "Méthode",
     "title": "La précision dans chaque détail",
-    "lead": "Exigences techniques, agencement de la scène, organisation du matériel : nous planifions tout à l'avance pour que vous n'ayez pas à y penser le jour J.",
-    "p1": { "t": "Écoute", "d": "Vous nous parlez de l'événement : lieu, invités, programme et ambiance souhaitée." },
-    "p2": { "t": "Projet et offre", "d": "Une proposition technique claire, avec visite des lieux si nécessaire." },
-    "p3": { "t": "Installation", "d": "Transport, montage et tests complets avant l'arrivée des invités." },
-    "p4": { "t": "Régie et démontage", "d": "Un technicien suit tout l'événement ; ensuite nous démontons et laissons le lieu en ordre." }
+    "lead": "Exigences techniques, agencement de la scène, organisation du matériel : nous planifions tout à l'avance, pour que le jour J vous puissiez vous consacrer à vos invités.",
+    "p1": { "t": "Écoute", "d": "Vous nous racontez votre événement : lieu, invités, programme et ambiance souhaitée." },
+    "p2": { "t": "Projet et offre", "d": "Une proposition technique claire, avec visite sur place si nécessaire." },
+    "p3": { "t": "Installation", "d": "Transport, montage et essais avant l'arrivée des invités." },
+    "p4": { "t": "Régie et démontage", "d": "Nous suivons l'événement puis démontons en fin de soirée, en laissant le lieu en ordre." }
   },
   "faq": {
     "eyebrow": "FAQ",
     "title": "Questions fréquentes",
     "items": [
-      ["Combien de temps à l'avance faut-il réserver ?", "Le plus tôt possible, surtout pour les week-ends d'été et la période du WEF. Pour les petits événements, quelques semaines suffisent souvent : contactez-nous pour vérifier la disponibilité."],
-      ["Le montage et le technicien sont-ils compris ?", "Oui. Nous nous chargeons du transport, du montage, des tests et du démontage, et un technicien suit l'événement sur place."],
-      ["Puis-je afficher mes photos et vidéos sur les écrans ?", "Bien sûr. Envoyez-nous photos, vidéos ou logos avant l'événement : nous préparons les contenus et les gérons pendant la soirée, y compris avec des images en direct."],
-      ["Travaillez-vous aussi en extérieur et dans toute la Suisse ?", "Oui, avec du matériel adapté à l'extérieur. Nous évaluons ensemble le lieu, l'alimentation électrique et les couvertures."],
-      ["Les étincelles froides et la fumée sont-elles sûres en intérieur ?", "Oui : les machines à étincelles froides ne produisent pas de flamme et nous utilisons uniquement du matériel professionnel. Nous vérifions toujours à l'avance les règles du lieu et les détecteurs de fumée."]
+      ["Combien de temps à l'avance faut-il réserver ?", "Le plus tôt possible, surtout pour les week-ends d'été et la période du WEF. Pour les petits événements, quelques semaines suffisent souvent : écrivez-nous et nous vérifions nos disponibilités."],
+      ["Le montage et le démontage sont-ils compris ?", "Oui. Nous nous chargeons du transport, du montage, des essais et du démontage. Le suivi sur place pendant l'événement est défini ensemble dans l'offre."],
+      ["Pouvons-nous diffuser nos propres photos et vidéos sur les écrans ?", "Bien sûr. Envoyez-nous photos, vidéos ou logos avant l'événement : nous les préparons et les diffusons pendant la soirée, aussi avec des images en direct."],
+      ["Où intervenez-vous ?", "Dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France. Pour les événements en plein air, nous étudions ensemble le lieu, l'alimentation électrique et les protections contre la météo."],
+      ["Les étincelles froides et la fumée sont-elles possibles en intérieur ?", "Dans la plupart des salles, oui : les étincelles froides fonctionnent sans flamme nue et nous n'utilisons que du matériel professionnel. Nous vérifions toujours à l'avance les règles du lieu et les détecteurs de fumée."]
     ]
   },
   "contact": {
     "eyebrow": "Contact",
     "title": "Parlez-nous de votre événement",
-    "lead": "Remplissez le formulaire : nous vous répondons avec une proposition sur mesure, sans engagement.",
+    "lead": "Remplissez le formulaire : nous vous répondrons avec une proposition sur mesure, sans engagement.",
     "phone": "Téléphone",
     "whatsapp": "Écrivez-nous sur WhatsApp",
     "langs": "Nous parlons italien, allemand, français et anglais."
   },
+  "whatsapp": { "label": "Écrivez-nous sur WhatsApp" },
   "form": {
-    "name": "Nom et prénom", "phone": "Téléphone", "email": "E-mail", "type": "Type d'événement", "date": "Date", "place": "Lieu", "place_ph": "p. ex. Genève, Lausanne, Davos", "guests": "Nombre d'invités", "needs": "De quoi avez-vous besoin ?", "msg": "Message", "msg_ph": "Dites-nous-en plus sur votre événement…", "submit": "Envoyer la demande", "note": "En envoyant ce formulaire, vous acceptez d'être recontacté au sujet de votre demande.",
-    "types": ["Mariage", "Anniversaire / fête privée", "Fête traditionnelle", "Événement d'entreprise", "WEF Davos", "Concert / événement scénique", "Autre"],
+    "name": "Prénom et nom", "phone": "Téléphone", "email": "E-mail", "type": "Type d'événement", "date": "Date", "place": "Lieu ou salle", "place_ph": "Localité ou nom du lieu", "guests": "Nombre d'invités", "needs": "De quoi avez-vous besoin ?", "msg": "Message", "msg_ph": "Dites-nous-en un peu plus sur votre événement…", "submit": "Envoyer la demande", "note": "En envoyant ce formulaire, vous acceptez d'être recontacté au sujet de votre demande.",
+    "country": "Pays",
+    "countries": ["Suisse", "Italie", "Allemagne", "France"],
+    "sending": "Envoi en cours…",
+    "error": "Votre demande n'a pas pu être envoyée. Veuillez réessayer dans un instant ou nous écrire sur WhatsApp.",
+    "types": ["Mariage", "Anniversaire / fête privée", "Fête traditionnelle", "Événement d'entreprise", "WEF Davos", "Événement scénique", "Autre"],
     "chips": ["Écrans LED", "TV / projecteur", "Lumière", "Structures", "Son", "Sono DJ", "Captation live", "Streaming", "Étincelles / fumée"]
   },
-  "footer": { "claim": "Installations techniques pour événements dans toute la Suisse." },
+  "privacy": { "note": "Vos données servent uniquement à répondre à votre demande, conformément à la loi suisse sur la protection des données (LPD)." },
+  "footer": { "claim": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France." },
   "thanks": { "title": "Merci, à bientôt !", "eyebrow": "Demande envoyée", "text": "Nous avons bien reçu votre demande et vous recontacterons rapidement avec une proposition.", "back": "Retour au site" }
 }
