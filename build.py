@@ -162,6 +162,117 @@ def items(values):
     return "".join(f"<li>{v}</li>" for v in values)
 
 
+# ---------------------------------------------------------------- modulo: dettagli tecnici
+# Blocco facoltativo "Dettagli tecnici sul luogo". I nomi dei campi (dt_*) e i
+# valori sono quelli validati da netlify/functions/_lib/schemas.js
+# (dettagliTecniciSchema); i testi arrivano da src/i18n/*.json -> "tech".
+# Senza JavaScript tutto il blocco e' visibile; main.js mostra solo i gruppi
+# dei servizi scelti (data-for) e le domande che dipendono da una risposta (data-if).
+
+# servizio tecnico di ogni casella "servizi" del modulo, nello stesso ordine di form.chips
+CHIP_TECH = ["screens", "screens", "screens", "lights", "lights", "audio", "dj", "", "", "fx", ""]
+TECH_ALL = "screens lights audio dj fx"
+YNN = ["si", "no", "non_so"]
+TECH_GROUPS = [
+    ("luogo", TECH_ALL, [
+        ("radio", "spazio", ["sala", "tendone", "capannone", "aperto"], None),
+        ("radio", "copertura", YNN, "spazio=aperto"),
+        ("radio", "grandezza", ["piccola", "media", "grande", "non_so"], None),
+        ("row", [("num", "superficie_m2", 1, 10000, "1"), ("num", "altezza_m", 1, 40, "0.1")], None),
+        ("radio", "accesso", ["piano_terra", "ascensore", "scale", "non_so"], None),
+        ("radio", "scarico", YNN, None),
+    ]),
+    ("corrente", TECH_ALL, [
+        ("check", "prese", ["230v", "cee400", "non_so"], None),
+        ("radio", "prese_vicine", YNN, None),
+    ]),
+    ("orari", TECH_ALL, [
+        ("radio", "montaggio_giorno_prima", ["possibile", "richiesto", "non_possibile", "non_so"], None),
+        ("row", [("text", "montaggio_dalle", 80), ("text", "smontaggio_entro", 80)], None),
+    ]),
+    ("audio", "audio dj", [
+        ("radio", "volume_limiti", YNN, None),
+        ("text", "volume_quali", 120, "volume_limiti=si"),
+        ("row", [("time", "musica_fino"), ("num", "decibel_max", 60, 120, "1")], "volume_limiti=si"),
+        ("radio", "discorsi", ["si", "no"], None),
+        ("radio", "oratori", ["1_2", "3_5", "oltre_5"], "discorsi=si"),
+    ]),
+    ("fumo", "lights fx", [
+        ("radio", "rilevatori_fumo", YNN, None),
+        ("radio", "nebbia_permessa", ["si", "no", "da_chiedere"], "rilevatori_fumo=si"),
+        ("note", "note_fumo"),
+    ]),
+    ("schermi", "screens", [
+        ("radio", "uscite_libere", ["si", "verifichiamo", "non_so"], None),
+        ("radio", "contenuti_da", ["cliente", "agenzia", "meekon"], None),
+        ("note", "note_mp4"),
+    ]),
+]
+FORNITORI = ["decorazioni", "foto", "musica", "planner", "location"]
+
+
+def tech_html(tt):
+    def cond(c):
+        return f' data-if="{c}"' if c else ""
+
+    def opt(key, val):
+        o = tt["o"].get(key, {})
+        if val in o:
+            return o[val]
+        return {"si": tt["yes"], "no": tt["no"], "non_so": tt["dunno"]}[val]
+
+    def field(item, c=None):
+        kind, key = item[0], item[1]
+        ph = tt["ph"].get(key)
+        ph = f' placeholder="{E(ph)}"' if ph else ""
+        if kind == "num":
+            _, _, lo, hi, step = item
+            inp = f'<input name="dt_{key}" type="number" min="{lo}" max="{hi}" step="{step}" inputmode="decimal"{ph}>'
+        elif kind == "time":
+            inp = f'<input name="dt_{key}" type="time">'
+        else:
+            inp = f'<input name="dt_{key}" maxlength="{item[2]}"{ph}>'
+        return f'<label{cond(c)}>{E(tt["q"][key])}{inp}</label>'
+
+    def node(item):
+        kind = item[0]
+        if kind in ("radio", "check"):
+            _, key, values, c = item
+            typ = "radio" if kind == "radio" else "checkbox"
+            opts = "".join(
+                f'<label><input type="{typ}" name="dt_{key}" value="{v}"><span>{E(opt(key, v))}</span></label>'
+                for v in values
+            )
+            return f'<fieldset class="form__chips tech__q"{cond(c)}><legend>{E(tt["q"][key])}</legend>{opts}</fieldset>'
+        if kind == "row":
+            pair = " tech__pair" if all(f[0] in ("num", "time") for f in item[1]) else ""
+            return f'<div class="form__row{pair}"{cond(item[2])}>' + "".join(field(f) for f in item[1]) + "</div>"
+        if kind == "note":
+            return f'<p class="tech__note">{E(tt[item[1]])}</p>'
+        return field(item, item[3] if len(item) > 3 else None)
+
+    groups = "".join(
+        f'<fieldset class="tech__group" data-for="{tags}"><legend>{E(tt["groups"][g])}</legend>'
+        f'<div class="tech__body">{"".join(node(i) for i in items)}</div></fieldset>'
+        for g, tags, items in TECH_GROUPS
+    )
+    rows = "".join(
+        f'<div class="tech__supplier"><p class="tech__role">{E(tt["roles"][r])}</p><div class="form__row">'
+        f'<label>{E(tt["q"]["forn_nome"])}<input name="dt_forn_{r}_nome" maxlength="80" autocomplete="off"></label>'
+        f'<label>{E(tt["q"]["forn_contatto"])}<input name="dt_forn_{r}_contatto" maxlength="80" autocomplete="off"></label>'
+        f"</div></div>"
+        for r in FORNITORI
+    )
+    more = (
+        f'<details class="tech__more" data-for="{TECH_ALL}"><summary>{E(tt["groups"]["fornitori"])}</summary>'
+        f'<div class="tech__body"><p class="tech__note">{E(tt["fornitori_intro"])}</p>{rows}</div></details>'
+    )
+    return (
+        f'<fieldset class="tech" id="tech"><legend>{E(tt["title"])}</legend>'
+        f'<p class="tech__intro">{E(tt["intro"])}</p>{groups}{more}</fieldset>'
+    )
+
+
 # ---------------------------------------------------------------- dati
 
 def load_data(name):
@@ -417,9 +528,12 @@ def build_context(lang, t, all_t, data):
             for c, n in zip(COUNTRIES, t["form"]["countries"])
         ),
         "form.chips": "".join(
-            f'<label><input type="checkbox" name="servizi" value="{E(c)}"><span>{E(c)}</span></label>'
-            for c in t["form"]["chips"]
+            f'<label><input type="checkbox" name="servizi" value="{E(c)}"'
+            + (f' data-tech="{CHIP_TECH[i]}"' if i < len(CHIP_TECH) and CHIP_TECH[i] else "")
+            + f'><span>{E(c)}</span></label>'
+            for i, c in enumerate(t["form"]["chips"])
         ),
+        "form.tech": tech_html(t["tech"]),
         "regions.list": regions_html(lang, t),
         "gallery": gallery_html(data["galleria"], lang, t),
         "venues.list": venues_html(data["sale"], lang, t),

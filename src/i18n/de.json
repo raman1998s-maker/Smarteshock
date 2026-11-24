@@ -126,6 +126,112 @@
     "types": ["Hochzeit", "Geburtstag / Privatfest", "Traditionelles Fest", "Firmenanlass", "WEF Davos", "Bühnenevent", "Anderes"],
     "chips": ["LED-Wände", "Digital banner", "TV / Beamer", "Licht", "Traversen", "Ton", "DJ-Anlage", "Live-Kamera", "Streaming", "Kaltfunken / Nebel", "Dance floor"]
   },
+  "tech": {
+    "title": "Technische Angaben zum Ort",
+    "intro": "Freiwillig: So können wir Ihnen eine genaue Offerte machen. Wenn Sie etwas nicht wissen, lassen Sie es einfach leer.",
+    "groups": {
+      "luogo": "Der Ort",
+      "corrente": "Strom",
+      "orari": "Zeiten",
+      "audio": "Ton und Reden",
+      "fumo": "Rauch und Nebel",
+      "schermi": "Bildschirme und Inhalte",
+      "fornitori": "Weitere Dienstleister zur Abstimmung"
+    },
+    "yes": "Ja",
+    "no": "Nein",
+    "dunno": "Weiss nicht",
+    "q": {
+      "spazio": "Art des Raums",
+      "copertura": "Im Freien: Gibt es eine Überdachung?",
+      "grandezza": "Grösse des Saals",
+      "superficie_m2": "Fläche (m²)",
+      "altezza_m": "Raumhöhe (m)",
+      "accesso": "Zugang für das Material (Boxen auf Rollen)",
+      "scarico": "Parkplatz oder Ablad nahe beim Eingang?",
+      "prese": "Verfügbare Stromanschlüsse",
+      "prese_vicine": "Sind sie nahe beim Aufbauort?",
+      "montaggio_dalle": "Aufbau möglich ab",
+      "smontaggio_entro": "Abbau bis",
+      "volume_limiti": "Lautstärkebegrenzung oder Ruhezeiten?",
+      "volume_quali": "Welche?",
+      "discorsi": "Reden oder Präsentationen mit Mikrofon?",
+      "oratori": "Wie viele Personen sprechen?",
+      "rilevatori_fumo": "Rauchmelder im Saal?",
+      "nebbia_permessa": "Sind Rauch- und Nebelmaschinen erlaubt?",
+      "uscite_libere": "Bleiben die Notausgänge frei von Bildschirmen?",
+      "contenuti_da": "Wer liefert Videos und Inhalte?",
+      "musica_fino": "Musik aus bis",
+      "decibel_max": "Maximale Lautstärke (dB)",
+      "montaggio_giorno_prima": "Aufbau am Vortag?",
+      "forn_nome": "Name oder Firma",
+      "forn_contatto": "Telefon oder E-Mail"
+    },
+    "o": {
+      "spazio": {
+        "sala": "Geschlossener Saal",
+        "tendone": "Festzelt",
+        "capannone": "Halle oder sehr hoher Raum",
+        "aperto": "Im Freien"
+      },
+      "grandezza": {
+        "piccola": "Klein (bis ca. 80 Personen)",
+        "media": "Mittel",
+        "grande": "Gross (über ca. 300 Personen)"
+      },
+      "accesso": {
+        "piano_terra": "Ebenerdig ohne Stufen",
+        "ascensore": "Lift",
+        "scale": "Treppen"
+      },
+      "prese": {
+        "230v": "Normale 230 V",
+        "cee400": "Industrie CEE 400 V (Kraftstrom)"
+      },
+      "prese_vicine": {
+        "no": "Nein, mehr als ca. 20 m"
+      },
+      "oratori": {
+        "1_2": "1–2",
+        "3_5": "3–5",
+        "oltre_5": "Mehr als 5"
+      },
+      "nebbia_permessa": {
+        "da_chiedere": "Bei der Location nachfragen"
+      },
+      "uscite_libere": {
+        "verifichiamo": "Klären wir mit der Location"
+      },
+      "contenuti_da": {
+        "cliente": "Wir selbst",
+        "agenzia": "Eine Agentur oder der Fotograf",
+        "meekon": "Meekon Displays"
+      },
+      "montaggio_giorno_prima": {
+        "possibile": "Möglich",
+        "richiesto": "Von der Location verlangt",
+        "non_possibile": "Nicht möglich"
+      }
+    },
+    "ph": {
+      "superficie_m2": "z. B. 250",
+      "altezza_m": "z. B. 4",
+      "montaggio_dalle": "z. B. am Vortag ab 14 Uhr",
+      "smontaggio_entro": "z. B. bis 3 Uhr morgens",
+      "volume_quali": "z. B. max. 95 dB, Musik bis 24 Uhr",
+      "decibel_max": "z. B. 95"
+    },
+    "note_fumo": "Manche Rauchmelder reagieren auch auf Nebel: Das klären wir gemeinsam mit der Location.",
+    "note_mp4": "Videos bitte im Format MP4 (nicht MOV) senden, spätestens 3 Tage vor dem Anlass.",
+    "fornitori_intro": "Freiwillig: Bitte nur Personen angeben, die mit einer Kontaktaufnahme einverstanden sind.",
+    "roles": {
+      "decorazioni": "Dekoration / Floristik",
+      "foto": "Fotograf / Videograf",
+      "musica": "Externer DJ oder Band",
+      "planner": "Hochzeitsplanung / Organisation",
+      "location": "Ansprechperson der Location"
+    }
+  },
   "privacy": { "note": "Wir verwenden Ihre Daten, um Ihre Anfrage zu beantworten und, wenn Sie es wünschen, die Offerte vorzubereiten und den Anlass zu organisieren; wir verkaufen sie nie und nutzen sie nicht für Werbung.", "link": "Datenschutzerklärung lesen" },
   "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich.", "privacy": "Datenschutz" },
   "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.", "back": "Zurück zur Website" },
@@ -150,6 +256,7 @@
         "h": "2. Welche Daten wir bearbeiten",
         "p": [
           "Anfrageformular: Name, E-Mail, Telefon, Art und Datum des Anlasses, Ort, Land, Anzahl Gäste, gewünschte Leistungen, Nachricht und Sprache.",
+          "Technische Angaben zum Ort (freiwillig): Informationen zum Saal und zum Aufbau sowie, wenn Sie möchten, Name und Kontakt weiterer Dienstleister des Anlasses (zum Beispiel Floristin, Fotograf, DJ oder Band, Hochzeitsplanerin, Ansprechperson der Location), die wir nur zur Abstimmung mit ihnen verwenden. Geben Sie diese bitte nur an, wenn die betroffenen Personen davon wissen.",
           "Name und E-Mail brauchen wir, um Ihnen zu antworten. Die übrigen Felder sind freiwillig, helfen uns aber, eine passende Offerte vorzubereiten.",
           "Direkte Kontakte: Wenn Sie uns per Telefon, WhatsApp, E-Mail oder Instagram kontaktieren, bearbeiten wir die Daten, die Sie uns senden (zum Beispiel Name, Nummer, E-Mail-Adresse und Inhalt der Nachrichten).",
           "Technische Daten: Beim Besuch der Website speichert der Hosting-Anbieter technische Daten wie die IP-Adresse sowie Datum und Uhrzeit des Zugriffs."

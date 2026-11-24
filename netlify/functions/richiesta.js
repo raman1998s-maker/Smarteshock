@@ -7,7 +7,7 @@
 //   permette ad anon solo INSERT su richieste_web, nessuna lettura.
 import { createHandler } from './_lib/handler.js';
 import { API_HEADERS, HttpError, json, mediaType, readText } from './_lib/http.js';
-import { LINGUE, richiestaSchema } from './_lib/schemas.js';
+import { DT_ARRAY, DT_PREFIX, LINGUE, dettagliTecnici, richiestaSchema } from './_lib/schemas.js';
 import { validate } from './_lib/validate.js';
 
 export const config = { path: '/api/richiesta' };
@@ -79,7 +79,7 @@ async function leggiCorpo(req, type) {
   const out = {};
   for (const [key, value] of form.entries()) {
     if (typeof value !== 'string') throw new HttpError(400, 'invalid_input'); // niente file
-    if (key === 'servizi') (out.servizi ||= []).push(value);
+    if (key === 'servizi' || (key.startsWith(DT_PREFIX) && DT_ARRAY.includes(key.slice(DT_PREFIX.length)))) (out[key] ||= []).push(value);
     else if (!(key in out)) out[key] = value;
   }
   return out;
@@ -110,6 +110,8 @@ export default createHandler(
           const input = {};
           for (const key of Object.keys(richiestaSchema)) if (key in body) input[key] = body[key];
           const data = validate(input, richiestaSchema);
+          const dettagli = dettagliTecnici(body);
+          if (dettagli) data.dettagli_tecnici = dettagli;
 
           await sb.rest('richieste_web', { method: 'POST', token: null, body: data, prefer: 'return=minimal' });
           return htmlMode ? redirect(paginaGrazie(data.lingua)) : json(200, { ok: true });

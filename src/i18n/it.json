@@ -126,6 +126,112 @@
     "types": ["Matrimonio", "Compleanno / festa privata", "Festa tradizionale", "Evento aziendale", "WEF Davos", "Evento da palco", "Altro"],
     "chips": ["Schermi LED", "Digital banner", "TV / beamer", "Luci", "Strutture", "Audio", "Impianto DJ", "Riprese live", "Streaming", "Effetti spark / nebbia", "Dance floor"]
   },
+  "tech": {
+    "title": "Dettagli tecnici sul luogo",
+    "intro": "Facoltativo: ci aiuta a preparare un'offerta precisa. Se non sapete una risposta, lasciatela vuota.",
+    "groups": {
+      "luogo": "Il luogo",
+      "corrente": "Corrente",
+      "orari": "Orari",
+      "audio": "Audio e discorsi",
+      "fumo": "Fumo e nebbia",
+      "schermi": "Schermi e contenuti",
+      "fornitori": "Altri fornitori da coordinare"
+    },
+    "yes": "Sì",
+    "no": "No",
+    "dunno": "Non so",
+    "q": {
+      "spazio": "Tipo di spazio",
+      "copertura": "All'aperto: c'è una copertura?",
+      "grandezza": "Grandezza della sala",
+      "superficie_m2": "Superficie (m²)",
+      "altezza_m": "Altezza della sala (m)",
+      "accesso": "Accesso per il materiale (casse su ruote)",
+      "scarico": "Parcheggio o zona di scarico vicino all'ingresso?",
+      "prese": "Prese di corrente disponibili",
+      "prese_vicine": "Sono vicine al punto di installazione?",
+      "montaggio_dalle": "Montaggio possibile dalle",
+      "smontaggio_entro": "Smontaggio entro",
+      "volume_limiti": "Limiti di volume o orari di silenzio?",
+      "volume_quali": "Quali?",
+      "discorsi": "Discorsi o presentazioni con microfono?",
+      "oratori": "Quante persone parlano?",
+      "rilevatori_fumo": "Rilevatori di fumo in sala?",
+      "nebbia_permessa": "Le macchine del fumo e della nebbia sono permesse?",
+      "uscite_libere": "Gli schermi lasciano libere le uscite di emergenza?",
+      "contenuti_da": "Chi fornisce video e contenuti?",
+      "musica_fino": "Musica spenta entro le",
+      "decibel_max": "Limite massimo (dB)",
+      "montaggio_giorno_prima": "Montaggio il giorno prima?",
+      "forn_nome": "Nome o ditta",
+      "forn_contatto": "Telefono o e-mail"
+    },
+    "o": {
+      "spazio": {
+        "sala": "Sala chiusa",
+        "tendone": "Tendone",
+        "capannone": "Capannone o spazio molto alto",
+        "aperto": "All'aperto"
+      },
+      "grandezza": {
+        "piccola": "Piccola (fino a ~80 persone)",
+        "media": "Media",
+        "grande": "Grande (oltre ~300 persone)"
+      },
+      "accesso": {
+        "piano_terra": "Piano terra senza gradini",
+        "ascensore": "Ascensore",
+        "scale": "Scale"
+      },
+      "prese": {
+        "230v": "Normali 230 V",
+        "cee400": "Industriali CEE 400 V (forza)"
+      },
+      "prese_vicine": {
+        "no": "No, a più di ~20 m"
+      },
+      "oratori": {
+        "1_2": "1–2",
+        "3_5": "3–5",
+        "oltre_5": "Più di 5"
+      },
+      "nebbia_permessa": {
+        "da_chiedere": "Da chiedere alla location"
+      },
+      "uscite_libere": {
+        "verifichiamo": "Lo verifichiamo con la location"
+      },
+      "contenuti_da": {
+        "cliente": "Noi",
+        "agenzia": "Un'agenzia o il fotografo",
+        "meekon": "Meekon Displays"
+      },
+      "montaggio_giorno_prima": {
+        "possibile": "Possibile",
+        "richiesto": "Richiesto dalla location",
+        "non_possibile": "Non possibile"
+      }
+    },
+    "ph": {
+      "superficie_m2": "es. 250",
+      "altezza_m": "es. 4",
+      "montaggio_dalle": "es. il giorno prima dalle 14",
+      "smontaggio_entro": "es. entro le 3 di notte",
+      "volume_quali": "es. massimo 95 dB, musica fino alle 24",
+      "decibel_max": "es. 95"
+    },
+    "note_fumo": "Alcuni rilevatori reagiscono anche alla nebbia: lo verifichiamo insieme alla location.",
+    "note_mp4": "I video vanno inviati in formato MP4 (non MOV), al più tardi 3 giorni prima dell'evento.",
+    "fornitori_intro": "Facoltativo: indicate solo chi è d'accordo di essere contattato.",
+    "roles": {
+      "decorazioni": "Decorazioni / fiorista",
+      "foto": "Fotografo / videomaker",
+      "musica": "DJ o band esterni",
+      "planner": "Wedding planner / organizzatore",
+      "location": "Referente della location"
+    }
+  },
   "privacy": { "note": "Usiamo i vostri dati per rispondere alla richiesta e, se lo desiderate, per preparare l'offerta e organizzare l'evento: mai venduti né usati per pubblicità.", "link": "Leggi l'informativa privacy" },
   "footer": { "claim": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia.", "privacy": "Privacy" },
   "thanks": { "title": "Grazie, a presto!", "eyebrow": "Richiesta inviata", "text": "Abbiamo ricevuto la vostra richiesta: vi ricontatteremo al più presto con una proposta.", "back": "Torna al sito" },
@@ -150,6 +256,7 @@
         "h": "2. Quali dati raccogliamo",
         "p": [
           "Modulo di richiesta: nome, e-mail, telefono, tipo e data dell'evento, località, paese, numero di ospiti, servizi desiderati, messaggio e lingua.",
+          "Dettagli tecnici sul luogo (facoltativi): informazioni sulla sala e sull'allestimento e, se volete, nome e contatto di altri fornitori dell'evento (per esempio fiorista, fotografo, DJ o band, wedding planner, referente della location), che usiamo solo per coordinarci con loro. Indicateli solo se queste persone ne sono informate.",
           "Nome ed e-mail sono necessari per rispondervi. Gli altri campi sono facoltativi, ma ci aiutano a preparare una proposta adatta.",
           "Contatti diretti: se ci scrivete o ci chiamate per telefono, WhatsApp, e-mail o Instagram, trattiamo i dati che ci inviate (per esempio nome, numero, indirizzo e-mail e contenuto dei messaggi).",
           "Dati tecnici: quando visitate il sito, il fornitore di hosting registra dati tecnici come l'indirizzo IP e la data e l'ora dell'accesso."

@@ -126,6 +126,112 @@
     "types": ["Wedding", "Birthday / private party", "Traditional celebration", "Corporate event", "WEF Davos", "Stage event", "Other"],
     "chips": ["LED screens", "Digital banner", "TV / projector", "Lighting", "Truss", "Sound", "DJ system", "Live camera", "Streaming", "Sparks / fog", "Dance floor"]
   },
+  "tech": {
+    "title": "Technical details about the venue",
+    "intro": "Optional: this helps us prepare an accurate quote. If you don't know an answer, just leave it blank.",
+    "groups": {
+      "luogo": "The venue",
+      "corrente": "Power",
+      "orari": "Times",
+      "audio": "Sound and speeches",
+      "fumo": "Smoke and haze",
+      "schermi": "Screens and content",
+      "fornitori": "Other suppliers to coordinate with"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "dunno": "Not sure",
+    "q": {
+      "spazio": "Type of space",
+      "copertura": "Outdoors: is there a cover?",
+      "grandezza": "Size of the room",
+      "superficie_m2": "Floor area (m²)",
+      "altezza_m": "Ceiling height (m)",
+      "accesso": "Access for equipment (speakers on wheels)",
+      "scarico": "Parking or a loading area near the entrance?",
+      "prese": "Power sockets available",
+      "prese_vicine": "Are they close to where we set up?",
+      "montaggio_dalle": "Set-up possible from",
+      "smontaggio_entro": "Dismantling by",
+      "volume_limiti": "Volume limits or quiet hours?",
+      "volume_quali": "Which ones?",
+      "discorsi": "Speeches or presentations with a microphone?",
+      "oratori": "How many people will speak?",
+      "rilevatori_fumo": "Smoke detectors in the room?",
+      "nebbia_permessa": "Are smoke and haze machines allowed?",
+      "uscite_libere": "Do the screens keep the emergency exits clear?",
+      "contenuti_da": "Who provides the videos and content?",
+      "musica_fino": "Music off by",
+      "decibel_max": "Maximum level (dB)",
+      "montaggio_giorno_prima": "Set-up the day before?",
+      "forn_nome": "Name or company",
+      "forn_contatto": "Phone or e-mail"
+    },
+    "o": {
+      "spazio": {
+        "sala": "Indoor room",
+        "tendone": "Marquee",
+        "capannone": "Hall or very high space",
+        "aperto": "Outdoors"
+      },
+      "grandezza": {
+        "piccola": "Small (up to ~80 people)",
+        "media": "Medium",
+        "grande": "Large (over ~300 people)"
+      },
+      "accesso": {
+        "piano_terra": "Ground floor, no steps",
+        "ascensore": "Lift",
+        "scale": "Stairs"
+      },
+      "prese": {
+        "230v": "Standard 230 V",
+        "cee400": "Industrial CEE 400 V (three-phase)"
+      },
+      "prese_vicine": {
+        "no": "No, more than ~20 m away"
+      },
+      "oratori": {
+        "1_2": "1–2",
+        "3_5": "3–5",
+        "oltre_5": "More than 5"
+      },
+      "nebbia_permessa": {
+        "da_chiedere": "To be checked with the venue"
+      },
+      "uscite_libere": {
+        "verifichiamo": "We'll check with the venue"
+      },
+      "contenuti_da": {
+        "cliente": "We do",
+        "agenzia": "An agency or the photographer",
+        "meekon": "Meekon Displays"
+      },
+      "montaggio_giorno_prima": {
+        "possibile": "Possible",
+        "richiesto": "Required by the venue",
+        "non_possibile": "Not possible"
+      }
+    },
+    "ph": {
+      "superficie_m2": "e.g. 250",
+      "altezza_m": "e.g. 4",
+      "montaggio_dalle": "e.g. the day before from 2 pm",
+      "smontaggio_entro": "e.g. by 3 am",
+      "volume_quali": "e.g. max 95 dB, music until midnight",
+      "decibel_max": "e.g. 95"
+    },
+    "note_fumo": "Some detectors also react to haze: we'll check this together with the venue.",
+    "note_mp4": "Please send videos as MP4 (not MOV), no later than 3 days before the event.",
+    "fornitori_intro": "Optional: only include people who are happy to be contacted.",
+    "roles": {
+      "decorazioni": "Decoration / florist",
+      "foto": "Photographer / videographer",
+      "musica": "External DJ or band",
+      "planner": "Wedding planner / organiser",
+      "location": "Venue contact"
+    }
+  },
   "privacy": { "note": "We use your details to respond to your request and, if you wish, to prepare a quote and organise your event; they are never sold or used for advertising.", "link": "Read the privacy notice" },
   "footer": { "claim": "Event technology across Switzerland and, on request, in Italy, Germany and France.", "privacy": "Privacy" },
   "thanks": { "title": "Thank you!", "eyebrow": "Request sent", "text": "We have received your request and will be in touch shortly with a proposal.", "back": "Back to the website" },
@@ -150,6 +256,7 @@
         "h": "2. What data we collect",
         "p": [
           "Enquiry form: name, e-mail, phone, type and date of the event, location, country, number of guests, services required, message and language.",
+          "Technical details about the venue (optional): information about the room and the set-up and, if you wish, the name and contact of other suppliers for the event (for example florist, photographer, DJ or band, wedding planner, venue contact), which we use only to coordinate with them. Please only include them if those people are aware of it.",
           "We need your name and e-mail to reply. The other fields are optional, but help us prepare a suitable proposal.",
           "Direct contact: if you contact us by phone, WhatsApp, e-mail or Instagram, we process the data you send us (for example your name, number, e-mail address and the content of your messages).",
           "Technical data: when you visit the website, our hosting provider records technical data such as your IP address and the date and time of access."

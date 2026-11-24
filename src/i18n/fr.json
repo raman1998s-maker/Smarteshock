@@ -126,6 +126,112 @@
     "types": ["Mariage", "Anniversaire / fête privée", "Fête traditionnelle", "Événement d'entreprise", "WEF Davos", "Événement scénique", "Autre"],
     "chips": ["Écrans LED", "Digital banner", "TV / projecteur", "Lumière", "Structures", "Son", "Sono DJ", "Captation live", "Streaming", "Étincelles / fumée", "Dance floor"]
   },
+  "tech": {
+    "title": "Détails techniques du lieu",
+    "intro": "Facultatif : cela nous aide à préparer une offre précise. Si vous ne connaissez pas une réponse, laissez-la vide.",
+    "groups": {
+      "luogo": "Le lieu",
+      "corrente": "Électricité",
+      "orari": "Horaires",
+      "audio": "Son et discours",
+      "fumo": "Fumée et brouillard",
+      "schermi": "Écrans et contenus",
+      "fornitori": "Autres prestataires à coordonner"
+    },
+    "yes": "Oui",
+    "no": "Non",
+    "dunno": "Je ne sais pas",
+    "q": {
+      "spazio": "Type d'espace",
+      "copertura": "En plein air : y a-t-il une couverture ?",
+      "grandezza": "Taille de la salle",
+      "superficie_m2": "Surface (m²)",
+      "altezza_m": "Hauteur de la salle (m)",
+      "accesso": "Accès pour le matériel (enceintes sur roulettes)",
+      "scarico": "Parking ou zone de déchargement près de l'entrée ?",
+      "prese": "Prises électriques disponibles",
+      "prese_vicine": "Sont-elles proches du lieu d'installation ?",
+      "montaggio_dalle": "Montage possible dès",
+      "smontaggio_entro": "Démontage jusqu'à",
+      "volume_limiti": "Limites de volume ou heures de silence ?",
+      "volume_quali": "Lesquelles ?",
+      "discorsi": "Discours ou présentations au micro ?",
+      "oratori": "Combien de personnes parlent ?",
+      "rilevatori_fumo": "Détecteurs de fumée dans la salle ?",
+      "nebbia_permessa": "Les machines à fumée et à brouillard sont-elles autorisées ?",
+      "uscite_libere": "Les écrans laissent-ils libres les sorties de secours ?",
+      "contenuti_da": "Qui fournit les vidéos et les contenus ?",
+      "musica_fino": "Musique éteinte à",
+      "decibel_max": "Limite maximale (dB)",
+      "montaggio_giorno_prima": "Montage la veille ?",
+      "forn_nome": "Nom ou entreprise",
+      "forn_contatto": "Téléphone ou e-mail"
+    },
+    "o": {
+      "spazio": {
+        "sala": "Salle fermée",
+        "tendone": "Tente",
+        "capannone": "Halle ou espace très haut",
+        "aperto": "En plein air"
+      },
+      "grandezza": {
+        "piccola": "Petite (jusqu'à ~80 personnes)",
+        "media": "Moyenne",
+        "grande": "Grande (plus de ~300 personnes)"
+      },
+      "accesso": {
+        "piano_terra": "Rez-de-chaussée sans marches",
+        "ascensore": "Ascenseur",
+        "scale": "Escaliers"
+      },
+      "prese": {
+        "230v": "Normales 230 V",
+        "cee400": "Industrielles CEE 400 V (force)"
+      },
+      "prese_vicine": {
+        "no": "Non, à plus de ~20 m"
+      },
+      "oratori": {
+        "1_2": "1–2",
+        "3_5": "3–5",
+        "oltre_5": "Plus de 5"
+      },
+      "nebbia_permessa": {
+        "da_chiedere": "À demander au lieu"
+      },
+      "uscite_libere": {
+        "verifichiamo": "Nous le vérifions avec le lieu"
+      },
+      "contenuti_da": {
+        "cliente": "Nous-mêmes",
+        "agenzia": "Une agence ou le photographe",
+        "meekon": "Meekon Displays"
+      },
+      "montaggio_giorno_prima": {
+        "possibile": "Possible",
+        "richiesto": "Demandé par le lieu",
+        "non_possibile": "Pas possible"
+      }
+    },
+    "ph": {
+      "superficie_m2": "p. ex. 250",
+      "altezza_m": "p. ex. 4",
+      "montaggio_dalle": "p. ex. la veille dès 14 h",
+      "smontaggio_entro": "p. ex. jusqu'à 3 h du matin",
+      "volume_quali": "p. ex. 95 dB max., musique jusqu'à minuit",
+      "decibel_max": "p. ex. 95"
+    },
+    "note_fumo": "Certains détecteurs réagissent aussi au brouillard : nous le vérifions ensemble avec le lieu.",
+    "note_mp4": "Les vidéos sont à envoyer en MP4 (pas en MOV), au plus tard 3 jours avant l'événement.",
+    "fornitori_intro": "Facultatif : indiquez seulement les personnes d'accord d'être contactées.",
+    "roles": {
+      "decorazioni": "Décoration / fleuriste",
+      "foto": "Photographe / vidéaste",
+      "musica": "DJ ou groupe externe",
+      "planner": "Wedding planner / organisateur",
+      "location": "Référent du lieu"
+    }
+  },
   "privacy": { "note": "Vos données servent à répondre à votre demande et, si vous le souhaitez, à préparer l'offre et organiser l'événement ; elles ne sont jamais vendues ni utilisées à des fins publicitaires.", "link": "Lire la politique de confidentialité" },
   "footer": { "claim": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France.", "privacy": "Confidentialité" },
   "thanks": { "title": "Merci, à bientôt !", "eyebrow": "Demande envoyée", "text": "Nous avons bien reçu votre demande et vous recontacterons rapidement avec une proposition.", "back": "Retour au site" },
@@ -150,6 +256,7 @@
         "h": "2. Les données que nous traitons",
         "p": [
           "Formulaire de demande : nom, e-mail, téléphone, type et date de l'événement, lieu, pays, nombre d'invités, prestations souhaitées, message et langue.",
+          "Détails techniques du lieu (facultatifs) : informations sur la salle et l'installation et, si vous le souhaitez, nom et contact d'autres prestataires de l'événement (par exemple fleuriste, photographe, DJ ou groupe, wedding planner, référent du lieu), que nous utilisons uniquement pour nous coordonner avec eux. Indiquez-les seulement si ces personnes en sont informées.",
           "Le nom et l'e-mail sont nécessaires pour vous répondre. Les autres champs sont facultatifs, mais nous aident à préparer une proposition adaptée.",
           "Contacts directs : si vous nous contactez par téléphone, WhatsApp, e-mail ou Instagram, nous traitons les données que vous nous transmettez (par exemple nom, numéro, adresse e-mail et contenu des messages).",
           "Données techniques : lors de votre visite, l'hébergeur enregistre des données techniques comme l'adresse IP ainsi que la date et l'heure de l'accès."

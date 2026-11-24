@@ -75,6 +75,17 @@ export const t = {
       return Math.round(n * 100) / 100;
     }),
 
+  /** Numero con al massimo `decimals` decimali (accetta anche la virgola: "3,5"). */
+  decimal: ({ min, max, decimals = 1, ...spec } = {}) =>
+    wrap(spec, (v, f) => {
+      const re = new RegExp(`^\\d{1,6}([.,]\\d{1,${decimals}})?$`);
+      const n = typeof v === 'string' && re.test(v.trim()) ? Number(v.trim().replace(',', '.')) : v;
+      if (typeof n !== 'number' || !Number.isFinite(n) || n < min || n > max) throw fail(f);
+      const k = 10 ** decimals;
+      if (Math.abs(n * k - Math.round(n * k)) > 1e-6) throw fail(f);
+      return Math.round(n * k) / k;
+    }),
+
   bool: (spec = {}) =>
     wrap(spec, (v, f) => {
       if (typeof v !== 'boolean') throw fail(f);

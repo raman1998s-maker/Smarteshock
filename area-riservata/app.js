@@ -28,6 +28,49 @@
   const LINGUE = { it: 'Italiano', de: 'Tedesco', fr: 'Francese', en: 'Inglese' };
   const RUOLI = { admin: 'Amministratore', tecnico: 'Tecnico' };
 
+  // Dettagli tecnici sul luogo (richieste_web.dettagli_tecnici): etichette e valori in italiano.
+  // Le chiavi e i valori sono quelli di dettagliTecniciSchema (netlify/functions/_lib/schemas.js).
+  const SNN = { si: 'Sì', no: 'No', non_so: 'Non so' };
+  const DETTAGLI = [
+    ['spazio', 'Tipo di spazio', { sala: 'Sala chiusa', tendone: 'Tendone', capannone: 'Capannone o spazio molto alto', aperto: "All'aperto" }],
+    ['copertura', 'Copertura (all\'aperto)', SNN],
+    ['grandezza', 'Grandezza della sala', { piccola: 'Piccola (fino a ~80 persone)', media: 'Media', grande: 'Grande (oltre ~300 persone)', non_so: 'Non so' }],
+    ['superficie_m2', 'Superficie', (v) => `${v} m²`],
+    ['altezza_m', 'Altezza della sala', (v) => `${String(v).replace('.', ',')} m`],
+    ['accesso', 'Accesso per il materiale', { piano_terra: 'Piano terra senza gradini', ascensore: 'Ascensore', scale: 'Scale', non_so: 'Non so' }],
+    ['scarico', 'Parcheggio / scarico vicino', SNN],
+    ['prese', 'Prese di corrente', { '230v': 'Normali 230 V', cee400: 'CEE 400 V (forza)', non_so: 'Non so' }],
+    ['prese_vicine', 'Prese vicine al punto di installazione', { si: 'Sì', no: 'No, a più di ~20 m', non_so: 'Non so' }],
+    ['montaggio_giorno_prima', 'Montaggio il giorno prima', { possibile: 'Possibile', richiesto: 'Richiesto dalla location', non_possibile: 'Non possibile', non_so: 'Non so' }],
+    ['montaggio_dalle', 'Montaggio possibile dalle', null],
+    ['smontaggio_entro', 'Smontaggio entro', null],
+    ['volume_limiti', 'Limiti di volume / orari di silenzio', SNN],
+    ['volume_quali', 'Quali limiti', null],
+    ['musica_fino', 'Musica spenta entro le', null],
+    ['decibel_max', 'Limite massimo', (v) => `${v} dB`],
+    ['discorsi', 'Discorsi con microfono', SNN],
+    ['oratori', 'Persone che parlano', { '1_2': '1–2', '3_5': '3–5', oltre_5: 'Più di 5' }],
+    ['rilevatori_fumo', 'Rilevatori di fumo', SNN],
+    ['nebbia_permessa', 'Fumo / nebbia permessi', { si: 'Sì', no: 'No', da_chiedere: 'Da chiedere alla location' }],
+    ['uscite_libere', 'Uscite di emergenza libere dagli schermi', { si: 'Sì', verifichiamo: 'Da verificare con la location', non_so: 'Non so' }],
+    ['contenuti_da', 'Video e contenuti forniti da', { cliente: 'Cliente', agenzia: 'Agenzia o fotografo', meekon: 'Meekon Displays' }],
+  ];
+  const FORNITORI = [['decorazioni', 'Decorazioni / fiorista'], ['foto', 'Fotografo / videomaker'], ['musica', 'DJ o band esterni'], ['planner', 'Wedding planner / organizzatore'], ['location', 'Referente della location']];
+  function dettagliTecnici(d) {
+    if (!d || typeof d !== 'object' || Array.isArray(d)) return null;
+    const fmt = (v, map) => {
+      const one = (x) => (typeof map === 'function' ? map(x) : map && Object.prototype.hasOwnProperty.call(map, x) ? map[x] : String(x));
+      return Array.isArray(v) ? v.map(one).join(', ') : one(v);
+    };
+    const rows = DETTAGLI.filter(([k]) => d[k] !== undefined && d[k] !== null && d[k] !== '').map(([k, label, map]) => [label, fmt(d[k], map)]);
+    FORNITORI.forEach(([k, label]) => {
+      const nome = d[`forn_${k}_nome`];
+      const contatto = d[`forn_${k}_contatto`];
+      if (nome || contatto) rows.push([label, [nome, contatto].filter(Boolean).map(String).join(' · ')]);
+    });
+    return rows.length ? rows : null;
+  }
+
   // ------------------------------------------------------------ API
   class ApiError extends Error {
     constructor(status, code, field, data) {
@@ -836,6 +879,7 @@
             ['Lingua', LINGUE[r.lingua] || dash(r.lingua)],
           ])),
         h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Messaggio')), multiline(r.messaggio)),
+        dettagliTecnici(r.dettagli_tecnici) && h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Dettagli tecnici sul luogo')), dl(dettagliTecnici(r.dettagli_tecnici))),
         wide(azioni)));
   }
 

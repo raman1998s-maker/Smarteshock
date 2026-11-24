@@ -9,7 +9,7 @@ export const config = {
   excludedPath: '/api/richieste/pulizia', // gestito da richieste-pulizia.js
 };
 
-const SELECT = 'id,nome,email,telefono,tipo,data,localita,ospiti,servizi,messaggio,lingua,paese,stato,evento_id,created_at,updated_at';
+const SELECT = 'id,nome,email,telefono,tipo,data,localita,ospiti,servizi,messaggio,lingua,paese,dettagli_tecnici,stato,evento_id,created_at,updated_at';
 
 export default createHandler(
   {
