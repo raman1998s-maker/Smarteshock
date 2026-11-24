@@ -4,7 +4,10 @@ import { HttpError, json, readJson } from './_lib/http.js';
 import { STATI_RICHIESTA } from './_lib/schemas.js';
 import { t, validate } from './_lib/validate.js';
 
-export const config = { path: ['/api/richieste', '/api/richieste/:id'] };
+export const config = {
+  path: ['/api/richieste', '/api/richieste/:id'],
+  excludedPath: '/api/richieste/pulizia', // gestito da richieste-pulizia.js
+};
 
 const SELECT = 'id,nome,email,telefono,tipo,data,localita,ospiti,servizi,messaggio,lingua,paese,stato,evento_id,created_at,updated_at';
 

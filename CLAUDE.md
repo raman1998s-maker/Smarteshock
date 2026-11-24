@@ -35,4 +35,5 @@ Vedi `docs/architettura.md` (stack, modello dati, API, flusso di autenticazione)
 
 ## Persone
 - **Titolare dell'azienda** (e titolare del trattamento dei dati per la privacy): **Arul Mayuran** — Meekon Displays. Contatto per la privacy: meekon.display@gmail.com.
+- **Account dei servizi** (Supabase, Netlify, dominio): vanno creati con i dati d'accesso di **Meekon Displays**, NON con gli account di Smart E Shock collegati a questa sessione. Supabase: regione **UE, Francoforte (eu-central-1)**, scelta dal referente il 24.11.2026.
 - **Referente del sito**: la persona che segue il progetto con Claude (non pubblicare il suo nome o la sua e-mail).

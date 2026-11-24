@@ -1,7 +1,7 @@
 // GET/POST /api/eventi · GET/PATCH/DELETE /api/eventi/:id
 import { createHandler } from './_lib/handler.js';
 import { HttpError, json, readJson } from './_lib/http.js';
-import { STATI_EVENTO, eventoSchema, senzaImporti } from './_lib/schemas.js';
+import { STATI_EVENTO, eventoSchema, perTecnico } from './_lib/schemas.js';
 import { isValidDate, validate } from './_lib/validate.js';
 
 export const config = { path: ['/api/eventi', '/api/eventi/:id'] };
@@ -12,6 +12,8 @@ const LIST_ADMIN =
 const LIST_TECNICO =
   'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,paese,ospiti,servizi,' +
   'cliente_id,cliente_nome,cliente_telefono';
+// Colonne esplicite (non *): il tecnico chiede solo ciò che può vedere.
+const DETAIL_TECNICO = `${LIST_TECNICO},programma,note_squadra,created_at,updated_at`;
 const DETAIL_ADMIN = '*,cliente:clienti(id,nome,azienda,email,telefono,lingua)';
 
 function filtri(url) {
@@ -52,7 +54,7 @@ async function elenco({ url, sb, token, user }) {
   }
   q.set('select', LIST_TECNICO);
   const rows = await sb.rest(`eventi_tecnico?${q}`, { token });
-  return json(200, { eventi: (rows || []).map(senzaImporti) });
+  return json(200, { eventi: (rows || []).map(perTecnico) });
 }
 
 async function dettaglio({ params, sb, token, user }) {
@@ -61,12 +63,12 @@ async function dettaglio({ params, sb, token, user }) {
   const [eventi, staff, checklist] = await Promise.all([
     isAdmin
       ? sb.rest(`eventi?id=eq.${id}&select=${encodeURIComponent(DETAIL_ADMIN)}`, { token })
-      : sb.rest(`eventi_tecnico?id=eq.${id}&select=*`, { token }),
+      : sb.rest(`eventi_tecnico?id=eq.${id}&select=${encodeURIComponent(DETAIL_TECNICO)}`, { token }),
     sb.rest(`eventi_staff?evento_id=eq.${id}&select=staff_id,ruolo_evento,staff(nome,telefono)`, { token }),
     sb.rest(`checklist?evento_id=eq.${id}&select=id,voce,quantita,caricato,note,updated_at&order=created_at.asc`, { token }),
   ]);
   if (!Array.isArray(eventi) || eventi.length !== 1) throw new HttpError(404, 'not_found');
-  const evento = isAdmin ? eventi[0] : senzaImporti(eventi[0]);
+  const evento = isAdmin ? eventi[0] : perTecnico(eventi[0]);
   return json(200, {
     evento,
     staff: (staff || []).map((s) => ({

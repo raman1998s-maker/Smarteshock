@@ -7,6 +7,8 @@ export const PAESI = ['CH', 'IT', 'DE', 'FR'];
 export const LINGUE = ['it', 'de', 'fr', 'en'];
 export const STATI_RICHIESTA = ['nuova', 'gestita', 'scartata'];
 export const CAMPI_ECONOMICI = ['importo_chf', 'acconto_pagato', 'saldo_pagato'];
+/** Campi che il tecnico non riceve mai: importi + note solo per l'admin. */
+export const CAMPI_SOLO_ADMIN = [...CAMPI_ECONOMICI, 'note_interne'];
 
 export const eventoSchema = {
   cliente_id: t.uuid(),
@@ -21,7 +23,8 @@ export const eventoSchema = {
   ospiti: t.int({ min: 0, max: 100000 }),
   servizi: t.array(t.string({ max: 80 }), { max: 30 }),
   programma: t.string({ max: 10000, multiline: true }),
-  note_interne: t.string({ max: 10000, multiline: true }),
+  note_squadra: t.string({ max: 10000, multiline: true }), // visibili ai tecnici assegnati
+  note_interne: t.string({ max: 10000, multiline: true }), // solo admin
   importo_chf: t.money(),
   acconto_pagato: t.bool({ default: false }),
   saldo_pagato: t.bool({ default: false }),
@@ -63,10 +66,13 @@ export const richiestaSchema = {
   paese: t.enumOf(PAESI), // facoltativo: vuoto/assente → null
 };
 
-/** Rimuove i campi economici (difesa in profondità per il ruolo tecnico). */
-export function senzaImporti(obj) {
+/**
+ * Rimuove i campi economici e note_interne (difesa in profondità per il ruolo
+ * tecnico: la vista eventi_tecnico non li restituisce già).
+ */
+export function perTecnico(obj) {
   if (!obj || typeof obj !== 'object') return obj;
   const copy = { ...obj };
-  for (const k of CAMPI_ECONOMICI) delete copy[k];
+  for (const k of CAMPI_SOLO_ADMIN) delete copy[k];
   return copy;
 }

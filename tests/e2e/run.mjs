@@ -4,7 +4,8 @@
 //   node tests/e2e/run.mjs
 //
 // - genera le pagine (`python3 build.py`) e avvia un server statico locale su una porta libera
-// - applica a ogni documento HTML la CSP letta da netlify.toml (per scoprire violazioni)
+// - applica a ogni documento HTML la CSP effettiva per il suo percorso secondo netlify.toml
+//   (intersezione delle CSP di tutte le regole che si applicano; per scoprire violazioni)
 // - simula tutte le API /api/* con page.route (nessuna chiamata reale, nessun dominio esterno)
 // - stampa un riepilogo passati/falliti ed esce con codice 1 se qualcosa fallisce
 //
@@ -48,16 +49,73 @@ async function guard(name, fn) {
 }
 
 // ------------------------------------------------------------------ CSP da netlify.toml
-function readCsp() {
+// Netlify applica TUTTE le regole [[headers]] il cui `for` corrisponde al percorso; più CSP
+// valgono insieme, cioè come intersezione. Qui si legge ogni regola con una CSP e, per ogni
+// documento, si calcola la CSP effettiva intersecando le CSP che si applicano al percorso.
+function readCspRules() {
   const toml = readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
-  const m = /Content-Security-Policy\s*=\s*"([^"]+)"/.exec(toml);
-  if (!m) throw new Error('Content-Security-Policy non trovata in netlify.toml');
-  return m[1];
+  const rules = [];
+  for (const block of toml.split(/^\s*\[\[headers\]\]\s*$/m).slice(1)) {
+    const body = block.split(/^\s*\[\[/m)[0]; // fino al blocco successivo ([[redirects]] ecc.)
+    const f = /^\s*for\s*=\s*"([^"]+)"/m.exec(body);
+    const c = /^\s*Content-Security-Policy\s*=\s*"([^"]+)"/m.exec(body);
+    if (f && c) rules.push({ for: f[1], csp: c[1] });
+  }
+  if (!rules.length) throw new Error('Nessuna Content-Security-Policy in netlify.toml');
+  return rules;
 }
-const CSP_FULL = readCsp();
-// `upgrade-insecure-requests` riscriverebbe in https le risorse del server locale http://127.0.0.1;
-// in produzione (https) non ha effetto sulle risorse same-origin, quindi qui la togliamo.
-const CSP = CSP_FULL.split(';').map((s) => s.trim()).filter((s) => s && s !== 'upgrade-insecure-requests').join('; ');
+const CSP_RULES = readCspRules();
+
+// corrispondenza dei percorsi come Netlify: "/x/*" vale per "/x/..." (anche "/x/"), altrimenti esatto
+function ruleMatches(pattern, pathname) {
+  if (pattern.endsWith('/*')) return pathname.startsWith(pattern.slice(0, -1));
+  return pathname === pattern;
+}
+
+function parseCsp(csp) {
+  const map = new Map();
+  for (const part of csp.split(';').map((x) => x.trim()).filter(Boolean)) {
+    const [name, ...src] = part.split(/\s+/);
+    if (!map.has(name.toLowerCase())) map.set(name.toLowerCase(), src);
+  }
+  return map;
+}
+// direttive che, se assenti, ricadono su default-src
+const FETCH_DIRECTIVES = new Set(['script-src', 'style-src', 'font-src', 'img-src', 'media-src', 'connect-src', 'object-src', 'frame-src', 'worker-src', 'manifest-src', 'child-src']);
+// intersezione per direttiva (confronto esatto delle sorgenti: in caso di dubbio più stretta)
+function intersectCsp(list) {
+  const maps = list.map(parseCsp);
+  const names = new Set(maps.flatMap((m) => [...m.keys()]));
+  const out = [];
+  for (const name of names) {
+    const sets = [];
+    for (const m of maps) {
+      if (m.has(name)) sets.push(m.get(name));
+      else if (FETCH_DIRECTIVES.has(name) && m.has('default-src')) sets.push(m.get('default-src'));
+    }
+    if (!sets.length) continue;
+    let common = sets[0].filter((x) => sets.every((s) => s.includes(x)));
+    if (!common.length && sets[0].length) common = ["'none'"];
+    out.push(common.length ? `${name} ${common.join(' ')}` : name);
+  }
+  return out.join('; ');
+}
+
+const cspCache = new Map();
+/** CSP effettiva per un percorso; null se nessuna regola si applica (sarebbe un difetto). */
+function effectiveCsp(pathname) {
+  if (cspCache.has(pathname)) return cspCache.get(pathname);
+  const matching = CSP_RULES.filter((r) => ruleMatches(r.for, pathname)).map((r) => r.csp);
+  let csp = matching.length ? intersectCsp(matching) : null;
+  // `upgrade-insecure-requests` riscriverebbe in https le risorse del server locale http://127.0.0.1;
+  // in produzione (https) non ha effetto sulle risorse same-origin, quindi qui la togliamo.
+  if (csp) csp = csp.split(';').map((x) => x.trim()).filter((x) => x && x !== 'upgrade-insecure-requests').join('; ');
+  cspCache.set(pathname, csp);
+  return csp;
+}
+// CSP pubblica stretta (quella di "/"), usata dall'autoverifica dei rilevatori
+const CSP = effectiveCsp('/');
+if (!CSP) throw new Error('Nessuna CSP per "/" in netlify.toml');
 
 // ------------------------------------------------------------------ build + server
 function build() {
@@ -153,7 +211,10 @@ async function openPage({ viewport = 'desktop', locale = 'it-CH', apiHandler = n
     const req = route.request();
     if (req.resourceType() !== 'document') return route.fallback();
     const resp = await route.fetch();
-    const headers = { ...resp.headers(), 'content-security-policy': CSP };
+    const pathname = new URL(req.url()).pathname;
+    const csp = effectiveCsp(pathname);
+    if (!csp) log.csp.push(`[CSP] nessuna CSP in netlify.toml per ${pathname}`);
+    const headers = { ...resp.headers(), 'content-security-policy': csp || CSP };
     return route.fulfill({ response: resp, headers });
   });
   if (extraRoutes) await extraRoutes(context); // registrate per ultime = hanno la precedenza
@@ -684,8 +745,12 @@ function isoIn(days, time) {
   const p = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}${time ? `T${time}:00` : ''}`;
 }
-function detail(e, withMoney) {
-  const ev = { ...e, programma: 'Riga 1\nRiga 2', note_interne: 'Nota interna di prova' };
+// note: `note_squadra` per admin e tecnico; `note_interne` solo per l'admin (l'API non la manda al tecnico)
+const NOTA_SQUADRA = 'Nota squadra di prova\nCarico alle 14:00';
+const NOTA_INTERNA = 'Nota interna riservata di prova';
+function detail(e, withMoney, isAdmin = withMoney) {
+  const ev = { ...e, programma: 'Riga 1\nRiga 2', note_squadra: NOTA_SQUADRA };
+  if (isAdmin) ev.note_interne = NOTA_INTERNA;
   if (!withMoney) { delete ev.importo_chf; delete ev.acconto_pagato; delete ev.saldo_pagato; }
   return {
     evento: ev,
@@ -714,7 +779,7 @@ function apiMock(role, { leakMoney = false, overrides = {} } = {}) {
     if (m && req.method() === 'GET') {
       const e = EVENTI_ADMIN.find((x) => x.id === m[1]);
       if (!e) return json(route, 404, { error: 'not_found' });
-      return json(route, 200, detail(e, role === 'admin' || leakMoney));
+      return json(route, 200, detail(e, role === 'admin' || leakMoney, role === 'admin'));
     }
     if (/^checklist\//.test(p) && req.method() === 'PATCH') {
       const body = JSON.parse(req.postData() || '{}');
@@ -722,6 +787,7 @@ function apiMock(role, { leakMoney = false, overrides = {} } = {}) {
     }
     if (role !== 'admin') return json(route, 403, { error: 'forbidden' });
     if (key === 'GET richieste') return json(route, 200, { richieste: [] });
+    if (key === 'POST richieste/pulizia') return json(route, 200, { ok: true, cancellate: 3 });
     if (key === 'GET clienti') return json(route, 200, { clienti: [] });
     if (key === 'GET staff') return json(route, 200, { staff: [] });
     return false;
@@ -909,6 +975,7 @@ async function areaRiservata() {
       check(`${L}: dettaglio con Dati economici (CHF 12'500.00)`, d.h2.includes('Dati economici') && /CHF 12'500\.00/.test(d.text), JSON.stringify(d.h2));
       check(`${L}: dettaglio con pulsanti Modifica, Elimina, Modifica staff, Aggiungi voce`, ['Modifica', 'Elimina', 'Modifica staff', 'Aggiungi voce'].every((b) => d.buttons.includes(b)), JSON.stringify(d.buttons));
       check(`${L}: dettaglio con staff e checklist`, /Tecnico Finto/.test(d.text) && /Teste mobili/.test(d.text), d.text.slice(0, 300));
+      check(`${L}: dettaglio con pannelli "Note per la squadra" e "Note interne" e i rispettivi testi`, d.h2.includes('Note per la squadra') && d.h2.includes('Note interne') && d.text.includes('Nota squadra di prova') && d.text.includes(NOTA_INTERNA), JSON.stringify(d.h2));
       over = await horizontalOverflow(page);
       check(`${L}: nessuno scorrimento orizzontale (dettaglio)`, !over, over);
       await a11yBasics(page, `${L} dettaglio`);
@@ -924,10 +991,47 @@ async function areaRiservata() {
       const patch = calls.find((c) => c.key === 'PATCH checklist/c1');
       check(`${L}: spunta checklist invia PATCH /api/checklist/c1`, !!patch, calls.map((c) => c.key).join(', '));
 
+      // form di modifica: entrambi i campi note, precompilati, con etichetta
+      await page.evaluate(() => { location.hash = '#/evento/e1/modifica'; });
+      await page.locator('#main form textarea[name="note_squadra"]').waitFor({ timeout: 5000 });
+      const fm = await page.evaluate(() => {
+        const lab = (el) => { const l = el && (el.labels && el.labels[0]); return l ? l.textContent.replace(/\s+/g, ' ').trim() : ''; };
+        const sq = document.querySelector('#main form textarea[name="note_squadra"]');
+        const ni = document.querySelector('#main form textarea[name="note_interne"]');
+        return { sq: !!sq, ni: !!ni, sqVal: sq && sq.value, niVal: ni && ni.value, sqLab: lab(sq), niLab: lab(ni), sqMax: sq && sq.maxLength, niMax: ni && ni.maxLength };
+      });
+      check(`${L}: form evento con "Note per la squadra" e "Note interne (solo amministratore)"`, fm.sq && fm.ni && /Note per la squadra/.test(fm.sqLab) && /Note interne \(solo amministratore\)/.test(fm.niLab), JSON.stringify(fm));
+      check(`${L}: form evento precompilato con le due note (max 10000 caratteri)`, fm.sqVal === NOTA_SQUADRA && fm.niVal === NOTA_INTERNA && fm.sqMax === 10000 && fm.niMax === 10000, JSON.stringify(fm));
+      over = await horizontalOverflow(page);
+      check(`${L}: nessuno scorrimento orizzontale (form evento)`, !over, over);
+
       // sezioni admin
       await page.evaluate(() => { location.hash = '#/richieste'; });
       await page.locator('#main h1', { hasText: 'Richieste' }).waitFor({ timeout: 5000 });
       check(`${L}: sezione Richieste accessibile`, true);
+
+      // pulizia richieste: conferma in pagina, Annulla non invia nulla, conferma → POST e numero eliminato
+      const puliziaCalls = () => calls.filter((c) => c.key === 'POST richieste/pulizia');
+      const opener = page.locator('#main button', { hasText: 'Elimina richieste senza seguito' });
+      if (check(`${L}: pulsante di pulizia delle richieste presente`, await opener.isVisible(), 'non visibile')) {
+        await opener.click();
+        const confirmBox = page.locator('#main .confirm');
+        await confirmBox.waitFor({ timeout: 3000 });
+        check(`${L}: pulizia chiede conferma in pagina, nessun POST prima della conferma`, await confirmBox.isVisible() && puliziaCalls().length === 0, `POST=${puliziaCalls().length}`);
+        await confirmBox.locator('button', { hasText: 'Annulla' }).click();
+        await page.waitForTimeout(200);
+        check(`${L}: "Annulla" chiude la conferma senza inviare nulla`, (await page.locator('#main .confirm').count()) === 0 && puliziaCalls().length === 0 && !(await opener.isDisabled()), `POST=${puliziaCalls().length}`);
+        await opener.click();
+        await page.locator('#main .confirm button', { hasText: 'Elimina definitivamente' }).click();
+        await page.locator('#main [role="status"] .alert').waitFor({ timeout: 5000 });
+        const pc = puliziaCalls();
+        const msg = await page.textContent('#main [role="status"]');
+        check(`${L}: conferma → POST /api/richieste/pulizia con X-Requested-With: meekon`, pc.length === 1 && pc[0].headers['x-requested-with'] === 'meekon', JSON.stringify(pc.map((c) => c.headers['x-requested-with'])));
+        check(`${L}: dopo la pulizia mostra il numero eliminato ("3 richieste eliminate")`, /3 richieste eliminate/.test(msg), msg);
+        check(`${L}: dopo la pulizia l'elenco viene ricaricato`, calls.filter((c) => c.key === 'GET richieste').length >= 2, calls.map((c) => c.key).join(', '));
+        over = await horizontalOverflow(page);
+        check(`${L}: nessuno scorrimento orizzontale (Richieste con pulizia)`, !over, over);
+      }
 
       const errs = unexpectedConsole(log, { allowApiStatus: true });
       check(`${L}: 0 errori console / CSP`, errs.length === 0 && log.pageErrors.length === 0 && log.csp.length === 0, fmtConsole(errs) + log.pageErrors.join('\n') + log.csp.join('\n'));
@@ -969,6 +1073,8 @@ async function areaRiservata() {
       const forbiddenBtns = d.buttons.filter((b) => /^(Modifica|Elimina|Modifica staff|Aggiungi voce|Nuovo evento)$/.test(b));
       check(`${L}: nessun pulsante di modifica (Modifica/Elimina/Modifica staff/Aggiungi voce)`, forbiddenBtns.length === 0 && d.forms === 0, `${forbiddenBtns.join(', ')} form=${d.forms}`);
       check(`${L}: può spuntare la checklist`, d.cb === 1, `checkbox=${d.cb}`);
+      check(`${L}: vede "Note per la squadra" con il testo`, d.h2.includes('Note per la squadra') && d.text.includes('Nota squadra di prova'), JSON.stringify(d.h2));
+      check(`${L}: non vede note interne (né pannello né testo)`, !d.h2.some((x) => /Note interne/.test(x)) && !d.text.includes(NOTA_INTERNA), JSON.stringify(d.h2));
       const over = await horizontalOverflow(page);
       check(`${L}: nessuno scorrimento orizzontale`, !over, over);
       await shot(page, `tecnico-detail-${leak ? 'leak' : 'ok'}`);
@@ -979,7 +1085,12 @@ async function areaRiservata() {
         await page.locator('#main h1', { hasText: 'Accesso non consentito' }).waitFor({ timeout: 3000 }).catch(() => {});
         const t = await page.textContent('#main h1');
         check(`${L}: ${h} → "Accesso non consentito"`, /Accesso non consentito/.test(t), t);
+        if (h === '#/richieste') {
+          const pb = await page.locator('#main button', { hasText: /Elimina richieste|Elimina definitivamente/ }).count();
+          check(`${L}: nessun pulsante di pulizia delle richieste`, pb === 0, `pulsanti=${pb}`);
+        }
       }
+      check(`${L}: nessuna chiamata a POST /api/richieste/pulizia`, !calls.some((c) => c.key === 'POST richieste/pulizia'), calls.map((c) => c.key).join(', '));
       const adminCalls = calls.filter((c) => /^(GET|POST|PATCH|PUT|DELETE) (richieste|clienti|staff)/.test(c.key) || /^(POST|PATCH|DELETE|PUT) eventi/.test(c.key));
       check(`${L}: nessuna chiamata ad API da amministratore`, adminCalls.length === 0, adminCalls.map((c) => c.key).join(', '));
 
@@ -1032,6 +1143,36 @@ async function areaRiservata() {
       const errs = unexpectedConsole(log, { allowApiStatus: true });
       check('errori API: nessun errore JS / CSP', errs.length === 0 && log.pageErrors.length === 0 && log.csp.length === 0, fmtConsole(errs) + log.pageErrors.join('\n') + log.csp.join('\n'));
       apiHeaderCheck('errori API', log);
+    });
+    await context.close();
+  }
+  // ---- pulizia richieste: errori (403 accesso negato, 401 sessione scaduta senza reindirizzare, 502)
+  {
+    let puliziaStatus = 403;
+    const { handler, calls } = apiMock('admin', {
+      overrides: { 'POST richieste/pulizia': (route) => json(route, puliziaStatus, { error: puliziaStatus === 403 ? 'forbidden' : puliziaStatus === 401 ? 'unauthorized' : 'upstream_error' }) },
+    });
+    const { context, page, log } = await openPage({ apiHandler: handler });
+    await guard('pulizia errori', async () => {
+      await page.goto(`${BASE}/area-riservata/app.html#/richieste`);
+      await page.locator('#main h1', { hasText: 'Richieste' }).waitFor({ timeout: 5000 });
+      const run = async () => {
+        await page.locator('#main button', { hasText: 'Elimina richieste senza seguito' }).click();
+        await page.locator('#main .confirm button', { hasText: 'Elimina definitivamente' }).click();
+        await page.locator('#main [role="alert"] .alert--error').waitFor({ timeout: 5000 });
+        return { msg: await page.textContent('#main [role="alert"] .alert--error'), ok: await page.textContent('#main [role="status"]'), path: new URL(page.url()).pathname };
+      };
+      let r = await run();
+      check('pulizia con 403 → "Solo un amministratore", nessun numero mostrato', /Solo un amministratore/.test(r.msg) && !/eliminat/.test(r.ok), JSON.stringify(r));
+      puliziaStatus = 401;
+      r = await run();
+      check('pulizia con 401 → "Sessione scaduta", resta nella pagina (nessun reindirizzamento)', /Sessione scaduta/.test(r.msg) && r.path === '/area-riservata/app.html', JSON.stringify(r));
+      puliziaStatus = 502;
+      r = await run();
+      check('pulizia con 502 → "nessuna richiesta è stata eliminata"', /nessuna richiesta è stata eliminata/.test(r.msg), JSON.stringify(r));
+      check('pulizia: 3 tentativi = 3 POST, tutti con X-Requested-With: meekon', calls.filter((c) => c.key === 'POST richieste/pulizia' && c.headers['x-requested-with'] === 'meekon').length === 3, calls.map((c) => c.key).join(', '));
+      const errs = unexpectedConsole(log, { allowApiStatus: true });
+      check('pulizia errori: nessun errore JS / CSP', errs.length === 0 && log.pageErrors.length === 0 && log.csp.length === 0, fmtConsole(errs) + log.pageErrors.join('\n') + log.csp.join('\n'));
     });
     await context.close();
   }
@@ -1134,6 +1275,26 @@ function summary() {
   return fail;
 }
 
+// ------------------------------------------------------------------ CSP per percorso (netlify.toml)
+// Nessun percorso senza CSP; pubbliche = solo 'self'; area riservata = host Supabase ammesso.
+async function cspMap() {
+  currentGroup = 'CSP per percorso (netlify.toml)';
+  const hasSupabase = (csp) => /supabase\.co/.test(csp || '');
+  const pub = ['/', '/index.html', '/grazie.html', '/privacy.html', '/404.html', '/de/', '/de/grazie.html', '/fr/', '/en/privacy.html', '/assets/css/x.css', '/robots.txt', '/sitemap.xml'];
+  for (const p of pub) {
+    const c = effectiveCsp(p);
+    check(`${p}: CSP pubblica stretta (solo 'self', niente Supabase/blob:)`, c && !hasSupabase(c) && !/blob:/.test(c) && /connect-src 'self'(;|$)/.test(c), c || 'nessuna CSP');
+  }
+  for (const p of ['/area-riservata', '/area-riservata/', '/area-riservata/app.html']) {
+    const c = effectiveCsp(p);
+    check(`${p}: CSP dell'area riservata (Supabase in connect/img/media-src)`, c && /connect-src [^;]*supabase\.co/.test(c) && /img-src [^;]*supabase\.co/.test(c) && /media-src [^;]*supabase\.co/.test(c), c || 'nessuna CSP');
+  }
+  for (const p of ['/pagina-inesistente', '/docs/architettura.md', '/netlify/functions/x.mjs', '/nuova-pagina.html']) {
+    const c = effectiveCsp(p);
+    check(`${p}: ha comunque una CSP (regola "/*")`, !!c && /default-src 'self'/.test(c) && /frame-ancestors 'none'/.test(c), c || 'nessuna CSP');
+  }
+}
+
 // ------------------------------------------------------------------ main
 let server;
 async function main() {
@@ -1142,7 +1303,7 @@ async function main() {
   BASE = server.base;
   browser = await chromium.launch({ headless: true });
   const only = (process.env.E2E_ONLY || '').split(',').filter(Boolean);
-  const suites = { selftest: selfTest, public: publicSite, form: formTests, area: areaRiservata, static: staticPages, service: serviceFiles };
+  const suites = { csp: cspMap, selftest: selfTest, public: publicSite, form: formTests, area: areaRiservata, static: staticPages, service: serviceFiles };
   for (const [name, fn] of Object.entries(suites)) {
     if (only.length && !only.includes(name)) continue;
     currentGroup = `Suite ${name}`;

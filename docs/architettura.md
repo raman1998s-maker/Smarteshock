@@ -40,10 +40,10 @@ La `service_role` key **non si usa** in nessuna function.
 |---|---|
 | `staff` | `id` (= `auth.users.id`), `nome`, `ruolo` (`admin` \| `tecnico`), `telefono`, `attivo` |
 | `clienti` | `id`, `nome`, `azienda`, `email`, `telefono`, `lingua`, `note`, `created_at` |
-| `eventi` | `id`, `numero_ordine` (unico), `cliente_id`, `titolo`, `tipo`, `stato` (`richiesta` → `offerta` → `confermato` → `completato` / `annullato`), `data_inizio`, `data_fine`, `localita`, `sala`, `paese` (`CH`,`IT`,`DE`,`FR`), `ospiti`, `servizi` (text[]), `programma`, `note_interne`, `importo_chf`, `acconto_pagato`, `saldo_pagato`, `created_at`, `updated_at` |
+| `eventi` | `id`, `numero_ordine` (unico), `cliente_id`, `titolo`, `tipo`, `stato` (`richiesta` → `offerta` → `confermato` → `completato` / `annullato`), `data_inizio`, `data_fine`, `localita`, `sala`, `paese` (`CH`,`IT`,`DE`,`FR`), `ospiti`, `servizi` (text[]), `programma`, `note_squadra` (visibili ai tecnici assegnati; migrazione `0004`), `note_interne` (solo admin), `importo_chf`, `acconto_pagato`, `saldo_pagato`, `created_at`, `updated_at` |
 | `eventi_staff` | `evento_id`, `staff_id`, `ruolo_evento` (es. tecnico audio, luci, video) |
 | `checklist` | `id`, `evento_id`, `voce`, `quantita`, `caricato` (bool), `note` |
-| `richieste_web` | `id`, `nome`, `email`, `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi`, `messaggio`, `lingua`, `paese` (`CH`,`IT`,`DE`,`FR`, facoltativo; migrazione `0002`), `stato` (`nuova`/`gestita`/`scartata`), `evento_id` (evento creato con "converti"), `created_at` |
+| `richieste_web` | `id`, `nome`, `email`, `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi`, `messaggio`, `lingua`, `paese` (`CH`,`IT`,`DE`,`FR`, facoltativo; migrazione `0002`), `stato` (`nuova`/`gestita`/`scartata`), `evento_id` (evento creato con "converti"), `created_at` — le righe senza `evento_id` più vecchie di 24 mesi vengono cancellate automaticamente (vedi "Conservazione delle richieste") |
 
 Note sul modello (schema reale in `supabase/migrations/0001_schema.sql`):
 - Tutte le tabelle modificabili hanno anche `updated_at` (trigger). `numero_ordine` è generato dal DB (`AAAA-NNNN`, contatore annuale in `contatori_ordine`) e non è modificabile.
@@ -52,11 +52,17 @@ Note sul modello (schema reale in `supabase/migrations/0001_schema.sql`):
 
 ### Row Level Security (attiva su tutte le tabelle)
 - **admin**: lettura e scrittura su tutto.
-- **tecnico**: legge solo gli eventi a cui è assegnato (via `eventi_staff`) e i relativi clienti (solo nome/telefono), può aggiornare solo `checklist.caricato` e `checklist.note` di quegli eventi (trigger `checklist_limita_tecnico`). Non vede `importo_chf`, `acconto_pagato`, `saldo_pagato` (vista `eventi_tecnico` senza campi economici). Vede nome/telefono dei colleghi assegnati agli stessi eventi.
-  - Implementazione: il tecnico **non ha nessuna policy** su `eventi` e `clienti` (nemmeno in lettura). La vista `eventi_tecnico` (`security_invoker = true`) legge da `public.eventi_assegnati()`, funzione `SECURITY DEFINER` che restituisce solo gli eventi assegnati all'utente corrente e solo colonne non economiche (+ `cliente_nome`, `cliente_telefono`). Così anche chi usasse direttamente il proprio JWT su PostgREST non potrebbe leggere gli importi.
+- **tecnico**: legge solo gli eventi a cui è assegnato (via `eventi_staff`) e i relativi clienti (solo nome/telefono), può aggiornare solo `checklist.caricato` e `checklist.note` di quegli eventi (trigger `checklist_limita_tecnico`). Non vede `importo_chf`, `acconto_pagato`, `saldo_pagato` né `note_interne` (vista `eventi_tecnico` senza campi economici e senza note interne; vede invece `note_squadra`). Vede nome/telefono dei colleghi assegnati agli stessi eventi.
+  - Implementazione: il tecnico **non ha nessuna policy** su `eventi` e `clienti` (nemmeno in lettura). La vista `eventi_tecnico` (`security_invoker = true`) legge da `public.eventi_assegnati()`, funzione `SECURITY DEFINER` che restituisce solo gli eventi assegnati all'utente corrente e solo colonne non economiche, con `note_squadra` ma senza `note_interne` (+ `cliente_nome`, `cliente_telefono`; migrazione `0004`). Così anche chi usasse direttamente il proprio JWT su PostgREST non potrebbe leggere gli importi né le note interne. Seconda difesa in `eventi.js`: per il tecnico si chiedono colonne esplicite e si tolgono comunque importi e `note_interne` dalla risposta (`perTecnico()` in `_lib/schemas.js`).
 - **anon**: solo `INSERT` su `richieste_web` (nessuna lettura; privilegio di colonna solo sui campi del modulo, policy con `stato = 'nuova'`).
 - Funzioni helper `SECURITY DEFINER` con `search_path = public`: `is_admin()`, `is_staff()`, `is_assegnato(evento)`, `condivide_evento(staff)`.
-- Operazioni in più passi come funzioni SQL transazionali (`SECURITY INVOKER`, controllano `is_admin()`): `imposta_staff_evento(evento, jsonb)`, `converti_richiesta(richiesta, titolo)`.
+- Operazioni in più passi come funzioni SQL transazionali (`SECURITY INVOKER`, controllano `is_admin()`): `imposta_staff_evento(evento, jsonb)`, `converti_richiesta(richiesta, titolo)` (copia il messaggio del cliente in `note_interne`, solo admin), `pulisci_richieste_vecchie_admin()`.
+
+### Conservazione delle richieste (migrazione `0004`)
+- Le righe di `richieste_web` con `evento_id is null` e `created_at` più vecchio di **24 mesi** vengono cancellate (impegno dell'informativa privacy). Le richieste convertite in evento restano finché esiste l'evento; se l'evento viene eliminato, `evento_id` diventa nullo e la richiesta rientra nella pulizia.
+- Via principale: job `pg_cron` giornaliero `pulisci_richieste_vecchie` (03:17 UTC) che esegue `public.pulisci_richieste_vecchie()` — `SECURITY DEFINER`, `search_path = public`, nessun `EXECUTE` per `public`/`anon`/`authenticated` (solo il proprietario, che è anche l'utente del job).
+- Seconda via (pg_cron non disponibile o pulizia immediata): `POST /api/richieste/pulizia` (solo admin) → `rpc/pulisci_richieste_vecchie_admin()`, `SECURITY INVOKER`, controlla `is_admin()`, stesso criterio, la RLS dell'admin si applica normalmente.
+- Verifica del job: vedi `supabase/README.md` (`select * from cron.job`).
 - I privilegi di default di Supabase (ALL per `anon`/`authenticated`) vengono revocati e riassegnati al minimo.
 
 ## API (`/api/*` → `netlify/functions/*`)
@@ -79,6 +85,7 @@ Tutte rispondono JSON. Errori: `{ "error": "codice" }` con status HTTP corretto,
 | `GET /api/staff` | admin | elenco dipendenti |
 | `GET /api/richieste`, `PATCH /api/richieste/:id` | admin | richieste dal sito |
 | `POST /api/richieste/:id/converti` | admin | crea cliente + evento da una richiesta |
+| `POST /api/richieste/pulizia` | admin | cancella subito le richieste senza seguito più vecchie di 24 mesi |
 | `POST /api/richiesta` | pubblico | modulo del sito (honeypot, limiti di lunghezza, validazione) |
 
 ### Dettagli delle API (file in `netlify/functions/`)
@@ -87,7 +94,7 @@ Tutte rispondono JSON. Errori: `{ "error": "codice" }` con status HTTP corretto,
 | `POST /api/auth/login` | `auth-login.js` | `{email, password}` → `{id, nome, ruolo}` + cookie; `401 invalid_credentials`, `403 forbidden` (non dipendente) |
 | `POST /api/auth/logout` | `auth-logout.js` | → `{ok:true}`, cookie cancellati |
 | `GET /api/me` | `me.js` | → `{id, nome, ruolo}` |
-| `GET/POST /api/eventi`, `GET/PATCH/DELETE /api/eventi/:id` | `eventi.js` | elenco `{eventi:[…]}` (filtri `da`, `a` = `AAAA-MM-GG`, `stato`); dettaglio `{evento, staff:[{staff_id, nome, telefono, ruolo_evento}], checklist:[…]}`; crea/modifica `{evento}` |
+| `GET/POST /api/eventi`, `GET/PATCH/DELETE /api/eventi/:id` | `eventi.js` | elenco `{eventi:[…]}` (filtri `da`, `a` = `AAAA-MM-GG`, `stato`); dettaglio `{evento, staff:[{staff_id, nome, telefono, ruolo_evento}], checklist:[…]}`; crea/modifica `{evento}`. Note: admin legge e scrive `note_squadra` e `note_interne` (testo multiriga, max 10000 caratteri ciascuna); il tecnico riceve solo `note_squadra` (nel dettaglio, non nell'elenco) |
 | `PUT /api/eventi/:id/staff` | `eventi-staff.js` | `{assegnazioni:[{staff_id, ruolo_evento}]}` (sostituisce tutto) |
 | `POST /api/eventi/:id/checklist` | `eventi-checklist.js` | `{voce, quantita?, note?}` → `{voce}` |
 | `PATCH /api/checklist/:id` | `checklist.js` | `{caricato?, note?}` → `{voce}` |
@@ -95,6 +102,7 @@ Tutte rispondono JSON. Errori: `{ "error": "codice" }` con status HTTP corretto,
 | `GET /api/staff` | `staff.js` | `{staff:[{id, nome, ruolo, telefono, attivo}]}` |
 | `GET /api/richieste`, `PATCH /api/richieste/:id` | `richieste.js` | filtro `?stato=`; PATCH `{stato}` |
 | `POST /api/richieste/:id/converti` | `richieste-converti.js` | `{titolo?}` → `201 {cliente_id, evento_id, numero_ordine}` (riusa il cliente con la stessa e-mail; passa all'evento anche il `paese`, `CH` se assente) |
+| `POST /api/richieste/pulizia` | `richieste-pulizia.js` | nessun corpo → `{ok:true, cancellate}` (numero di righe cancellate); `richieste.js` esclude questo percorso con `excludedPath` |
 | `POST /api/richiesta` | `richiesta.js` | vedi sotto |
 
 Codici d'errore: `invalid_input` (400, con `field`), `invalid_json` (400), `unauthorized` (401), `invalid_credentials` (401), `forbidden` (403), `forbidden_origin` (403, controllo CSRF), `not_found` (404), `method_not_allowed` (405), `conflict` (409), `payload_too_large` (413), `unsupported_media_type` (415), `too_many_requests` (429), `server_error`/`server_misconfigured` (500), `upstream_error`/`upstream_unavailable` (502).
@@ -173,7 +181,7 @@ Schema: `supabase/migrations/0003_cms.sql`. Functions: `contenuti.js`, `testi.js
 **CSP dell'area riservata** (`netlify.toml`)
 - `connect-src 'self' https://*.supabase.co; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co`.
 - Il wildcard è temporaneo: appena il progetto è collegato va sostituito con l'host esatto (`https://<id>.supabase.co`, lo stesso di `SUPABASE_URL`), perché `netlify.toml` non può leggere variabili d'ambiente e il wildcard ammetterebbe qualsiasi progetto Supabase.
-- La CSP non è più nella regola `/*`: se più regole corrispondono a un percorso Netlify le applica tutte, e due CSP valgono come intersezione (l'area riservata non potrebbe contattare Supabase). La CSP pubblica è quindi assegnata a un elenco esplicito di percorsi pubblici (`/`, pagine `.html` alla radice, `/de/*`, `/fr/*`, `/en/*`, `/assets/*`, `robots.txt`, `sitemap.xml`): **ogni nuova pagina pubblica alla radice va aggiunta all'elenco**.
+- Questa CSP è assegnata a `/*` (sicura per default): nessun percorso esce mai senza CSP (404 per URL sconosciuti, rewrite 404 delle cartelle interne, pagine future dimenticate). `/area-riservata` e `/area-riservata/*` non hanno una CSP propria: ricevono quella di `/*` (più `X-Robots-Tag: noindex, nofollow` e `Cache-Control: no-store`). Vedi "Pubblicazione (`netlify.toml`)" per la CSP pubblica.
 
 **API del CMS: corpi e risposte**
 | Endpoint | Corpo / risposta |
@@ -203,6 +211,11 @@ Chiavi di testo **non** modificabili (`CHIAVI_ESCLUSE` in `_lib/cms.js`, uguale 
 
 ## Pubblicazione (`netlify.toml`)
 - `publish = "."`: per questo le cartelle interne (`/netlify/`, `/supabase/`, `/tests/`, `/docs/`, `/src/`, `/data/`, `/scripts/`, `/.claude/`) e i file di progetto (`CLAUDE.md`, `README.md`, `build.py`, `package.json`, `netlify.toml`, …) sono bloccati con un redirect forzato `404` verso `/404.html` (pagina da creare a cura del frontend). `/data/` contiene anche voci non approvate e non deve mai essere servita.
+- CSP in due livelli. Se più regole `[[headers]]` corrispondono a un percorso Netlify le applica tutte, e più CSP valgono come **intersezione**:
+  - `/*`: CSP dell'area riservata (`'self'` + host Supabase in `connect-src`/`img-src`/`media-src`, `blob:` in `img-src`/`media-src`), insieme agli altri header di sicurezza (HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, COOP). Così ogni percorso ha sempre una CSP.
+  - percorsi pubblici elencati (`/`, pagine `.html` alla radice, `/de/*`, `/fr/*`, `/en/*`, `/assets/*`, `robots.txt`, `sitemap.xml`): in più la CSP pubblica stretta (solo `'self'`); l'intersezione con quella di `/*` è esattamente la CSP pubblica. Una nuova pagina pubblica alla radice non elencata ha comunque la CSP di `/*`, ma va aggiunta all'elenco per avere quella stretta. L'area riservata non va mai elencata (non potrebbe contattare Supabase).
+  - Il wildcard `https://*.supabase.co` va sostituito con l'host esatto del progetto appena collegato.
+  - Il collaudo `tests/e2e/run.mjs` calcola per ogni documento la CSP effettiva (intersezione delle regole che si applicano al percorso) e verifica che nessun percorso resti senza CSP.
 - CSP senza `'unsafe-inline'` per script e stili: nessuno script inline (JSON-LD `type="application/ld+json"` è ammesso perché non viene eseguito), nessun attributo `style=`. Caratteri ospitati in locale (`/assets/fonts/`): `style-src 'self'; font-src 'self'`, nessun dominio esterno.
 - Cache: immagini/video 1 anno; CSS/JS 1 giorno (i nomi dei file non hanno hash); `/api/*` e `/area-riservata/*` `no-store` + `noindex`.
 - Test: `npm test` = `node --test tests/*/*.test.js` (da Node 21 `node --test` non accetta più una cartella come argomento).
