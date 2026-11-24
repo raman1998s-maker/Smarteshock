@@ -36,4 +36,40 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://meekondisplay.ch/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://meekondisplay.ch/"/>
   </url>
+  <url>
+    <loc>https://meekondisplay.ch/privacy.html</loc>
+    <lastmod>2026-11-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="it" href="https://meekondisplay.ch/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://meekondisplay.ch/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://meekondisplay.ch/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://meekondisplay.ch/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://meekondisplay.ch/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://meekondisplay.ch/de/privacy.html</loc>
+    <lastmod>2026-11-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="it" href="https://meekondisplay.ch/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://meekondisplay.ch/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://meekondisplay.ch/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://meekondisplay.ch/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://meekondisplay.ch/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://meekondisplay.ch/fr/privacy.html</loc>
+    <lastmod>2026-11-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="it" href="https://meekondisplay.ch/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://meekondisplay.ch/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://meekondisplay.ch/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://meekondisplay.ch/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://meekondisplay.ch/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://meekondisplay.ch/en/privacy.html</loc>
+    <lastmod>2026-11-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="it" href="https://meekondisplay.ch/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://meekondisplay.ch/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://meekondisplay.ch/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://meekondisplay.ch/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://meekondisplay.ch/privacy.html"/>
+  </url>
 </urlset>

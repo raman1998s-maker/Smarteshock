@@ -123,8 +123,132 @@
     "types": ["Matrimonio", "Compleanno / festa privata", "Festa tradizionale", "Evento aziendale", "WEF Davos", "Evento da palco", "Altro"],
     "chips": ["Schermi LED", "TV / beamer", "Luci", "Strutture", "Audio", "Impianto DJ", "Riprese live", "Streaming", "Effetti spark / nebbia"]
   },
-  "privacy": { "note": "Usiamo i vostri dati solo per rispondere alla richiesta, nel rispetto della legge svizzera sulla protezione dei dati (LPD)." },
-  "footer": { "claim": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia." },
+  "privacy": { "note": "Usiamo i vostri dati per rispondere alla richiesta e, se lo desiderate, per preparare l'offerta e organizzare l'evento: mai venduti né usati per pubblicità.", "link": "Leggi l'informativa privacy" },
+  "footer": { "claim": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia.", "privacy": "Privacy" },
   "thanks": { "title": "Grazie, a presto!", "eyebrow": "Richiesta inviata", "text": "Abbiamo ricevuto la vostra richiesta: vi ricontatteremo al più presto con una proposta.", "back": "Torna al sito" },
-  "notfound": { "title": "Pagina non trovata", "text": "La pagina che cercate non esiste o è stata spostata.", "back": "Torna al sito" }
+  "notfound": { "title": "Pagina non trovata", "text": "La pagina che cercate non esiste o è stata spostata.", "back": "Torna al sito" },
+  "privacy_page": {
+    "meta_title": "Informativa privacy — Meekon Displays",
+    "meta_description": "Come Meekon Displays tratta i dati personali raccolti tramite il sito e i contatti diretti, secondo la legge svizzera sulla protezione dei dati (LPD) e il GDPR.",
+    "eyebrow": "Protezione dei dati",
+    "title": "Informativa privacy",
+    "updated": "Ultimo aggiornamento: 24 novembre 2026",
+    "intro": "Questa informativa spiega quali dati personali raccogliamo, perché lo facciamo e quali diritti avete. Vale per questo sito e per i contatti diretti con noi. Si basa sulla legge federale svizzera sulla protezione dei dati (LPD) e tiene conto del Regolamento generale sulla protezione dei dati dell'UE (GDPR), perché lavoriamo anche con clienti in Italia, Germania e Francia.",
+    "sections": [
+      {
+        "h": "1. Chi è responsabile",
+        "p": [
+          "Titolare del trattamento: Meekon Displays, Arul Mayuran.",
+          "Per ogni domanda sulla protezione dei dati scriveteci a meekon.display@gmail.com.",
+          "Su richiesta via e-mail vi comunichiamo anche il nostro indirizzo postale."
+        ]
+      },
+      {
+        "h": "2. Quali dati raccogliamo",
+        "p": [
+          "Modulo di richiesta: nome, e-mail, telefono, tipo e data dell'evento, località, paese, numero di ospiti, servizi desiderati, messaggio e lingua.",
+          "Nome ed e-mail sono necessari per rispondervi. Gli altri campi sono facoltativi, ma ci aiutano a preparare una proposta adatta.",
+          "Contatti diretti: se ci scrivete o ci chiamate per telefono, WhatsApp, e-mail o Instagram, trattiamo i dati che ci inviate (per esempio nome, numero, indirizzo e-mail e contenuto dei messaggi).",
+          "Dati tecnici: quando visitate il sito, il fornitore di hosting registra dati tecnici come l'indirizzo IP e la data e l'ora dell'accesso."
+        ]
+      },
+      {
+        "h": "3. Per quali scopi",
+        "p": [
+          "Usiamo i vostri dati per:",
+          "rispondere alla vostra richiesta;",
+          "preparare un'offerta;",
+          "organizzare ed eseguire l'evento;",
+          "tenere la contabilità e rispettare gli obblighi di legge;",
+          "proteggere il sito da abusi e attacchi (dati tecnici).",
+          "Non vendiamo i vostri dati e non li usiamo per pubblicità."
+        ]
+      },
+      {
+        "h": "4. Base giuridica",
+        "p": [
+          "Secondo il GDPR trattiamo i dati sulle seguenti basi: misure precontrattuali ed esecuzione del contratto (art. 6 cpv. 1 lett. b), per richieste, offerte ed eventi; obbligo legale (art. 6 cpv. 1 lett. c), per la contabilità; interesse legittimo (art. 6 cpv. 1 lett. f), per la sicurezza del sito.",
+          "In Svizzera trattiamo i dati nel rispetto dei principi della LPD: in modo lecito, trasparente, proporzionato e solo per gli scopi indicati qui."
+        ]
+      },
+      {
+        "h": "5. Telefono, WhatsApp, e-mail e Instagram",
+        "p": [
+          "Se ci contattate tramite WhatsApp o Instagram (servizi di Meta) o tramite la nostra e-mail su Gmail (servizio di Google), valgono anche le condizioni e le informative privacy di questi fornitori.",
+          "Questi fornitori possono trattare i dati anche al di fuori della Svizzera e dell'UE.",
+          "Vi consigliamo di non inviare per questi canali dati particolarmente sensibili."
+        ]
+      },
+      {
+        "h": "6. Fornitori che trattano dati per noi",
+        "p": [
+          "Ci affidiamo a fornitori esterni che trattano i dati solo per nostro conto e secondo le nostre istruzioni:",
+          "Netlify: hosting del sito e delle funzioni che ricevono il modulo. Sede negli Stati Uniti.",
+          "Supabase: database delle richieste e dell'area riservata. Server nell'UE."
+        ]
+      },
+      {
+        "h": "7. Trasferimento di dati all'estero",
+        "p": [
+          "I dati del database restano su server nell'UE, che la Svizzera riconosce come area con una protezione dei dati adeguata.",
+          "Netlify ha sede negli Stati Uniti. Per eventuali trasferimenti verso gli Stati Uniti ci basiamo su garanzie adeguate, come le clausole contrattuali standard e, se applicabile, il Swiss-US Data Privacy Framework o l'EU-US Data Privacy Framework.",
+          "Su richiesta vi diamo maggiori informazioni sulle garanzie utilizzate."
+        ]
+      },
+      {
+        "h": "8. Per quanto tempo conserviamo i dati",
+        "p": [
+          "Le richieste senza seguito vengono cancellate al più tardi dopo 24 mesi.",
+          "I dati di offerte e contratti vengono conservati per 10 anni, come previsto dagli obblighi contabili (Codice delle obbligazioni svizzero, art. 958f).",
+          "I log tecnici vengono conservati dal fornitore di hosting solo per il tempo necessario alla sicurezza."
+        ]
+      },
+      {
+        "h": "9. Cookie e memoria del browser",
+        "p": [
+          "Il sito pubblico non usa cookie di profilazione, statistiche, pubblicità o strumenti di tracciamento.",
+          "I caratteri sono ospitati sul sito stesso: la vostra visita non genera richieste a Google o ad altri servizi esterni.",
+          "Il sito salva nel vostro browser solo la lingua scelta (memoria locale). Potete cancellarla in qualsiasi momento dalle impostazioni del browser.",
+          "L'area riservata ai dipendenti usa solo cookie tecnici necessari per il login, che scadono al logout o dopo 7 giorni senza utilizzo."
+        ]
+      },
+      {
+        "h": "10. Sicurezza",
+        "p": [
+          "Il sito funziona solo con connessione cifrata (HTTPS).",
+          "L'accesso ai dati delle richieste è riservato a chi ne ha bisogno per il proprio lavoro e richiede un login.",
+          "Non prendiamo decisioni basate unicamente su un trattamento automatizzato e non creiamo profili."
+        ]
+      },
+      {
+        "h": "11. I vostri diritti",
+        "p": [
+          "Avete il diritto di:",
+          "ottenere informazioni e accedere ai dati che vi riguardano;",
+          "far correggere dati inesatti;",
+          "chiedere la cancellazione dei dati;",
+          "opporvi al trattamento;",
+          "ricevere i dati che ci avete fornito in un formato elettronico di uso comune (portabilità);",
+          "revocare in qualsiasi momento un consenso dato, senza effetto sui trattamenti già avvenuti.",
+          "Per esercitare i vostri diritti scriveteci a meekon.display@gmail.com. Per proteggere i vostri dati possiamo chiedervi di confermare la vostra identità. Restano riservati gli obblighi di conservazione previsti dalla legge."
+        ]
+      },
+      {
+        "h": "12. Reclami",
+        "p": [
+          "Se ritenete che trattiamo i vostri dati in modo non corretto, potete presentare un reclamo all'Incaricato federale della protezione dei dati e della trasparenza (IFPDT) in Svizzera.",
+          "Se vivete in un paese dell'UE, potete rivolgervi anche all'autorità di protezione dei dati del vostro paese.",
+          "Ci farebbe piacere, però, poter chiarire prima la questione direttamente con voi."
+        ]
+      },
+      {
+        "h": "13. Modifiche",
+        "p": [
+          "Possiamo aggiornare questa informativa, per esempio se cambiano i nostri servizi o la legge.",
+          "Vale sempre la versione pubblicata su questa pagina, con la data dell'ultimo aggiornamento."
+        ]
+      }
+    ],
+    "back": "Torna al sito"
+  }
 }

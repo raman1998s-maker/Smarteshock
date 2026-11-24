@@ -123,8 +123,132 @@
     "types": ["Wedding", "Birthday / private party", "Traditional celebration", "Corporate event", "WEF Davos", "Stage event", "Other"],
     "chips": ["LED screens", "TV / projector", "Lighting", "Truss", "Sound", "DJ system", "Live camera", "Streaming", "Sparks / fog"]
   },
-  "privacy": { "note": "We use your details solely to respond to your request, in line with the Swiss Federal Act on Data Protection (FADP)." },
-  "footer": { "claim": "Event technology across Switzerland and, on request, in Italy, Germany and France." },
+  "privacy": { "note": "We use your details to respond to your request and, if you wish, to prepare a quote and organise your event; they are never sold or used for advertising.", "link": "Read the privacy notice" },
+  "footer": { "claim": "Event technology across Switzerland and, on request, in Italy, Germany and France.", "privacy": "Privacy" },
   "thanks": { "title": "Thank you!", "eyebrow": "Request sent", "text": "We have received your request and will be in touch shortly with a proposal.", "back": "Back to the website" },
-  "notfound": { "title": "Page not found", "text": "The page you are looking for does not exist or has been moved.", "back": "Back to the website" }
+  "notfound": { "title": "Page not found", "text": "The page you are looking for does not exist or has been moved.", "back": "Back to the website" },
+  "privacy_page": {
+    "meta_title": "Privacy notice — Meekon Displays",
+    "meta_description": "How Meekon Displays handles personal data collected through the website and direct contact, in line with the Swiss Federal Act on Data Protection (FADP) and the GDPR.",
+    "eyebrow": "Data protection",
+    "title": "Privacy notice",
+    "updated": "Last updated: 24 November 2026",
+    "intro": "This notice explains what personal data we collect, why we do so and what rights you have. It applies to this website and to direct contact with us. It is based on the Swiss Federal Act on Data Protection (FADP) and takes the EU General Data Protection Regulation (GDPR) into account, as we also work with clients in Italy, Germany and France.",
+    "sections": [
+      {
+        "h": "1. Who is responsible",
+        "p": [
+          "Data controller: Meekon Displays, Arul Mayuran.",
+          "For any question about data protection, please write to meekon.display@gmail.com.",
+          "On request by e-mail, we will also provide our postal address."
+        ]
+      },
+      {
+        "h": "2. What data we collect",
+        "p": [
+          "Enquiry form: name, e-mail, phone, type and date of the event, location, country, number of guests, services required, message and language.",
+          "We need your name and e-mail to reply. The other fields are optional, but help us prepare a suitable proposal.",
+          "Direct contact: if you contact us by phone, WhatsApp, e-mail or Instagram, we process the data you send us (for example your name, number, e-mail address and the content of your messages).",
+          "Technical data: when you visit the website, our hosting provider records technical data such as your IP address and the date and time of access."
+        ]
+      },
+      {
+        "h": "3. Why we use your data",
+        "p": [
+          "We use your data to:",
+          "reply to your enquiry;",
+          "prepare a quote;",
+          "organise and deliver the event;",
+          "keep our accounts and meet our legal obligations;",
+          "protect the website against misuse and attacks (technical data).",
+          "We do not sell your data or use it for advertising."
+        ]
+      },
+      {
+        "h": "4. Legal basis",
+        "p": [
+          "Under the GDPR, we process data on the following bases: pre-contractual steps and performance of a contract (Art. 6(1)(b)) for enquiries, quotes and events; legal obligation (Art. 6(1)(c)) for accounting; legitimate interests (Art. 6(1)(f)) for website security.",
+          "In Switzerland, we process data in line with the principles of the FADP: lawfully, transparently, proportionately and only for the purposes set out here."
+        ]
+      },
+      {
+        "h": "5. Phone, WhatsApp, e-mail and Instagram",
+        "p": [
+          "If you contact us via WhatsApp or Instagram (Meta services) or via our Gmail address (a Google service), the terms and privacy policies of those providers also apply.",
+          "These providers may process data outside Switzerland and the EU.",
+          "We recommend that you do not send particularly sensitive data through these channels."
+        ]
+      },
+      {
+        "h": "6. Providers that process data for us",
+        "p": [
+          "We use external providers that process data only on our behalf and according to our instructions:",
+          "Netlify: hosting of the website and of the functions that receive the form. Based in the United States.",
+          "Supabase: database for enquiries and the staff area. Servers in the EU."
+        ]
+      },
+      {
+        "h": "7. Transfers abroad",
+        "p": [
+          "Database records remain on servers in the EU, which Switzerland recognises as providing adequate data protection.",
+          "Netlify is based in the United States. For any transfers to the United States, we rely on appropriate safeguards such as standard contractual clauses and, where applicable, the Swiss-US Data Privacy Framework or the EU-US Data Privacy Framework.",
+          "On request, we are happy to give you more information about these safeguards."
+        ]
+      },
+      {
+        "h": "8. How long we keep data",
+        "p": [
+          "Enquiries that do not lead to a booking are deleted after 24 months at the latest.",
+          "Data relating to quotes and contracts is kept for 10 years to meet accounting obligations (Swiss Code of Obligations, Art. 958f).",
+          "Technical logs are kept by the hosting provider only as long as needed for security."
+        ]
+      },
+      {
+        "h": "9. Cookies and browser storage",
+        "p": [
+          "The public website uses no profiling cookies, no analytics, no advertising and no tracking tools.",
+          "Fonts are hosted on our own website: your visit sends no requests to Google or other external services.",
+          "The website stores only your chosen language in your browser (local storage). You can delete it at any time in your browser settings.",
+          "The staff area uses only technical cookies required for login, which expire when you log out or after 7 days without use."
+        ]
+      },
+      {
+        "h": "10. Security",
+        "p": [
+          "The website is only available over an encrypted connection (HTTPS).",
+          "Access to enquiry data is limited to people who need it for their work and requires a login.",
+          "We do not make decisions based solely on automated processing and we do not create profiles."
+        ]
+      },
+      {
+        "h": "11. Your rights",
+        "p": [
+          "You have the right to:",
+          "obtain information about and access to your data;",
+          "have inaccurate data corrected;",
+          "request that your data be deleted;",
+          "object to processing;",
+          "receive the data you have given us in a common electronic format (portability);",
+          "withdraw consent at any time, without affecting processing that has already taken place.",
+          "To exercise your rights, please write to meekon.display@gmail.com. To protect your data, we may ask you to confirm your identity. Statutory retention obligations remain unaffected."
+        ]
+      },
+      {
+        "h": "12. Complaints",
+        "p": [
+          "If you believe we are not handling your data correctly, you can lodge a complaint with the Federal Data Protection and Information Commissioner (FDPIC) in Switzerland.",
+          "If you live in an EU country, you can also contact the data protection authority in your country.",
+          "We would, however, welcome the chance to resolve the matter directly with you first."
+        ]
+      },
+      {
+        "h": "13. Changes",
+        "p": [
+          "We may update this notice, for example if our services or the law change.",
+          "The version published on this page, with the date of the last update, always applies."
+        ]
+      }
+    ],
+    "back": "Back to the website"
+  }
 }

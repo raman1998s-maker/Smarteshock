@@ -689,6 +689,14 @@ p { margin: 0; text-wrap: pretty; }
 .form__chips input:checked + span { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-text); }
 .form__chips input:focus-visible + span { outline: 1px solid var(--color-focus); outline-offset: 2px; }
 .form__note { font-size: var(--fs-2xs); line-height: 1.6; color: var(--color-text-3); text-align: center; }
+/* link nel testo: ciano, sottolineatura sottile */
+.form__note a, .prose__section a {
+  color: var(--color-accent);
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em;
+  transition: color var(--dur-1) var(--ease);
+}
+.form__note a:hover, .prose__section a:hover { color: var(--color-text); }
+.form__note a:focus-visible, .prose__section a:focus-visible { outline-offset: 2px; }
 .form__error { font-size: var(--fs-sm); color: var(--c-danger); }
 .form__ok { font-size: var(--fs-sm); color: var(--c-success); }
 
@@ -739,6 +747,36 @@ p { margin: 0; text-wrap: pretty; }
 .langhint button:hover { color: var(--color-text); }
 @media (max-width: 720px) { .langhint { right: calc(var(--gutter) + 56px + var(--sp-3)); flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); } }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+
+/* ---------- Testo lungo (privacy, pagine legali) ---------- */
+.privacy-page main.section { padding-top: calc(var(--nav-h) + var(--sp-8)); }
+.prose { max-width: 44rem; margin-inline: auto; }
+.prose__intro, .prose__section p { max-width: 36em; } /* ~65-70 caratteri per riga */
+.prose .head--left { margin-bottom: var(--sp-7); }
+.prose h1 { font-size: var(--fs-2xl); font-weight: 400; }
+.prose__back { margin-bottom: var(--sp-6); }
+.prose__back a { color: var(--color-accent); flex-direction: row-reverse; }
+.prose__back a:hover { color: var(--color-text); }
+.prose__intro { font-size: var(--fs-md); line-height: var(--lh-body); color: var(--color-text); }
+
+/* indice: due colonne su desktop, filetti sottili, nessun pallino */
+.prose__toc { margin: var(--sp-7) 0 var(--sp-8); padding: var(--sp-4) 0; border-block: var(--border); }
+.prose__toc ul { list-style: none; margin: 0; padding: 0; }
+.prose__toc li { break-inside: avoid; }
+.prose__toc a {
+  display: flex; align-items: center; min-height: var(--tap); padding: var(--sp-1) 0;
+  font-size: var(--fs-sm); line-height: var(--lh-snug); color: var(--color-text-2);
+  text-decoration: none; transition: color var(--dur-1) var(--ease);
+}
+.prose__toc a:hover { color: var(--color-accent); }
+.prose__toc a:focus-visible { color: var(--color-text); outline-offset: 2px; }
+@media (min-width: 760px) { .prose__toc ul { columns: 2; column-gap: var(--sp-7); } }
+
+.prose__section { padding-top: var(--sp-7); scroll-margin-top: var(--sp-4); } /* si somma a scroll-padding-top (header fisso) */
+.prose__section + .prose__section { margin-top: var(--sp-7); border-top: var(--border); }
+.prose__section h2 { font-size: var(--fs-lg); font-weight: 500; line-height: var(--lh-snug); margin-bottom: var(--sp-4); }
+.prose__section p { color: var(--color-text-2); line-height: var(--lh-body); }
+.prose__section p + p { margin-top: var(--sp-4); }
 
 /* ---------- Pagina di ringraziamento ---------- */
 .thanks { min-height: 100svh; display: grid; place-items: center; text-align: center; padding: 40px var(--gutter); }

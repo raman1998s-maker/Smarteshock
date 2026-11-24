@@ -123,8 +123,132 @@
     "types": ["Hochzeit", "Geburtstag / Privatfest", "Traditionelles Fest", "Firmenanlass", "WEF Davos", "Bühnenevent", "Anderes"],
     "chips": ["LED-Wände", "TV / Beamer", "Licht", "Traversen", "Ton", "DJ-Anlage", "Live-Kamera", "Streaming", "Kaltfunken / Nebel"]
   },
-  "privacy": { "note": "Wir verwenden Ihre Daten ausschliesslich zur Beantwortung Ihrer Anfrage, gemäss dem Schweizer Datenschutzgesetz (DSG)." },
-  "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich." },
+  "privacy": { "note": "Wir verwenden Ihre Daten, um Ihre Anfrage zu beantworten und, wenn Sie es wünschen, die Offerte vorzubereiten und den Anlass zu organisieren; wir verkaufen sie nie und nutzen sie nicht für Werbung.", "link": "Datenschutzerklärung lesen" },
+  "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich.", "privacy": "Datenschutz" },
   "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.", "back": "Zurück zur Website" },
-  "notfound": { "title": "Seite nicht gefunden", "text": "Die gesuchte Seite existiert nicht oder wurde verschoben.", "back": "Zurück zur Website" }
+  "notfound": { "title": "Seite nicht gefunden", "text": "Die gesuchte Seite existiert nicht oder wurde verschoben.", "back": "Zurück zur Website" },
+  "privacy_page": {
+    "meta_title": "Datenschutzerklärung — Meekon Displays",
+    "meta_description": "Wie Meekon Displays Personendaten aus der Website und aus direkten Kontakten bearbeitet, gemäss Schweizer Datenschutzgesetz (DSG) und DSGVO.",
+    "eyebrow": "Datenschutz",
+    "title": "Datenschutzerklärung",
+    "updated": "Letzte Aktualisierung: 24. November 2026",
+    "intro": "Diese Datenschutzerklärung zeigt, welche Personendaten wir bearbeiten, wozu wir das tun und welche Rechte Sie haben. Sie gilt für diese Website und für direkte Kontakte mit uns. Sie stützt sich auf das Schweizer Bundesgesetz über den Datenschutz (DSG) und berücksichtigt die Datenschutz-Grundverordnung der EU (DSGVO), da wir auch für Kundinnen und Kunden in Italien, Deutschland und Frankreich arbeiten.",
+    "sections": [
+      {
+        "h": "1. Verantwortliche Stelle",
+        "p": [
+          "Verantwortlich für die Datenbearbeitung: Meekon Displays, Arul Mayuran.",
+          "Für alle Fragen zum Datenschutz schreiben Sie uns an meekon.display@gmail.com.",
+          "Unsere Postadresse teilen wir Ihnen auf Anfrage per E-Mail mit."
+        ]
+      },
+      {
+        "h": "2. Welche Daten wir bearbeiten",
+        "p": [
+          "Anfrageformular: Name, E-Mail, Telefon, Art und Datum des Anlasses, Ort, Land, Anzahl Gäste, gewünschte Leistungen, Nachricht und Sprache.",
+          "Name und E-Mail brauchen wir, um Ihnen zu antworten. Die übrigen Felder sind freiwillig, helfen uns aber, eine passende Offerte vorzubereiten.",
+          "Direkte Kontakte: Wenn Sie uns per Telefon, WhatsApp, E-Mail oder Instagram kontaktieren, bearbeiten wir die Daten, die Sie uns senden (zum Beispiel Name, Nummer, E-Mail-Adresse und Inhalt der Nachrichten).",
+          "Technische Daten: Beim Besuch der Website speichert der Hosting-Anbieter technische Daten wie die IP-Adresse sowie Datum und Uhrzeit des Zugriffs."
+        ]
+      },
+      {
+        "h": "3. Wozu wir die Daten verwenden",
+        "p": [
+          "Wir verwenden Ihre Daten, um:",
+          "Ihre Anfrage zu beantworten;",
+          "eine Offerte vorzubereiten;",
+          "den Anlass zu organisieren und durchzuführen;",
+          "die Buchhaltung zu führen und gesetzliche Pflichten zu erfüllen;",
+          "die Website vor Missbrauch und Angriffen zu schützen (technische Daten).",
+          "Wir verkaufen Ihre Daten nicht und verwenden sie nicht für Werbung."
+        ]
+      },
+      {
+        "h": "4. Rechtsgrundlage",
+        "p": [
+          "Nach der DSGVO bearbeiten wir die Daten auf folgenden Grundlagen: vorvertragliche Massnahmen und Vertragserfüllung (Art. 6 Abs. 1 lit. b) für Anfragen, Offerten und Anlässe; rechtliche Verpflichtung (Art. 6 Abs. 1 lit. c) für die Buchhaltung; berechtigtes Interesse (Art. 6 Abs. 1 lit. f) für die Sicherheit der Website.",
+          "In der Schweiz bearbeiten wir die Daten nach den Grundsätzen des DSG: rechtmässig, transparent, verhältnismässig und nur für die hier genannten Zwecke."
+        ]
+      },
+      {
+        "h": "5. Telefon, WhatsApp, E-Mail und Instagram",
+        "p": [
+          "Wenn Sie uns über WhatsApp oder Instagram (Dienste von Meta) oder über unsere Gmail-Adresse (Dienst von Google) kontaktieren, gelten zusätzlich die Bedingungen und Datenschutzerklärungen dieser Anbieter.",
+          "Diese Anbieter können Daten auch ausserhalb der Schweiz und der EU bearbeiten.",
+          "Wir empfehlen, über diese Kanäle keine besonders schützenswerten Daten zu senden."
+        ]
+      },
+      {
+        "h": "6. Dienstleister, die Daten für uns bearbeiten",
+        "p": [
+          "Wir arbeiten mit externen Dienstleistern, die Daten nur in unserem Auftrag und nach unseren Weisungen bearbeiten:",
+          "Netlify: Hosting der Website und der Funktionen, die das Formular empfangen. Sitz in den USA.",
+          "Supabase: Datenbank für Anfragen und den internen Bereich. Server in der EU."
+        ]
+      },
+      {
+        "h": "7. Datenbekanntgabe ins Ausland",
+        "p": [
+          "Die Daten der Datenbank bleiben auf Servern in der EU, deren Datenschutz die Schweiz als angemessen anerkennt.",
+          "Netlify hat seinen Sitz in den USA. Für allfällige Übermittlungen in die USA stützen wir uns auf geeignete Garantien wie die Standardvertragsklauseln und, soweit anwendbar, das Swiss-US Data Privacy Framework oder das EU-US Data Privacy Framework.",
+          "Auf Anfrage geben wir Ihnen gerne weitere Auskünfte zu diesen Garantien."
+        ]
+      },
+      {
+        "h": "8. Wie lange wir Daten aufbewahren",
+        "p": [
+          "Anfragen ohne Folgeauftrag löschen wir spätestens nach 24 Monaten.",
+          "Daten zu Offerten und Verträgen bewahren wir aufgrund der Buchführungspflicht 10 Jahre auf (Schweizerisches Obligationenrecht, Art. 958f).",
+          "Technische Protokolle bewahrt der Hosting-Anbieter nur so lange auf, wie es für die Sicherheit nötig ist."
+        ]
+      },
+      {
+        "h": "9. Cookies und Browserspeicher",
+        "p": [
+          "Die öffentliche Website verwendet keine Profiling-Cookies, keine Statistik, keine Werbung und keine Tracking-Werkzeuge.",
+          "Die Schriften liegen auf unserer eigenen Website: Ihr Besuch löst keine Anfragen an Google oder andere externe Dienste aus.",
+          "Die Website speichert in Ihrem Browser nur die gewählte Sprache (lokaler Speicher). Sie können diese Angabe jederzeit in den Browsereinstellungen löschen.",
+          "Der interne Bereich für Mitarbeitende verwendet nur technische Cookies, die für das Login nötig sind; sie laufen beim Abmelden oder nach 7 Tagen ohne Nutzung ab."
+        ]
+      },
+      {
+        "h": "10. Sicherheit",
+        "p": [
+          "Die Website ist nur über eine verschlüsselte Verbindung (HTTPS) erreichbar.",
+          "Zugriff auf die Anfragedaten haben nur Personen, die sie für ihre Arbeit brauchen, und nur mit Login.",
+          "Wir treffen keine Entscheidungen, die ausschliesslich auf einer automatisierten Bearbeitung beruhen, und erstellen keine Profile."
+        ]
+      },
+      {
+        "h": "11. Ihre Rechte",
+        "p": [
+          "Sie haben das Recht:",
+          "Auskunft über Ihre Daten zu erhalten;",
+          "unrichtige Daten berichtigen zu lassen;",
+          "die Löschung Ihrer Daten zu verlangen;",
+          "der Bearbeitung zu widersprechen;",
+          "die Daten, die Sie uns gegeben haben, in einem gängigen elektronischen Format zu erhalten (Datenübertragbarkeit);",
+          "eine erteilte Einwilligung jederzeit zu widerrufen, ohne Wirkung auf die bisherige Bearbeitung.",
+          "Um Ihre Rechte auszuüben, schreiben Sie uns an meekon.display@gmail.com. Zum Schutz Ihrer Daten können wir Sie bitten, Ihre Identität zu bestätigen. Gesetzliche Aufbewahrungspflichten bleiben vorbehalten."
+        ]
+      },
+      {
+        "h": "12. Beschwerden",
+        "p": [
+          "Wenn Sie der Meinung sind, dass wir Ihre Daten nicht korrekt bearbeiten, können Sie sich beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB) in der Schweiz beschweren.",
+          "Wenn Sie in einem EU-Land wohnen, können Sie sich auch an die Datenschutzbehörde Ihres Landes wenden.",
+          "Wir würden uns aber freuen, die Angelegenheit zuerst direkt mit Ihnen zu klären."
+        ]
+      },
+      {
+        "h": "13. Änderungen",
+        "p": [
+          "Wir können diese Datenschutzerklärung anpassen, zum Beispiel wenn sich unsere Leistungen oder das Gesetz ändern.",
+          "Es gilt jeweils die auf dieser Seite veröffentlichte Fassung mit dem Datum der letzten Aktualisierung."
+        ]
+      }
+    ],
+    "back": "Zurück zur Website"
+  }
 }

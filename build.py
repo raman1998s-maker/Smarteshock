@@ -4,11 +4,11 @@
 Uso:  python3 build.py
 
 Legge  src/template.html,  src/i18n/<lingua>.json  e  data/*.json  e scrive:
-  index.html, grazie.html            (italiano, lingua principale)
-  de/index.html, de/grazie.html      (tedesco)
+  index.html, grazie.html, privacy.html          (italiano, lingua principale)
+  de/index.html, de/grazie.html, de/privacy.html (tedesco)
   fr/..., en/...                     (francese, inglese)
   404.html                           (pagina "non trovata", noindex)
-  sitemap.xml                        (4 lingue con hreflang)
+  sitemap.xml                        (home e privacy nelle 4 lingue, con hreflang)
 
 I testi si modificano SOLO nei file JSON; poi si rilancia questo script.
 Dei file in data/ si pubblicano solo le voci con "approvato": true.
@@ -296,6 +296,7 @@ def build_context(lang, t, all_t, data):
         "lang": lang,
         "path": path,
         "thanks": f"{path}grazie.html",
+        "privacy_href": f"{path}{PRIVACY}",
         "jsonld": jsonld(lang, t),
         "hreflang": "\n".join(
             [f'  <link rel="alternate" hreflang="{l}" href="{SITE}{base(l)}">' for l in LANGS]
@@ -404,13 +405,133 @@ NOT_FOUND = """<!doctype html>
 """
 
 
-def sitemap(today):
-    alts = "".join(
-        f'\n    <xhtml:link rel="alternate" hreflang="{l}" href="{SITE}{base(l)}"/>' for l in LANGS
-    ) + f'\n    <xhtml:link rel="alternate" hreflang="x-default" href="{SITE}/"/>'
-    urls = "".join(
-        f"\n  <url>\n    <loc>{SITE}{base(l)}</loc>\n    <lastmod>{today}</lastmod>{alts}\n  </url>" for l in LANGS
+# ---------------------------------------------------------------- informativa privacy
+
+PRIVACY = "privacy.html"
+
+PRIVACY_PAGE = """<!doctype html>
+<html lang="{lang}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{meta_title}</title>
+  <meta name="description" content="{meta_description}">
+  <link rel="canonical" href="{canonical}">
+{hreflang}
+  <meta name="theme-color" content="#08090B">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="{locale}">
+  <meta property="og:title" content="{meta_title}">
+  <meta property="og:description" content="{meta_description}">
+  <meta property="og:url" content="{canonical}">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="privacy-page">
+  <a class="skip" href="#main">{skip}</a>
+
+  <header class="nav is-scrolled">
+    <div class="nav__inner wrap">
+      <a class="nav__brand" href="{home}" aria-label="Meekon Displays">
+        <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246">
+      </a>
+      <nav class="lang" aria-label="{lang_label}">{langlinks}</nav>
+    </div>
+  </header>
+
+  <main id="main" class="section">
+    <div class="wrap wrap--narrow">
+      <article class="prose">
+        <p class="prose__back"><a class="link-arrow" href="{home}">{back}</a></p>
+        <header class="head head--left">
+          <p class="eyebrow">{eyebrow}</p>
+          <h1>{title}</h1>
+          <p class="head__lead">{updated}</p>
+        </header>
+        <p class="prose__intro">{intro}</p>
+        <nav class="prose__toc" aria-label="{title}">
+          <ul>{toc}</ul>
+        </nav>
+{sections}
+        <p class="prose__back"><a class="link-arrow" href="{home}">{back}</a></p>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246" loading="lazy">
+      <p class="footer__claim">{claim}</p>
+      <nav class="lang lang--footer" aria-label="{lang_label}">{langlinks}</nav>
+      <p class="footer__small">© {year} Meekon Displays · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
+    </div>
+  </footer>
+</body>
+</html>
+"""
+
+
+def privacy_page(lang, t, all_t, year):
+    pp = t["privacy_page"]
+    sections = pp["sections"]
+    if not isinstance(sections, list) or not sections:
+        raise SystemExit(f"[{lang}] privacy_page.sections deve essere un elenco non vuoto")
+    toc, body = [], []
+    for i, sec in enumerate(sections, 1):
+        anchor = f"s{i}"
+        toc.append(f'<li><a href="#{anchor}">{E(sec["h"])}</a></li>')
+        paras = "".join(f"\n          <p>{E(p)}</p>" for p in sec["p"])
+        body.append(
+            f'        <section class="prose__section" id="{anchor}" aria-labelledby="{anchor}-h">\n'
+            f'          <h2 id="{anchor}-h">{E(sec["h"])}</h2>{paras}\n        </section>'
+        )
+    hreflang = "\n".join(
+        [f'  <link rel="alternate" hreflang="{l}" href="{SITE}{base(l)}{PRIVACY}">' for l in LANGS]
+        + [f'  <link rel="alternate" hreflang="x-default" href="{SITE}/{PRIVACY}">']
     )
+    langlinks = "".join(
+        f'<a href="{base(l)}{PRIVACY}" hreflang="{l}" lang="{l}" title="{E(all_t[l]["label"])}"'
+        + (' aria-current="true"' if l == lang else "")
+        + f">{l.upper()}</a>"
+        for l in LANGS
+    )
+    return PRIVACY_PAGE.format(
+        lang=lang,
+        locale=E(t.get("locale", "")),
+        meta_title=E(pp["meta_title"]),
+        meta_description=E(pp["meta_description"]),
+        canonical=f"{SITE}{base(lang)}{PRIVACY}",
+        hreflang=hreflang,
+        skip=E(t["a11y"]["skip"]),
+        lang_label=E(t["a11y"]["lang"]),
+        home=base(lang),
+        langlinks=langlinks,
+        eyebrow=E(pp["eyebrow"]),
+        title=E(pp["title"]),
+        updated=E(pp["updated"]),
+        intro=E(pp["intro"]),
+        toc="".join(toc),
+        sections="\n".join(body),
+        back=E(pp["back"]),
+        claim=E(re.sub(r"</?em>", "", t["footer"]["claim"])),
+        year=year,
+        privacy_href=f"{base(lang)}{PRIVACY}",
+        footer_privacy=E(t["footer"]["privacy"]),
+    )
+
+
+def sitemap(today):
+    urls = ""
+    for page in ["", PRIVACY]:
+        alts = "".join(
+            f'\n    <xhtml:link rel="alternate" hreflang="{l}" href="{SITE}{base(l)}{page}"/>' for l in LANGS
+        ) + f'\n    <xhtml:link rel="alternate" hreflang="x-default" href="{SITE}/{page}"/>'
+        urls += "".join(
+            f"\n  <url>\n    <loc>{SITE}{base(l)}{page}</loc>\n    <lastmod>{today}</lastmod>{alts}\n  </url>"
+            for l in LANGS
+        )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
@@ -445,6 +566,9 @@ def main():
         thanks = THANKS.format(lang=lang, home=base(lang), **t["thanks"])
         check_page(f"{lang}/grazie", thanks)
         (out_dir / "grazie.html").write_text(thanks, encoding="utf-8")
+        privacy = privacy_page(lang, t, all_t, datetime.date.today().year)
+        check_page(f"{lang}/privacy", privacy)
+        (out_dir / PRIVACY).write_text(privacy, encoding="utf-8")
         print(f"ok  {lang}  ->  {out_dir.relative_to(ROOT) / 'index.html'}")
 
     langs = "".join(
