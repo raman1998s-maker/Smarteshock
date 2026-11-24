@@ -773,6 +773,24 @@ p { margin: 0; text-wrap: pretty; }
 }
 .form__chips span:hover { border-color: var(--color-text); color: var(--color-text); }
 .form__chips input:checked + span { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-text); }
+
+/* blocco facoltativo "Dettagli tecnici sul luogo" (si mostra con i servizi tecnici scelti) */
+.tech { margin: 0; padding: var(--sp-5); border: var(--border); border-radius: var(--radius-card); min-width: 0; display: grid; gap: var(--sp-5); }
+.tech[hidden], .tech [hidden] { display: none; }
+.tech > legend { padding: 0 var(--sp-2); font-size: var(--fs-2xs); font-weight: 500; letter-spacing: var(--tr-caps-sm); text-transform: uppercase; color: var(--color-accent); }
+.tech__intro, .tech__note { margin: 0; font-size: var(--fs-sm); color: var(--color-text-2); }
+.tech__note { padding-left: var(--sp-3); border-left: 2px solid var(--color-accent); }
+.tech__group { margin: 0; padding: var(--sp-4) 0 0; border: 0; border-top: var(--border); min-width: 0; }
+.tech__group > legend { float: left; width: 100%; padding: 0; margin-bottom: var(--sp-4); font-size: var(--fs-base); font-weight: 500; color: var(--color-text); }
+.tech__body { clear: both; display: grid; gap: var(--sp-4); }
+.tech__q legend { margin-bottom: var(--sp-2); }
+.tech__q span { min-height: 36px; padding: 0 12px; }
+.tech__more { border-top: var(--border); padding-top: var(--sp-4); }
+.tech__more summary { cursor: pointer; min-height: var(--tap); display: flex; align-items: center; font-size: var(--fs-base); font-weight: 500; color: var(--color-text); }
+.tech__more summary:hover, .tech__more[open] summary { color: var(--color-accent); }
+.tech__more[open] summary { margin-bottom: var(--sp-3); }
+.tech__role { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); color: var(--color-text); }
+@media (max-width: 560px) { .tech { padding: var(--sp-4); } .tech .tech__pair { grid-template-columns: 1fr 1fr; } }
 .form__chips input:focus-visible + span { outline: 1px solid var(--color-focus); outline-offset: 2px; }
 .form__note { font-size: var(--fs-2xs); line-height: 1.6; color: var(--color-text-3); text-align: center; }
 /* link nel testo: ciano, sottolineatura sottile */
