@@ -1,20 +1,32 @@
-/* Proposta C + titolo della B (scelta di Raman, 24.11.2026)
+/* Proposta C + titolo della B (scelta del referente, 24.11.2026)
    Si carica DOPO c-grafite.css. Solo il titolo del hero prende lo stile "Matrice LED":
    Jost maiuscolo, "unico" in ciano senza corsivo, accensione a scatti come un ledwall.
-   Gli altri titoli restano in Cormorant come nella C. In più, trama LED molto leggera sui fondi. */
-:root { --ease-out: cubic-bezier(.23, 1, .32, 1); }
+   Gli altri titoli restano in Cormorant come nella C. In più, trama LED molto leggera sui fondi.
+
+   Armonia con la C: lo scatto riguarda solo la "scansione" che accende le righe; il blocco
+   sale comunque con la curva morbida della C (c-rise) e il bagliore del ciano si posa con
+   --ease-soft, senza lampi. Stessi tempi della sequenza C (eyebrow 0, titolo 60, testo 180 ms). */
 
 .hero h1 {
   font-family: var(--font-text); font-weight: 500; text-transform: uppercase;
-  letter-spacing: -.01em; line-height: .98;
-  font-size: clamp(40px, 7vw, 108px); max-width: 16ch;
+  letter-spacing: -.01em; line-height: 1;
+  /* il maiuscolo è più largo del Cormorant: 31px a 320, 34px a 390, ~78px a 1440.
+     Così anche DE ("EVENTTECHNIK,") e FR stanno in riga e il hero resta in una schermata. */
+  font-size: clamp(28px, 4.2vw + 18px, 84px); max-width: 17ch;
 }
 .hero h1 em { font-style: normal; color: var(--c-cyan); text-shadow: 0 0 28px rgb(var(--c-cyan-rgb) / .45); }
 
+/* Scansione a scatti, come un ledwall che si accende riga per riga (10 scatti da ~50 ms) */
 @keyframes cb-scan { from { clip-path: inset(-30% 100% -30% -5%); } to { clip-path: inset(-30% -5% -30% -5%); } }
-@keyframes cb-glow { 0%, 60% { text-shadow: 0 0 0 rgb(var(--c-cyan-rgb) / 0); } 80% { text-shadow: 0 0 44px rgb(var(--c-cyan-rgb) / .8); } }
-.hero h1 { animation: cb-scan 640ms steps(16) 80ms both; }
-.hero h1 em { animation: cb-glow 1100ms ease-out 80ms both; }
+/* Il ciano si accende dopo la scansione e si posa morbido sul bagliore di riposo */
+@keyframes cb-glow {
+  from { text-shadow: 0 0 0 rgb(var(--c-cyan-rgb) / 0); }
+  40%  { text-shadow: 0 0 40px rgb(var(--c-cyan-rgb) / .7); }
+  to   { text-shadow: 0 0 28px rgb(var(--c-cyan-rgb) / .45); }
+}
+.hero h1 { --rise: 22px; animation: c-rise 800ms var(--ease-out) 60ms both, cb-scan 520ms steps(10, end) 60ms both; }
+.hero h1 em { animation: cb-glow 900ms var(--ease-soft) 520ms both; }
+/* prefers-reduced-motion: già coperto da style.css (animation: none su tutto) → titolo fermo e visibile */
 
 /* Trama LED leggera, richiamo alla scritta del logo */
 body { background-image: radial-gradient(circle at center, rgb(var(--c-ivory-rgb) / .05) 1px, transparent 1.6px); background-size: 9px 9px; }
