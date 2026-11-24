@@ -1,0 +1,20 @@
+/* Proposta C + titolo della B (scelta di Raman, 24.11.2026)
+   Si carica DOPO c-grafite.css. Solo il titolo del hero prende lo stile "Matrice LED":
+   Jost maiuscolo, "unico" in ciano senza corsivo, accensione a scatti come un ledwall.
+   Gli altri titoli restano in Cormorant come nella C. In più, trama LED molto leggera sui fondi. */
+:root { --ease-out: cubic-bezier(.23, 1, .32, 1); }
+
+.hero h1 {
+  font-family: var(--font-text); font-weight: 500; text-transform: uppercase;
+  letter-spacing: -.01em; line-height: .98;
+  font-size: clamp(40px, 7vw, 108px); max-width: 16ch;
+}
+.hero h1 em { font-style: normal; color: var(--c-cyan); text-shadow: 0 0 28px rgb(var(--c-cyan-rgb) / .45); }
+
+@keyframes cb-scan { from { clip-path: inset(-30% 100% -30% -5%); } to { clip-path: inset(-30% -5% -30% -5%); } }
+@keyframes cb-glow { 0%, 60% { text-shadow: 0 0 0 rgb(var(--c-cyan-rgb) / 0); } 80% { text-shadow: 0 0 44px rgb(var(--c-cyan-rgb) / .8); } }
+.hero h1 { animation: cb-scan 640ms steps(16) 80ms both; }
+.hero h1 em { animation: cb-glow 1100ms ease-out 80ms both; }
+
+/* Trama LED leggera, richiamo alla scritta del logo */
+body { background-image: radial-gradient(circle at center, rgb(var(--c-ivory-rgb) / .05) 1px, transparent 1.6px); background-size: 9px 9px; }
