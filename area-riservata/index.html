@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accesso — Area riservata Meekon Displays</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="same-origin">
+  <meta name="theme-color" content="#08090B">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script src="/area-riservata/login.js" defer></script>
+</head>
+<body class="login-page">
+  <main class="login">
+    <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246">
+    <div>
+      <h1>Area riservata</h1>
+      <p>Accesso per i collaboratori di Meekon Displays.</p>
+    </div>
+    <noscript><p class="alert alert--error">Per usare l'area riservata è necessario attivare JavaScript nel browser.</p></noscript>
+    <p class="alert alert--error" id="login-error" role="alert" hidden></p>
+    <form id="login-form" method="post" action="/api/auth/login" novalidate>
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="username" inputmode="email" maxlength="254" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required>
+      </div>
+      <button class="btn btn--primary" type="submit">Accedi</button>
+    </form>
+    <p class="muted">Password dimenticata o account bloccato? Contattate l'amministratore.</p>
+  </main>
+</body>
+</html>

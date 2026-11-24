@@ -60,6 +60,7 @@ export const richiestaSchema = {
   servizi: t.array(t.string({ max: 60 }), { max: 15 }),
   messaggio: t.string({ max: 4000, multiline: true }),
   lingua: t.enumOf(LINGUE, { default: 'it' }),
+  paese: t.enumOf(PAESI), // facoltativo: vuoto/assente → null
 };
 
 /** Rimuove i campi economici (difesa in profondità per il ruolo tecnico). */

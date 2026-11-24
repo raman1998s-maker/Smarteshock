@@ -6,7 +6,7 @@ import { t, validate } from './_lib/validate.js';
 
 export const config = { path: ['/api/richieste', '/api/richieste/:id'] };
 
-const SELECT = 'id,nome,email,telefono,tipo,data,localita,ospiti,servizi,messaggio,lingua,stato,evento_id,created_at,updated_at';
+const SELECT = 'id,nome,email,telefono,tipo,data,localita,ospiti,servizi,messaggio,lingua,paese,stato,evento_id,created_at,updated_at';
 
 export default createHandler(
   {

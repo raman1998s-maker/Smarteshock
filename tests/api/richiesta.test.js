@@ -6,7 +6,7 @@ setEnv();
 const richiesta = (await import('../../netlify/functions/richiesta.js')).default;
 
 const insertRoute = () => ['POST', /^\/rest\/v1\/richieste_web$/, () => ({ status: 201 })];
-const VALIDA = { nome: 'Maria Muster', email: 'maria@example.ch', telefono: '+41 79 000 00 00', tipo: 'Hochzeit', data: '2026-08-15', localita: 'Zürich', ospiti: '120', servizi: ['Licht', 'Audio'], messaggio: 'Hallo', lingua: 'de' };
+const VALIDA = { nome: 'Maria Muster', email: 'maria@example.ch', telefono: '+41 79 000 00 00', tipo: 'Hochzeit', data: '2026-08-15', localita: 'Zürich', ospiti: '120', servizi: ['Licht', 'Audio'], messaggio: 'Hallo', lingua: 'de', paese: 'CH' };
 
 describe('POST /api/richiesta', () => {
   beforeEach(setEnv);
@@ -24,6 +24,30 @@ describe('POST /api/richiesta', () => {
     assert.equal(c.body.ospiti, 120);
     assert.equal(c.body.stato, undefined);
     assert.deepEqual(c.body.servizi, ['Licht', 'Audio']);
+    assert.equal(c.body.paese, 'CH');
+  });
+
+  test('paese facoltativo: solo CH/IT/DE/FR, assente o vuoto → non inviato / null', async () => {
+    const calls = mockFetch([insertRoute()]);
+    for (const paese of ['CH', 'IT', 'DE', 'FR']) {
+      const res = await richiesta(req('/api/richiesta', { method: 'POST', body: { ...VALIDA, paese } }));
+      assert.equal(res.status, 200, paese);
+      assert.equal(calls.at(-1).body.paese, paese);
+    }
+    const { paese: _omesso, ...senzaPaese } = VALIDA;
+    let res = await richiesta(req('/api/richiesta', { method: 'POST', body: senzaPaese }));
+    assert.equal(res.status, 200);
+    assert.equal(calls.at(-1).body.paese, undefined);
+
+    const form = new URLSearchParams({ lingua: 'it', nome: 'Mario', email: 'mario@example.ch', paese: '' });
+    res = await richiesta(req('/api/richiesta', { method: 'POST', body: form.toString(), xrw: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }));
+    assert.equal(res.status, 303);
+    assert.equal(calls.at(-1).body.paese, null);
+
+    const formIT = new URLSearchParams({ lingua: 'it', nome: 'Mario', email: 'mario@example.ch', paese: 'IT' });
+    res = await richiesta(req('/api/richiesta', { method: 'POST', body: formIT.toString(), xrw: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }));
+    assert.equal(res.status, 303);
+    assert.equal(calls.at(-1).body.paese, 'IT');
   });
 
   test('honeypot compilato → risposta ok ma nessun inserimento', async () => {
@@ -80,6 +104,10 @@ describe('POST /api/richiesta', () => {
       [{ ...VALIDA, nome: '' }, 'nome'],
       [{ ...VALIDA, messaggio: 'x'.repeat(4001) }, 'messaggio'],
       [{ ...VALIDA, lingua: 'es' }, 'lingua'],
+      [{ ...VALIDA, paese: 'US' }, 'paese'],
+      [{ ...VALIDA, paese: 'ch' }, 'paese'],
+      [{ ...VALIDA, paese: ['CH'] }, 'paese'],
+      [{ ...VALIDA, paese: 41 }, 'paese'],
       [{ ...VALIDA, data: '15.08.2026' }, 'data'],
       [{ ...VALIDA, ospiti: '0' }, 'ospiti'],
       [{ ...VALIDA, telefono: '<script>' }, 'telefono'],

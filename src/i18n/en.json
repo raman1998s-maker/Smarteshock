@@ -56,20 +56,13 @@
     "title": "Live, on our installations",
     "lead": "A few moments from events we have equipped.",
     "video": "Video of an event equipped by Meekon Displays",
-    "a1": "Guests on the dance floor among light beams, with an LED wall behind",
-    "a2": "White light beams above the dance floor, with illuminated truss",
-    "a3": "Reception hall in blue and violet light, with moving heads on truss",
-    "a4": "Moving heads drawing light beams above the guests",
-    "a5": "Portrait of the bride on an LED wall, above the DJ booth",
-    "a6": "Stage with a screen and an illuminated DJ booth",
-    "a7": "Light beams and LED wall above the dance floor",
-    "filters": { "all": "All", "matrimoni": "Weddings", "aziende": "Corporate", "feste": "Parties", "palco": "Stage" }
+    "filters": { "all": "All", "matrimoni": "Weddings", "aziende": "Corporate", "feste": "Parties", "palco": "Stage", "label": "Filter by type of event" }
   },
   "regions": {
     "eyebrow": "Where we work",
     "title": "Across Switzerland, and beyond",
     "lead": "We work in every region of Switzerland. On request, we also bring our technology to Italy, Germany and France.",
-    "main": { "label": "Switzerland", "text": "Every canton, from city venues to mountain resorts." },
+    "main": { "label": "Switzerland", "text": "Every canton, from city venues to mountain resorts.", "note": "Main area" },
     "onrequest": "on request",
     "countries": { "ch": "Switzerland", "it": "Italy", "de": "Germany", "fr": "France" }
   },
@@ -132,5 +125,6 @@
   },
   "privacy": { "note": "We use your details solely to respond to your request, in line with the Swiss Federal Act on Data Protection (FADP)." },
   "footer": { "claim": "Event technology across Switzerland and, on request, in Italy, Germany and France." },
-  "thanks": { "title": "Thank you!", "eyebrow": "Request sent", "text": "We have received your request and will be in touch shortly with a proposal.", "back": "Back to the website" }
+  "thanks": { "title": "Thank you!", "eyebrow": "Request sent", "text": "We have received your request and will be in touch shortly with a proposal.", "back": "Back to the website" },
+  "notfound": { "title": "Page not found", "text": "The page you are looking for does not exist or has been moved.", "back": "Back to the website" }
 }

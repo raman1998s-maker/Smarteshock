@@ -188,6 +188,17 @@ describe('logout', () => {
     assert.ok(cookies.every((c) => c.includes('Max-Age=0') && c.includes('HttpOnly') && c.includes('SameSite=Strict')));
   });
 
+  test('access token scaduto: rinnova col refresh token e revoca comunque la sessione', async () => {
+    const calls = mockFetch([
+      ['POST', /^\/auth\/v1\/token\?grant_type=refresh_token$/, () => ({ body: { access_token: fakeJwt(ADMIN_ID), refresh_token: 'rt-2', expires_in: 3600 } })],
+      ['POST', /^\/auth\/v1\/logout/, () => ({ status: 204 })],
+    ]);
+    const res = await logout(req('/api/auth/logout', { method: 'POST', cookie: cookieFor(ADMIN_ID, { exp: -60 }) }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls.map((c) => c.url.pathname), ['/auth/v1/token', '/auth/v1/logout']);
+    assert.ok(setCookies(res).every((c) => c.includes('Max-Age=0')));
+  });
+
   test('logout senza X-Requested-With → 403', async () => {
     mockFetch([]);
     const res = await logout(req('/api/auth/logout', { method: 'POST', cookie: cookieFor(ADMIN_ID), xrw: false }));

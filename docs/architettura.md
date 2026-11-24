@@ -43,7 +43,7 @@ La `service_role` key **non si usa** in nessuna function.
 | `eventi` | `id`, `numero_ordine` (unico), `cliente_id`, `titolo`, `tipo`, `stato` (`richiesta` → `offerta` → `confermato` → `completato` / `annullato`), `data_inizio`, `data_fine`, `localita`, `sala`, `paese` (`CH`,`IT`,`DE`,`FR`), `ospiti`, `servizi` (text[]), `programma`, `note_interne`, `importo_chf`, `acconto_pagato`, `saldo_pagato`, `created_at`, `updated_at` |
 | `eventi_staff` | `evento_id`, `staff_id`, `ruolo_evento` (es. tecnico audio, luci, video) |
 | `checklist` | `id`, `evento_id`, `voce`, `quantita`, `caricato` (bool), `note` |
-| `richieste_web` | `id`, `nome`, `email`, `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi`, `messaggio`, `lingua`, `stato` (`nuova`/`gestita`/`scartata`), `evento_id` (evento creato con "converti"), `created_at` |
+| `richieste_web` | `id`, `nome`, `email`, `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi`, `messaggio`, `lingua`, `paese` (`CH`,`IT`,`DE`,`FR`, facoltativo; migrazione `0002`), `stato` (`nuova`/`gestita`/`scartata`), `evento_id` (evento creato con "converti"), `created_at` |
 
 Note sul modello (schema reale in `supabase/migrations/0001_schema.sql`):
 - Tutte le tabelle modificabili hanno anche `updated_at` (trigger). `numero_ordine` è generato dal DB (`AAAA-NNNN`, contatore annuale in `contatori_ordine`) e non è modificabile.
@@ -94,12 +94,12 @@ Tutte rispondono JSON. Errori: `{ "error": "codice" }` con status HTTP corretto,
 | `GET/POST /api/clienti`, `PATCH /api/clienti/:id` | `clienti.js` | ricerca `?q=`; `{nome, azienda, email, telefono, lingua, note}` |
 | `GET /api/staff` | `staff.js` | `{staff:[{id, nome, ruolo, telefono, attivo}]}` |
 | `GET /api/richieste`, `PATCH /api/richieste/:id` | `richieste.js` | filtro `?stato=`; PATCH `{stato}` |
-| `POST /api/richieste/:id/converti` | `richieste-converti.js` | `{titolo?}` → `201 {cliente_id, evento_id, numero_ordine}` (riusa il cliente con la stessa e-mail) |
+| `POST /api/richieste/:id/converti` | `richieste-converti.js` | `{titolo?}` → `201 {cliente_id, evento_id, numero_ordine}` (riusa il cliente con la stessa e-mail; passa all'evento anche il `paese`, `CH` se assente) |
 | `POST /api/richiesta` | `richiesta.js` | vedi sotto |
 
 Codici d'errore: `invalid_input` (400, con `field`), `invalid_json` (400), `unauthorized` (401), `invalid_credentials` (401), `forbidden` (403), `forbidden_origin` (403, controllo CSRF), `not_found` (404), `method_not_allowed` (405), `conflict` (409), `payload_too_large` (413), `unsupported_media_type` (415), `too_many_requests` (429), `server_error`/`server_misconfigured` (500), `upstream_error`/`upstream_unavailable` (502).
 
-**Modulo pubblico `POST /api/richiesta`**: campi `nome`, `email` (obbligatori), `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi` (ripetibile), `messaggio`, `lingua`, honeypot `bot-field`; altri campi (es. `form-name`) ignorati. Accetta JSON oppure un normale `<form method="POST" action="/api/richiesta">` (urlencoded o multipart): senza `X-Requested-With: meekon` risponde `303` verso `/grazie.html` (it) o `/{lingua}/grazie.html`, in caso di errore una piccola pagina HTML 400 con link al modulo. Con JSON/`X-Requested-With` risponde `{ok:true}`. `Origin` obbligatorio e uguale ad `ALLOWED_ORIGIN`; `X-Requested-With` non è richiesto qui (un form HTML non può inviarlo) — l'endpoint non usa cookie e scrive solo con il ruolo `anon`. Limite 24 KB.
+**Modulo pubblico `POST /api/richiesta`**: campi `nome`, `email` (obbligatori), `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi` (ripetibile), `messaggio`, `lingua`, `paese` (facoltativo, `CH`/`IT`/`DE`/`FR`), honeypot `bot-field`; altri campi (es. `form-name`) ignorati. Accetta JSON oppure un normale `<form method="POST" action="/api/richiesta">` (urlencoded o multipart): senza `X-Requested-With: meekon` risponde `303` verso `/grazie.html` (it) o `/{lingua}/grazie.html`, in caso di errore una piccola pagina HTML 400 con link al modulo. Con JSON/`X-Requested-With` risponde `{ok:true}`. `Origin` obbligatorio e uguale ad `ALLOWED_ORIGIN`; `X-Requested-With` non è richiesto qui (un form HTML non può inviarlo) — l'endpoint non usa cookie e scrive solo con il ruolo `anon`. Limite 24 KB.
 
 ## Contenuti pubblici gestiti da file
 `data/sale.json` (location dove abbiamo lavorato), `data/dj.json` (DJ con cui collaboriamo), `data/partner.json` (partner), `data/galleria.json` (foto e video). Ogni voce ha `"approvato": true|false`; `build.py` pubblica solo le voci approvate.
@@ -111,6 +111,6 @@ Codici d'errore: `invalid_input` (400, con `field`), `invalid_json` (400), `unau
 
 ## Pubblicazione (`netlify.toml`)
 - `publish = "."`: per questo le cartelle interne (`/netlify/`, `/supabase/`, `/tests/`, `/docs/`, `/src/`, `/data/`, `/.claude/`) e i file di progetto (`CLAUDE.md`, `README.md`, `build.py`, `package.json`, `netlify.toml`, …) sono bloccati con un redirect forzato `404` verso `/404.html` (pagina da creare a cura del frontend). `/data/` contiene anche voci non approvate e non deve mai essere servita.
-- CSP senza `'unsafe-inline'` per script e stili: nessuno script inline (JSON-LD `type="application/ld+json"` è ammesso perché non viene eseguito), nessun attributo `style=`.
+- CSP senza `'unsafe-inline'` per script e stili: nessuno script inline (JSON-LD `type="application/ld+json"` è ammesso perché non viene eseguito), nessun attributo `style=`. Caratteri ospitati in locale (`/assets/fonts/`): `style-src 'self'; font-src 'self'`, nessun dominio esterno.
 - Cache: immagini/video 1 anno; CSS/JS 1 giorno (i nomi dei file non hanno hash); `/api/*` e `/area-riservata/*` `no-store` + `noindex`.
 - Test: `npm test` = `node --test tests/*/*.test.js` (da Node 21 `node --test` non accetta più una cartella come argomento).

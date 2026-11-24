@@ -56,20 +56,13 @@
     "title": "Live, mit unseren Installationen",
     "lead": "Einige Momente aus Anlässen, die wir technisch begleitet haben.",
     "video": "Video eines Anlasses mit Technik von Meekon Displays",
-    "a1": "Gäste auf der Tanzfläche zwischen Lichtstrahlen, im Hintergrund eine LED-Wand",
-    "a2": "Weisse Lichtstrahlen über der Tanzfläche, mit beleuchteten Traversen",
-    "a3": "Festsaal in blauem und violettem Licht, mit Moving Heads an der Traverse",
-    "a4": "Moving Heads zeichnen Lichtstrahlen über die Gäste",
-    "a5": "Porträt der Braut auf der LED-Wand, über dem DJ-Pult",
-    "a6": "Bühne mit Bildschirm und beleuchtetem DJ-Pult",
-    "a7": "Lichtstrahlen und LED-Wand über der Tanzfläche",
-    "filters": { "all": "Alle", "matrimoni": "Hochzeiten", "aziende": "Firmen", "feste": "Feste", "palco": "Bühne" }
+    "filters": { "all": "Alle", "matrimoni": "Hochzeiten", "aziende": "Firmen", "feste": "Feste", "palco": "Bühne", "label": "Nach Art des Anlasses filtern" }
   },
   "regions": {
     "eyebrow": "Einsatzgebiet",
     "title": "In der ganzen Schweiz und darüber hinaus",
     "lead": "Wir sind in allen Regionen der Schweiz für Sie da. Auf Anfrage bringen wir unsere Technik auch nach Italien, Deutschland und Frankreich.",
-    "main": { "label": "Schweiz", "text": "Alle Kantone, von der Stadt bis in die Berge." },
+    "main": { "label": "Schweiz", "text": "Alle Kantone, von der Stadt bis in die Berge.", "note": "Hauptgebiet" },
     "onrequest": "auf Anfrage",
     "countries": { "ch": "Schweiz", "it": "Italien", "de": "Deutschland", "fr": "Frankreich" }
   },
@@ -132,5 +125,6 @@
   },
   "privacy": { "note": "Wir verwenden Ihre Daten ausschliesslich zur Beantwortung Ihrer Anfrage, gemäss dem Schweizer Datenschutzgesetz (DSG)." },
   "footer": { "claim": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich." },
-  "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.", "back": "Zurück zur Website" }
+  "thanks": { "title": "Vielen Dank!", "eyebrow": "Anfrage gesendet", "text": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.", "back": "Zurück zur Website" },
+  "notfound": { "title": "Seite nicht gefunden", "text": "Die gesuchte Seite existiert nicht oder wurde verschoben.", "back": "Zurück zur Website" }
 }

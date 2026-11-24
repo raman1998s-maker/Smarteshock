@@ -1,0 +1,934 @@
+// Area riservata Meekon Displays — gestionale.
+// Regole: il browser parla solo con /api/* (stessa origine, cookie HttpOnly);
+// i dati del server si inseriscono SOLO con textContent / creazione di nodi (mai innerHTML).
+// L'interfaccia nasconde ai tecnici le funzioni da amministratore, ma i permessi
+// veri li controllano le API e la Row Level Security.
+(() => {
+  'use strict';
+
+  const LOGIN = '/area-riservata/';
+  const main = document.getElementById('main');
+  const nav = document.getElementById('nav');
+  const userBox = document.getElementById('user');
+  const toastEl = document.getElementById('toast');
+
+  const state = {
+    me: null,
+    filters: { q: '', stato: '', da: '', a: '' },
+    richiesteTab: 'nuova',
+    richieste: new Map(),
+    clienti: new Map(),
+  };
+  const isAdmin = () => state.me && state.me.ruolo === 'admin';
+
+  // ------------------------------------------------------------ etichette
+  const STATI = { richiesta: 'Richiesta', offerta: 'Offerta', confermato: 'Confermato', completato: 'Completato', annullato: 'Annullato' };
+  const STATI_RICHIESTA = { nuova: 'Nuova', gestita: 'Gestita', scartata: 'Scartata' };
+  const PAESI = { CH: 'Svizzera', IT: 'Italia', DE: 'Germania', FR: 'Francia' };
+  const LINGUE = { it: 'Italiano', de: 'Tedesco', fr: 'Francese', en: 'Inglese' };
+  const RUOLI = { admin: 'Amministratore', tecnico: 'Tecnico' };
+
+  // ------------------------------------------------------------ API
+  class ApiError extends Error {
+    constructor(status, code, field) {
+      super(code);
+      this.status = status;
+      this.code = code;
+      this.field = field || null;
+    }
+  }
+
+  async function api(path, { method = 'GET', body } = {}) {
+    const headers = { 'X-Requested-With': 'meekon' };
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    let res;
+    try {
+      res = await fetch(`/api/${path}`, {
+        method,
+        credentials: 'same-origin',
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+    } catch (err) {
+      throw new ApiError(0, 'network');
+    }
+    if (res.status === 401) {
+      window.location.replace(LOGIN);
+      throw new ApiError(401, 'unauthorized');
+    }
+    let data = null;
+    try { data = await res.json(); } catch (err) { data = null; }
+    if (!res.ok) {
+      throw new ApiError(res.status, (data && typeof data.error === 'string' && data.error) || 'server_error', data && data.field);
+    }
+    return data || {};
+  }
+
+  function errorMessage(err) {
+    if (!(err instanceof ApiError)) return 'Si è verificato un errore imprevisto. Ricaricate la pagina.';
+    if (err.status === 0) return 'Connessione non riuscita. Controllate la connessione a internet e riprovate.';
+    if (err.status === 400) return 'Alcuni dati non sono validi. Controllate i campi evidenziati.';
+    if (err.status === 403) return 'Non avete i permessi per questa operazione.';
+    if (err.status === 404) return 'Elemento non trovato: forse è stato eliminato.';
+    if (err.status === 409) return 'Operazione non possibile: il dato esiste già o è stato modificato nel frattempo.';
+    if (err.status === 413) return 'Il testo inserito è troppo lungo.';
+    if (err.status === 429) return 'Troppe richieste in poco tempo. Attendete un momento e riprovate.';
+    return 'Il server non risponde correttamente. Riprovate tra qualche istante.';
+  }
+
+  // ------------------------------------------------------------ DOM
+  function h(tag, props, ...kids) {
+    const el = document.createElement(tag);
+    if (props) {
+      for (const [k, v] of Object.entries(props)) {
+        if (v === null || v === undefined || v === false) continue;
+        if (k === 'class') el.className = v;
+        else if (k === 'text') el.textContent = v;
+        else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+        else if (k === 'value' || k === 'checked' || k === 'disabled' || k === 'selected') el[k] = v;
+        else el.setAttribute(k, v === true ? '' : String(v));
+      }
+    }
+    add(el, kids);
+    return el;
+  }
+  function add(el, kids) {
+    for (const k of kids.flat(Infinity)) {
+      if (k === null || k === undefined || k === false) continue;
+      el.append(k instanceof Node ? k : document.createTextNode(String(k)));
+    }
+    return el;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+
+  let uid = 0;
+  const nextId = (p) => `${p}-${++uid}`;
+
+  // ------------------------------------------------------------ formati
+  const pad = (n) => String(n).padStart(2, '0');
+  function isoDate(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+  function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+
+  function fmtDate(s) {
+    if (!s || typeof s !== 'string') return '—';
+    const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(s);
+    if (!m) return '—';
+    const date = `${m[3]}.${m[2]}.${m[1]}`;
+    return m[4] && `${m[4]}:${m[5]}` !== '00:00' ? `${date} ${m[4]}:${m[5]}` : date;
+  }
+  function fmtRange(a, b) {
+    if (!b || fmtDate(a) === fmtDate(b)) return fmtDate(a);
+    if (a && a.slice(0, 10) === b.slice(0, 10)) {
+      const end = fmtDate(b).slice(11);
+      return end ? `${fmtDate(a)} – ${end}` : fmtDate(a);
+    }
+    return `${fmtDate(a)} – ${fmtDate(b)}`;
+  }
+  function fmtMoney(n) {
+    if (n === null || n === undefined || n === '') return '—';
+    const v = Number(n);
+    if (!Number.isFinite(v)) return '—';
+    const [int, dec] = Math.abs(v).toFixed(2).split('.');
+    return `${v < 0 ? '-' : ''}${int.replace(/\B(?=(\d{3})+(?!\d))/g, "'")}.${dec}`;
+  }
+  const yesNo = (b) => (b ? 'Sì' : 'No');
+  const dash = (v) => (v === null || v === undefined || v === '' ? '—' : String(v));
+
+  function telLink(phone) {
+    if (!phone) return '—';
+    const num = String(phone).replace(/[^0-9+]/g, '');
+    return num ? h('a', { href: `tel:${num}` }, String(phone)) : String(phone);
+  }
+  function mailLink(email) {
+    if (!email) return '—';
+    return /^[^\s@<>"]+@[^\s@<>"]+$/.test(email) ? h('a', { href: `mailto:${email}` }, email) : String(email);
+  }
+  function badge(stato, labels) {
+    if (!Object.prototype.hasOwnProperty.call(labels, stato)) return h('span', { class: 'badge' }, dash(stato));
+    return h('span', { class: `badge badge--${stato}` }, labels[stato]);
+  }
+  function multiline(text) {
+    if (!text) return h('p', { class: 'muted' }, '—');
+    const p = h('p');
+    String(text).split(/\r?\n/).forEach((line, i) => { if (i) p.append(h('br')); p.append(document.createTextNode(line)); });
+    return p;
+  }
+  function dl(rows) {
+    const list = h('dl', { class: 'dl' });
+    rows.forEach(([k, v]) => { if (v !== undefined) add(list, [h('dt', null, k), h('dd', null, v === null ? '—' : v)]); });
+    return list;
+  }
+  // ogni pannello della griglia sta in un <div>: così ".panel + .panel" non aggiunge margini nella griglia
+  // i pannelli "larghi" (tabelle) occupano tutta la riga (grid-column 1 / -1 di .field--full)
+  function panels(...list) {
+    return h('div', { class: 'panels' }, list.flat().filter(Boolean).map((p) => (p.wide ? h('div', { class: 'field--full' }, p.el) : h('div', null, p))));
+  }
+  const wide = (el) => ({ wide: true, el });
+  function td(label, ...kids) { return h('td', { 'data-label': label }, h('span', null, ...kids)); }
+  const clienteNome = (e) => (e.cliente && e.cliente.nome) || e.cliente_nome || null;
+
+  // ------------------------------------------------------------ notifiche
+  let toastTimer = null;
+  function toast(msg, kind = 'ok') {
+    clearTimeout(toastTimer);
+    clear(toastEl);
+    toastEl.className = `toast toast--${kind}`;
+    add(toastEl, [h('span', null, msg), h('button', { type: 'button', 'aria-label': 'Chiudi la notifica', onclick: () => { toastEl.hidden = true; } }, '×')]);
+    toastEl.hidden = false;
+    toastTimer = setTimeout(() => { toastEl.hidden = true; }, kind === 'error' ? 8000 : 4000);
+  }
+
+  // ------------------------------------------------------------ pagina
+  let seq = 0;
+  let firstRender = true;
+  function page({ title, sub, actions, back }, ...content) {
+    clear(main);
+    document.title = `${title} — Area riservata Meekon Displays`;
+    const h1 = h('h1', { tabindex: '-1' }, title);
+    const head = h('header', { class: 'app__head' },
+      h('div', null, back ? h('a', { class: 'btn btn--ghost btn--sm', href: back[0] }, `← ${back[1]}`) : null, h1, sub ? h('p', null, sub) : null),
+      actions && actions.length ? h('div', null, actions.flatMap((a, i) => (i ? [' ', a] : [a]))) : null);
+    add(main, [head, content]);
+    if (firstRender) firstRender = false;
+    else h1.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+  function loading() { clear(main); main.append(h('p', { class: 'muted', role: 'status' }, 'Caricamento…')); }
+  function failure(title, err) {
+    page({ title },
+      h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)),
+      h('p', null, h('button', { class: 'btn', type: 'button', onclick: route }, 'Riprova')));
+  }
+  function empty(title, text) { return h('div', { class: 'empty' }, h('strong', null, title), text ? h('p', null, text) : null); }
+
+  function field(label, input, { full = false, hint = null } = {}) {
+    const id = input.id || nextId('f');
+    input.id = id;
+    const wrap = h('div', { class: `field${full ? ' field--full' : ''}` }, h('label', { for: id }, label), input);
+    if (hint) { const hid = `${id}-hint`; input.setAttribute('aria-describedby', hid); wrap.append(h('p', { class: 'field__hint', id: hid }, hint)); }
+    return wrap;
+  }
+  function select(name, options, value) {
+    return h('select', { name }, options.map(([v, l]) => h('option', { value: v, selected: v === (value ?? '') }, l)));
+  }
+  function check(name, label, checked) {
+    return h('label', { class: 'check' }, h('input', { type: 'checkbox', name, checked: !!checked }), label);
+  }
+
+  // errori di validazione dal server (400 invalid_input con "field")
+  function markInvalid(form, err) {
+    form.querySelectorAll('[aria-invalid="true"]').forEach((el) => el.removeAttribute('aria-invalid'));
+    form.querySelectorAll('.field__error').forEach((el) => el.remove());
+    form.querySelectorAll('.field--invalid').forEach((el) => el.classList.remove('field--invalid'));
+    if (!(err instanceof ApiError) || !err.field || !/^[a-z_]+$/.test(err.field)) return;
+    const input = form.querySelector(`[name="${err.field}"]`);
+    if (!input) return;
+    input.setAttribute('aria-invalid', 'true');
+    const wrap = input.closest('.field');
+    if (wrap) {
+      wrap.classList.add('field--invalid');
+      const eid = nextId('err');
+      wrap.append(h('p', { class: 'field__error', id: eid }, 'Valore non valido: controllate questo campo.'));
+      input.setAttribute('aria-describedby', eid);
+    }
+    input.focus();
+  }
+  async function busy(btn, fn) {
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    try { return await fn(); } finally { btn.disabled = false; btn.removeAttribute('aria-busy'); }
+  }
+
+  // ------------------------------------------------------------ eventi: tabella
+  function eventsTable(list) {
+    const admin = isAdmin();
+    const head = ['Data', 'Evento', 'Località', 'Stato'];
+    if (admin) head.push('Importo CHF');
+    const rows = list.map((e) => {
+      const href = `#/evento/${encodeURIComponent(e.id)}`;
+      const cliente = clienteNome(e);
+      const azienda = e.cliente && e.cliente.azienda;
+      const tr = h('tr', { class: 'is-link' },
+        td('Data', fmtRange(e.data_inizio, e.data_fine)),
+        h('td', { 'data-label': 'Evento', class: 'table__primary' },
+          h('span', null, h('a', { href }, e.titolo || 'Senza titolo'),
+            h('span', { class: 'table__sub' }, [e.numero_ordine ? `N. ${e.numero_ordine}` : null, cliente, azienda].filter(Boolean).join(' · ')))),
+        td('Località', dash(e.localita), h('span', { class: 'table__sub' }, [e.sala, PAESI[e.paese]].filter(Boolean).join(' · '))),
+        td('Stato', badge(e.stato, STATI)),
+        admin ? h('td', { 'data-label': 'Importo CHF', class: 'num' }, h('span', null, fmtMoney(e.importo_chf))) : null);
+      tr.addEventListener('click', (ev) => { if (!ev.target.closest('a, button, input')) window.location.hash = href; });
+      return tr;
+    });
+    return h('div', { class: 'table-wrap' },
+      h('table', { class: 'table' },
+        h('thead', null, h('tr', null, head.map((t) => h('th', { scope: 'col', class: t === 'Importo CHF' ? 'num' : null }, t)))),
+        h('tbody', null, rows)));
+  }
+
+  // ------------------------------------------------------------ viste
+  async function viewProssimi(_, alive) {
+    loading();
+    const oggi = new Date();
+    const giorni = 90;
+    let data;
+    try { data = await api(`eventi?da=${isoDate(oggi)}&a=${isoDate(addDays(oggi, giorni))}`); } catch (err) { if (alive()) failure('Prossimi eventi', err); return; }
+    if (!alive()) return;
+    const list = (data.eventi || []).filter((e) => e.stato !== 'annullato');
+    page({
+      title: 'Prossimi eventi',
+      sub: `Prossimi ${giorni} giorni · ${list.length} ${list.length === 1 ? 'evento' : 'eventi'}${isAdmin() ? '' : ' a cui siete assegnati'}`,
+      actions: isAdmin() ? [h('a', { class: 'btn btn--primary', href: '#/eventi/nuovo' }, 'Nuovo evento')] : null,
+    }, list.length ? eventsTable(list) : empty('Nessun evento in programma', isAdmin()
+      ? 'Nei prossimi 90 giorni non ci sono eventi. Potete crearne uno nuovo o convertire una richiesta dal sito.'
+      : 'Nei prossimi 90 giorni non siete assegnati a nessun evento.'));
+  }
+
+  async function viewEventi(_, alive) {
+    const f = state.filters;
+    const q = h('input', { type: 'search', name: 'q', value: f.q, placeholder: 'Titolo, cliente, località, numero…', autocomplete: 'off' });
+    const stato = select('stato', [['', 'Tutti gli stati'], ...Object.entries(STATI)], f.stato);
+    const da = h('input', { type: 'date', name: 'da', value: f.da });
+    const a = h('input', { type: 'date', name: 'a', value: f.a });
+    const count = h('span', { class: 'toolbar__count', role: 'status' });
+    const results = h('div', null, h('p', { class: 'muted' }, 'Caricamento…'));
+    const reset = h('button', { class: 'btn btn--ghost', type: 'button' }, 'Azzera filtri');
+    const toolbar = h('form', { class: 'toolbar', role: 'search', 'aria-label': 'Filtra gli eventi', onsubmit: (e) => e.preventDefault() },
+      h('div', { class: 'field field--search' }, h('label', { for: 'f-q' }, 'Cerca'), Object.assign(q, { id: 'f-q' })),
+      field('Stato', stato), field('Dal', da), field('Al', a), reset, count);
+
+    page({
+      title: 'Eventi',
+      sub: isAdmin() ? 'Tutti gli eventi e gli ordini' : 'Gli eventi a cui siete assegnati',
+      actions: isAdmin() ? [h('a', { class: 'btn btn--primary', href: '#/eventi/nuovo' }, 'Nuovo evento')] : null,
+    }, toolbar, results);
+
+    let list = [];
+    const draw = () => {
+      const term = f.q.trim().toLowerCase();
+      const shown = term
+        ? list.filter((e) => [e.titolo, e.numero_ordine, clienteNome(e), e.cliente && e.cliente.azienda, e.localita, e.sala, e.tipo]
+          .some((v) => v && String(v).toLowerCase().includes(term)))
+        : list;
+      count.textContent = `${shown.length} ${shown.length === 1 ? 'evento' : 'eventi'}`;
+      clear(results);
+      results.append(shown.length ? eventsTable(shown) : empty('Nessun evento trovato', 'Modificate o azzerate i filtri.'));
+    };
+    const load = async () => {
+      const params = new URLSearchParams();
+      if (f.stato) params.set('stato', f.stato);
+      if (f.da) params.set('da', f.da);
+      if (f.a) params.set('a', f.a);
+      clear(results);
+      results.append(h('p', { class: 'muted' }, 'Caricamento…'));
+      try {
+        const data = await api(`eventi${params.toString() ? `?${params}` : ''}`);
+        if (!alive()) return;
+        list = data.eventi || [];
+        draw();
+      } catch (err) {
+        if (!alive()) return;
+        clear(results);
+        count.textContent = '';
+        results.append(h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)));
+      }
+    };
+    q.addEventListener('input', () => { f.q = q.value; draw(); });
+    stato.addEventListener('change', () => { f.stato = stato.value; load(); });
+    da.addEventListener('change', () => { f.da = da.value; load(); });
+    a.addEventListener('change', () => { f.a = a.value; load(); });
+    reset.addEventListener('click', () => {
+      Object.assign(f, { q: '', stato: '', da: '', a: '' });
+      q.value = ''; stato.value = ''; da.value = ''; a.value = '';
+      load();
+    });
+    await load();
+  }
+
+  async function viewEvento([id], alive) {
+    loading();
+    let data;
+    try { data = await api(`eventi/${encodeURIComponent(id)}`); } catch (err) { if (alive()) failure('Evento', err); return; }
+    if (!alive()) return;
+    const e = data.evento || {};
+    const admin = isAdmin();
+    const actions = [];
+    if (admin) {
+      actions.push(h('a', { class: 'btn', href: `#/evento/${encodeURIComponent(e.id)}/modifica` }, 'Modifica'));
+      const del = h('button', { class: 'btn btn--danger', type: 'button' }, 'Elimina');
+      del.addEventListener('click', () => {
+        if (!window.confirm(`Eliminare definitivamente l'evento "${e.titolo || ''}"? L'operazione non si può annullare.`)) return;
+        busy(del, async () => {
+          try {
+            await api(`eventi/${encodeURIComponent(e.id)}`, { method: 'DELETE' });
+            toast('Evento eliminato.');
+            window.location.hash = '#/eventi';
+          } catch (err) { toast(errorMessage(err), 'error'); }
+        });
+      });
+      actions.push(del);
+    }
+
+    const sub = h('span', null, e.numero_ordine ? `N. ${e.numero_ordine} · ` : '', badge(e.stato, STATI));
+
+    const dati = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, "Dati dell'evento")),
+      dl([
+        ['Tipo', dash(e.tipo)],
+        ['Inizio', fmtDate(e.data_inizio)],
+        ['Fine', fmtDate(e.data_fine)],
+        ['Località', dash(e.localita)],
+        ['Sala', dash(e.sala)],
+        ['Paese', PAESI[e.paese] || dash(e.paese)],
+        ['Ospiti', dash(e.ospiti)],
+        ['Servizi', Array.isArray(e.servizi) && e.servizi.length ? e.servizi.join(', ') : '—'],
+      ]));
+
+    const c = e.cliente || null;
+    const clienteRows = c
+      ? [['Nome', dash(c.nome)], ['Azienda', dash(c.azienda)], ['Telefono', telLink(c.telefono)], ['E-mail', mailLink(c.email)], ['Lingua', LINGUE[c.lingua] || dash(c.lingua)]]
+      : (e.cliente_nome || e.cliente_telefono ? [['Nome', dash(e.cliente_nome)], ['Telefono', telLink(e.cliente_telefono)]] : null);
+    const cliente = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Cliente')),
+      clienteRows ? dl(clienteRows) : h('p', { class: 'muted' }, 'Nessun cliente collegato.'));
+
+    // campi economici: solo se l'API li ha inviati (mai per i tecnici)
+    const hasMoney = admin && ['importo_chf', 'acconto_pagato', 'saldo_pagato'].some((k) => Object.prototype.hasOwnProperty.call(e, k));
+    const economia = hasMoney
+      ? h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Dati economici')),
+        dl([['Importo', h('span', { class: 'num' }, `CHF ${fmtMoney(e.importo_chf)}`)], ['Acconto pagato', yesNo(e.acconto_pagato)], ['Saldo pagato', yesNo(e.saldo_pagato)]]))
+      : null;
+
+    const programma = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Programma')), multiline(e.programma));
+    const note = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Note interne')), multiline(e.note_interne));
+
+    page({ title: e.titolo || 'Evento', sub, actions, back: ['#/eventi', 'Eventi'] },
+      panels(dati, cliente, economia, programma, note,
+        wide(staffPanel(e, data.staff || [])),
+        [].concat(checklistPanel(e, data.checklist || [])).map(wide)));
+  }
+
+  function staffPanel(e, staff) {
+    const panel = h('section', { class: 'panel' });
+    const show = () => {
+      clear(panel);
+      const head = h('div', { class: 'panel__head' }, h('h2', null, 'Staff assegnato'));
+      if (isAdmin()) head.append(h('button', { class: 'btn btn--sm', type: 'button', onclick: edit }, 'Modifica staff'));
+      panel.append(head);
+      if (!staff.length) { panel.append(h('p', { class: 'muted' }, 'Nessun collaboratore assegnato.')); return; }
+      panel.append(h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
+        h('thead', null, h('tr', null, ['Nome', 'Ruolo', 'Telefono'].map((t) => h('th', { scope: 'col' }, t)))),
+        h('tbody', null, staff.map((s) => h('tr', null, td('Nome', dash(s.nome)), td('Ruolo', dash(s.ruolo_evento)), td('Telefono', telLink(s.telefono))))))));
+    };
+    const edit = async () => {
+      clear(panel);
+      panel.append(h('div', { class: 'panel__head' }, h('h2', null, 'Modifica staff')), h('p', { class: 'muted' }, 'Caricamento…'));
+      let all;
+      try { all = (await api('staff')).staff || []; } catch (err) { toast(errorMessage(err), 'error'); show(); return; }
+      const current = new Map(staff.map((s) => [s.staff_id, s.ruolo_evento || '']));
+      const rows = all.filter((s) => s.attivo !== false || current.has(s.id)).map((s) => {
+        const cb = h('input', { type: 'checkbox', value: s.id, checked: current.has(s.id) });
+        const role = h('input', { type: 'text', maxlength: '80', value: current.get(s.id) || '', placeholder: 'es. audio, luci, video', 'aria-label': `Ruolo nell'evento di ${s.nome || ''}` });
+        return { s, cb, role, tr: h('tr', null,
+          h('td', { 'data-label': 'Assegnato' }, h('label', { class: 'check' }, cb, h('span', null, s.nome || '—'))),
+          td('Profilo', RUOLI[s.ruolo] || dash(s.ruolo)),
+          h('td', { 'data-label': "Ruolo nell'evento" }, h('div', { class: 'field' }, role))) };
+      });
+      const save = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Salva staff');
+      const form = h('form', null,
+        rows.length
+          ? h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
+            h('thead', null, h('tr', null, ['Collaboratore', 'Profilo', "Ruolo nell'evento"].map((t) => h('th', { scope: 'col' }, t)))),
+            h('tbody', null, rows.map((r) => r.tr))))
+          : h('p', { class: 'muted' }, 'Nessun collaboratore attivo.'),
+        h('div', { class: 'panel__foot' }, h('button', { class: 'btn', type: 'button', onclick: show }, 'Annulla'), save));
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const assegnazioni = rows.filter((r) => r.cb.checked).map((r) => ({ staff_id: r.s.id, ruolo_evento: r.role.value.trim() || null }));
+        busy(save, async () => {
+          try {
+            await api(`eventi/${encodeURIComponent(e.id)}/staff`, { method: 'PUT', body: { assegnazioni } });
+            staff = rows.filter((r) => r.cb.checked).map((r) => ({ staff_id: r.s.id, nome: r.s.nome, telefono: r.s.telefono, ruolo_evento: r.role.value.trim() || null }));
+            toast('Staff aggiornato.');
+            show();
+          } catch (err) { toast(errorMessage(err), 'error'); }
+        });
+      });
+      clear(panel);
+      panel.append(h('div', { class: 'panel__head' }, h('h2', null, 'Modifica staff')), form);
+    };
+    show();
+    return panel;
+  }
+
+  function checklistPanel(e, items) {
+    const counter = h('span', { class: 'muted' });
+    const updateCount = () => {
+      const done = items.filter((i) => i.caricato).length;
+      counter.textContent = items.length ? `${done} di ${items.length} caricati` : '';
+    };
+    const tbody = h('tbody');
+    const rowFor = (item) => {
+      const cb = h('input', { type: 'checkbox', checked: !!item.caricato, 'aria-label': `Caricato: ${item.voce || ''}` });
+      cb.addEventListener('change', async () => {
+        const value = cb.checked;
+        cb.disabled = true;
+        try {
+          const res = await api(`checklist/${encodeURIComponent(item.id)}`, { method: 'PATCH', body: { caricato: value } });
+          item.caricato = res.voce ? !!res.voce.caricato : value;
+          cb.checked = item.caricato;
+          updateCount();
+        } catch (err) {
+          cb.checked = !value;
+          toast(errorMessage(err), 'error');
+        } finally { cb.disabled = false; }
+      });
+      const note = h('input', { type: 'text', maxlength: '1000', value: item.note || '', placeholder: 'Annotazione', 'aria-label': `Note: ${item.voce || ''}` });
+      note.addEventListener('change', async () => {
+        const value = note.value.trim();
+        try {
+          await api(`checklist/${encodeURIComponent(item.id)}`, { method: 'PATCH', body: { note: value || null } });
+          item.note = value;
+          toast('Nota salvata.');
+        } catch (err) {
+          note.value = item.note || '';
+          toast(errorMessage(err), 'error');
+        }
+      });
+      return h('tr', null,
+        h('td', { 'data-label': 'Caricato' }, h('label', { class: 'check' }, cb, h('span', { class: 'sr-only' }, 'Caricato'))),
+        h('td', { 'data-label': 'Voce', class: 'table__primary' }, h('span', null, dash(item.voce))),
+        h('td', { 'data-label': 'Quantità', class: 'num' }, h('span', null, dash(item.quantita))),
+        h('td', { 'data-label': 'Note' }, h('div', { class: 'field' }, note)));
+    };
+    items.forEach((i) => tbody.append(rowFor(i)));
+    updateCount();
+
+    const table = h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
+      h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Caricato'), h('th', { scope: 'col' }, 'Voce'), h('th', { scope: 'col', class: 'num' }, 'Quantità'), h('th', { scope: 'col' }, 'Note'))),
+      tbody));
+    const emptyMsg = h('p', { class: 'muted' }, 'La checklist del materiale è vuota.');
+    const body = h('div', null, items.length ? table : emptyMsg);
+
+    const panel = h('section', { class: 'panel' },
+      h('div', { class: 'panel__head' }, h('h2', null, 'Checklist materiale'), counter), body);
+
+    if (isAdmin()) {
+      const voce = h('input', { type: 'text', name: 'voce', maxlength: '200', required: true });
+      const qta = h('input', { type: 'number', name: 'quantita', min: '1', max: '100000', value: '1', inputmode: 'numeric' });
+      const nota = h('input', { type: 'text', name: 'note', maxlength: '1000' });
+      const btn = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Aggiungi voce');
+      const form = h('form', { class: 'panel', 'aria-labelledby': 'add-voce-title' },
+        h('div', { class: 'panel__head' }, h('h2', { id: 'add-voce-title' }, 'Aggiungi una voce alla checklist')),
+        h('div', { class: 'fields' }, field('Voce', voce), field('Quantità', qta), field('Note', nota)),
+        h('div', { class: 'panel__foot' }, btn));
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        if (!voce.value.trim()) { voce.setAttribute('aria-invalid', 'true'); voce.focus(); return; }
+        voce.removeAttribute('aria-invalid');
+        busy(btn, async () => {
+          try {
+            const res = await api(`eventi/${encodeURIComponent(e.id)}/checklist`, {
+              method: 'POST', body: { voce: voce.value.trim(), quantita: qta.value ? Number(qta.value) : null, note: nota.value.trim() || null },
+            });
+            if (res.voce) {
+              items.push(res.voce);
+              if (items.length === 1) { clear(body); body.append(table); }
+              tbody.append(rowFor(res.voce));
+              updateCount();
+            }
+            voce.value = ''; qta.value = '1'; nota.value = '';
+            voce.focus();
+            toast('Voce aggiunta.');
+          } catch (err) { markInvalid(form, err); toast(errorMessage(err), 'error'); }
+        });
+      });
+      return [panel, form];
+    }
+    return panel;
+  }
+
+  async function viewEventoForm([id], alive) {
+    loading();
+    let e = {};
+    let clienti = [];
+    try {
+      const [det, cl] = await Promise.all([id ? api(`eventi/${encodeURIComponent(id)}`) : Promise.resolve(null), api('clienti')]);
+      if (det) e = det.evento || {};
+      clienti = cl.clienti || [];
+    } catch (err) { if (alive()) failure(id ? 'Modifica evento' : 'Nuovo evento', err); return; }
+    if (!alive()) return;
+    clienti.forEach((c) => state.clienti.set(c.id, c));
+
+    const dt = (v) => (v ? String(v).slice(0, 16) : '');
+    const inp = (name, attrs = {}) => h('input', { name, type: 'text', ...attrs });
+    const f = {
+      titolo: inp('titolo', { maxlength: '200', required: true, value: e.titolo || '' }),
+      cliente_id: select('cliente_id', [['', '— Nessun cliente —'], ...clienti.map((c) => [c.id, c.azienda ? `${c.nome} (${c.azienda})` : c.nome])], e.cliente_id || ''),
+      tipo: inp('tipo', { maxlength: '80', value: e.tipo || '' }),
+      stato: select('stato', Object.entries(STATI), e.stato || 'richiesta'),
+      data_inizio: inp('data_inizio', { type: 'datetime-local', value: dt(e.data_inizio) }),
+      data_fine: inp('data_fine', { type: 'datetime-local', value: dt(e.data_fine) }),
+      localita: inp('localita', { maxlength: '200', value: e.localita || '' }),
+      sala: inp('sala', { maxlength: '200', value: e.sala || '' }),
+      paese: select('paese', Object.entries(PAESI), e.paese || 'CH'),
+      ospiti: inp('ospiti', { type: 'number', min: '0', max: '100000', inputmode: 'numeric', value: e.ospiti ?? '' }),
+      servizi: inp('servizi', { value: Array.isArray(e.servizi) ? e.servizi.join(', ') : '' }),
+      programma: h('textarea', { name: 'programma', rows: '5', maxlength: '10000' }),
+      note_interne: h('textarea', { name: 'note_interne', rows: '4', maxlength: '10000' }),
+      importo_chf: inp('importo_chf', { inputmode: 'decimal', value: e.importo_chf ?? '', placeholder: '0.00' }),
+    };
+    f.programma.value = e.programma || '';
+    f.note_interne.value = e.note_interne || '';
+    const acconto = check('acconto_pagato', 'Acconto pagato', e.acconto_pagato);
+    const saldo = check('saldo_pagato', 'Saldo pagato', e.saldo_pagato);
+    const alert = h('div');
+    const save = h('button', { class: 'btn btn--primary', type: 'submit' }, id ? 'Salva le modifiche' : 'Crea evento');
+    const cancel = h('a', { class: 'btn', href: id ? `#/evento/${encodeURIComponent(id)}` : '#/eventi' }, 'Annulla');
+
+    const form = h('form', { class: 'panel', novalidate: true },
+      alert,
+      h('div', { class: 'fields' },
+        field('Titolo *', f.titolo, { full: true }),
+        field('Cliente', f.cliente_id, { hint: 'Il cliente non è in elenco? Createlo prima in "Clienti".' }),
+        field('Tipo di evento', f.tipo),
+        field('Stato', f.stato),
+        field('Inizio', f.data_inizio),
+        field('Fine', f.data_fine),
+        field('Località', f.localita),
+        field('Sala', f.sala),
+        field('Paese', f.paese),
+        field('Ospiti', f.ospiti),
+        field('Servizi', f.servizi, { full: true, hint: 'Separate i servizi con una virgola (es. Ledwall, Luci, Audio).' }),
+        field('Programma', f.programma, { full: true }),
+        field('Note interne', f.note_interne, { full: true })),
+      h('h2', null, 'Dati economici'),
+      h('div', { class: 'fields' },
+        field('Importo (CHF)', f.importo_chf, { hint: 'Es. 2450.00' }),
+        h('div', { class: 'field' }, acconto, saldo)),
+      h('div', { class: 'panel__foot' }, cancel, save));
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      clear(alert);
+      if (!f.titolo.value.trim()) {
+        markInvalid(form, new ApiError(400, 'invalid_input', 'titolo'));
+        alert.append(h('p', { class: 'alert alert--error', role: 'alert' }, 'Il titolo è obbligatorio.'));
+        return;
+      }
+      const importo = f.importo_chf.value.replace(/['\s]/g, '').replace(',', '.');
+      const body = {
+        titolo: f.titolo.value.trim(),
+        cliente_id: f.cliente_id.value || null,
+        tipo: f.tipo.value.trim() || null,
+        stato: f.stato.value,
+        data_inizio: f.data_inizio.value || null,
+        data_fine: f.data_fine.value || null,
+        localita: f.localita.value.trim() || null,
+        sala: f.sala.value.trim() || null,
+        paese: f.paese.value,
+        ospiti: f.ospiti.value === '' ? null : Number(f.ospiti.value),
+        servizi: f.servizi.value.split(',').map((s) => s.trim()).filter(Boolean),
+        programma: f.programma.value.trim() || null,
+        note_interne: f.note_interne.value.trim() || null,
+        importo_chf: importo === '' ? null : importo,
+        acconto_pagato: acconto.querySelector('input').checked,
+        saldo_pagato: saldo.querySelector('input').checked,
+      };
+      busy(save, async () => {
+        try {
+          const res = await api(id ? `eventi/${encodeURIComponent(id)}` : 'eventi', { method: id ? 'PATCH' : 'POST', body });
+          const newId = (res.evento && res.evento.id) || id;
+          toast(id ? 'Evento aggiornato.' : `Evento creato${res.evento && res.evento.numero_ordine ? ` (N. ${res.evento.numero_ordine})` : ''}.`);
+          window.location.hash = newId ? `#/evento/${encodeURIComponent(newId)}` : '#/eventi';
+        } catch (err) {
+          markInvalid(form, err);
+          alert.append(h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)));
+        }
+      });
+    });
+
+    page({ title: id ? 'Modifica evento' : 'Nuovo evento', sub: e.numero_ordine ? `N. ${e.numero_ordine}` : null, back: id ? [`#/evento/${encodeURIComponent(id)}`, 'Evento'] : ['#/eventi', 'Eventi'] }, form);
+  }
+
+  // ------------------------------------------------------------ richieste dal sito
+  async function viewRichieste(_, alive) {
+    loading();
+    const tab = state.richiesteTab;
+    let list;
+    try { list = (await api(`richieste${tab ? `?stato=${tab}` : ''}`)).richieste || []; } catch (err) { if (alive()) failure('Richieste dal sito', err); return; }
+    if (!alive()) return;
+    list.forEach((r) => state.richieste.set(r.id, r));
+
+    const tabs = h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Stato delle richieste' },
+      [['nuova', 'Nuove'], ['gestita', 'Gestite'], ['scartata', 'Scartate'], ['', 'Tutte']].map(([v, l]) => {
+        const sel = v === tab;
+        return h('button', {
+          type: 'button', role: 'tab', 'aria-selected': String(sel), 'aria-controls': 'richieste-panel',
+          onclick: () => { state.richiesteTab = v; route(); },
+        }, l, sel ? h('span', { class: 'count' }, String(list.length)) : null);
+      }));
+
+    const content = list.length
+      ? h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
+        h('thead', null, h('tr', null, ['Ricevuta', 'Richiedente', 'Evento', 'Ospiti', 'Stato', ''].map((t, i) => h('th', { scope: 'col', class: i === 3 ? 'num' : null }, t || h('span', { class: 'sr-only' }, 'Azioni'))))),
+        h('tbody', null, list.map((r) => {
+          const href = `#/richiesta/${encodeURIComponent(r.id)}`;
+          const tr = h('tr', { class: 'is-link' },
+            td('Ricevuta', fmtDate(r.created_at)),
+            h('td', { 'data-label': 'Richiedente', class: 'table__primary' }, h('span', null, h('a', { href }, r.nome || '—'), h('span', { class: 'table__sub' }, [r.email, r.telefono].filter(Boolean).join(' · ')))),
+            td('Evento', dash(r.tipo), h('span', { class: 'table__sub' }, [r.data ? fmtDate(r.data) : null, r.localita].filter(Boolean).join(' · '))),
+            h('td', { 'data-label': 'Ospiti', class: 'num' }, h('span', null, dash(r.ospiti))),
+            td('Stato', badge(r.stato, STATI_RICHIESTA)),
+            h('td', { 'data-label': '', class: 'table__actions' }, h('a', { class: 'btn btn--sm', href }, 'Apri')));
+          tr.addEventListener('click', (ev) => { if (!ev.target.closest('a, button')) window.location.hash = href; });
+          return tr;
+        }))))
+      : empty('Nessuna richiesta', tab === 'nuova' ? 'Non ci sono nuove richieste dal modulo del sito.' : 'Nessuna richiesta in questo elenco.');
+
+    page({ title: 'Richieste dal sito', sub: 'Richieste di offerta inviate dal modulo del sito pubblico' },
+      tabs, h('div', { id: 'richieste-panel', role: 'tabpanel' }, content));
+  }
+
+  async function viewRichiesta([id], alive) {
+    let r = state.richieste.get(id);
+    if (!r) {
+      loading();
+      try {
+        const list = (await api('richieste')).richieste || [];
+        list.forEach((x) => state.richieste.set(x.id, x));
+        r = state.richieste.get(id);
+      } catch (err) { if (alive()) failure('Richiesta', err); return; }
+      if (!alive()) return;
+      if (!r) { failure('Richiesta', new ApiError(404, 'not_found')); return; }
+    }
+
+    const setStato = (stato, btn) => busy(btn, async () => {
+      try {
+        const res = await api(`richieste/${encodeURIComponent(r.id)}`, { method: 'PATCH', body: { stato } });
+        state.richieste.set(r.id, res.richiesta || { ...r, stato });
+        toast(`Richiesta segnata come "${STATI_RICHIESTA[stato]}".`);
+        route();
+      } catch (err) { toast(errorMessage(err), 'error'); }
+    });
+
+    const azioni = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Azioni')));
+    if (r.evento_id) {
+      add(azioni, [
+        h('p', { class: 'alert alert--ok' }, 'Questa richiesta è già stata convertita in evento.'),
+        h('div', { class: 'panel__foot' }, h('a', { class: 'btn btn--primary', href: `#/evento/${encodeURIComponent(r.evento_id)}` }, "Apri l'evento")),
+      ]);
+    } else {
+      const titolo = h('input', { type: 'text', maxlength: '200', value: [r.tipo, r.nome].filter(Boolean).join(' — ') });
+      const conv = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Converti in evento');
+      const form = h('form', null,
+        h('p', { class: 'muted' }, "Crea il cliente (o riusa quello con la stessa e-mail) e un nuovo evento con i dati della richiesta."),
+        h('div', { class: 'fields' }, field("Titolo dell'evento", titolo, { full: true, hint: 'Facoltativo: potete modificarlo anche dopo.' })),
+        h('div', { class: 'panel__foot' },
+          r.stato !== 'scartata' ? h('button', { class: 'btn', type: 'button', onclick: (ev) => setStato('scartata', ev.currentTarget) }, 'Scarta') : null,
+          r.stato !== 'gestita' ? h('button', { class: 'btn', type: 'button', onclick: (ev) => setStato('gestita', ev.currentTarget) }, 'Segna come gestita') : null,
+          r.stato !== 'nuova' ? h('button', { class: 'btn', type: 'button', onclick: (ev) => setStato('nuova', ev.currentTarget) }, 'Riporta tra le nuove') : null,
+          conv));
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        busy(conv, async () => {
+          try {
+            const t = titolo.value.trim();
+            const res = await api(`richieste/${encodeURIComponent(r.id)}/converti`, { method: 'POST', body: t ? { titolo: t } : {} });
+            state.richieste.delete(r.id);
+            toast(`Evento creato${res.numero_ordine ? ` (N. ${res.numero_ordine})` : ''}.`);
+            window.location.hash = res.evento_id ? `#/evento/${encodeURIComponent(res.evento_id)}` : '#/richieste';
+          } catch (err) { toast(errorMessage(err), 'error'); }
+        });
+      });
+      azioni.append(form);
+    }
+
+    page({ title: r.nome || 'Richiesta', sub: h('span', null, `Ricevuta il ${fmtDate(r.created_at)} · `, badge(r.stato, STATI_RICHIESTA)), back: ['#/richieste', 'Richieste'] },
+      panels(
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Dati della richiesta')),
+          dl([
+            ['E-mail', mailLink(r.email)],
+            ['Telefono', telLink(r.telefono)],
+            ['Tipo di evento', dash(r.tipo)],
+            ['Data', fmtDate(r.data)],
+            ['Località', dash(r.localita)],
+            ['Ospiti', dash(r.ospiti)],
+            ['Servizi', Array.isArray(r.servizi) && r.servizi.length ? r.servizi.join(', ') : dash(typeof r.servizi === 'string' ? r.servizi : null)],
+            ['Lingua', LINGUE[r.lingua] || dash(r.lingua)],
+          ])),
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Messaggio')), multiline(r.messaggio)),
+        wide(azioni)));
+  }
+
+  // ------------------------------------------------------------ clienti
+  async function viewClienti(_, alive) {
+    const q = h('input', { type: 'search', id: 'c-q', placeholder: 'Nome, azienda o e-mail…', autocomplete: 'off', maxlength: '60' });
+    const count = h('span', { class: 'toolbar__count', role: 'status' });
+    const results = h('div', null, h('p', { class: 'muted' }, 'Caricamento…'));
+    page({ title: 'Clienti', actions: [h('a', { class: 'btn btn--primary', href: '#/clienti/nuovo' }, 'Nuovo cliente')] },
+      h('form', { class: 'toolbar', role: 'search', 'aria-label': 'Cerca un cliente', onsubmit: (e) => e.preventDefault() },
+        h('div', { class: 'field field--search' }, h('label', { for: 'c-q' }, 'Cerca'), q), count),
+      results);
+    let timer = null;
+    let last = 0;
+    const load = async () => {
+      const my = ++last;
+      const term = q.value.trim();
+      try {
+        const list = (await api(`clienti${term ? `?q=${encodeURIComponent(term)}` : ''}`)).clienti || [];
+        if (!alive() || my !== last) return;
+        list.forEach((c) => state.clienti.set(c.id, c));
+        count.textContent = `${list.length} ${list.length === 1 ? 'cliente' : 'clienti'}`;
+        clear(results);
+        results.append(list.length
+          ? h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
+            h('thead', null, h('tr', null, ['Nome', 'E-mail', 'Telefono', 'Lingua'].map((t) => h('th', { scope: 'col' }, t)))),
+            h('tbody', null, list.map((c) => {
+              const href = `#/cliente/${encodeURIComponent(c.id)}`;
+              const tr = h('tr', { class: 'is-link' },
+                h('td', { 'data-label': 'Nome', class: 'table__primary' }, h('span', null, h('a', { href }, c.nome || '—'), c.azienda ? h('span', { class: 'table__sub' }, c.azienda) : null)),
+                td('E-mail', mailLink(c.email)), td('Telefono', telLink(c.telefono)), td('Lingua', LINGUE[c.lingua] || dash(c.lingua)));
+              tr.addEventListener('click', (ev) => { if (!ev.target.closest('a, button')) window.location.hash = href; });
+              return tr;
+            }))))
+          : empty('Nessun cliente trovato', term ? 'Provate con un altro termine di ricerca.' : 'Non ci sono ancora clienti.'));
+      } catch (err) {
+        if (!alive() || my !== last) return;
+        clear(results);
+        count.textContent = '';
+        results.append(h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)));
+      }
+    };
+    q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(load, 300); });
+    await load();
+  }
+
+  async function viewClienteForm([id], alive) {
+    let c = {};
+    if (id) {
+      c = state.clienti.get(id);
+      if (!c) {
+        loading();
+        try { ((await api('clienti')).clienti || []).forEach((x) => state.clienti.set(x.id, x)); } catch (err) { if (alive()) failure('Cliente', err); return; }
+        if (!alive()) return;
+        c = state.clienti.get(id);
+        if (!c) { failure('Cliente', new ApiError(404, 'not_found')); return; }
+      }
+    }
+    const f = {
+      nome: h('input', { name: 'nome', type: 'text', maxlength: '120', required: true, value: c.nome || '', autocomplete: 'off' }),
+      azienda: h('input', { name: 'azienda', type: 'text', maxlength: '160', value: c.azienda || '', autocomplete: 'off' }),
+      email: h('input', { name: 'email', type: 'email', maxlength: '254', value: c.email || '', autocomplete: 'off' }),
+      telefono: h('input', { name: 'telefono', type: 'tel', maxlength: '40', value: c.telefono || '', autocomplete: 'off' }),
+      lingua: select('lingua', Object.entries(LINGUE), c.lingua || 'it'),
+      note: h('textarea', { name: 'note', rows: '4', maxlength: '4000' }),
+    };
+    f.note.value = c.note || '';
+    const alert = h('div');
+    const save = h('button', { class: 'btn btn--primary', type: 'submit' }, id ? 'Salva le modifiche' : 'Crea cliente');
+    const form = h('form', { class: 'panel', novalidate: true }, alert,
+      h('div', { class: 'fields' },
+        field('Nome e cognome *', f.nome), field('Azienda', f.azienda), field('E-mail', f.email), field('Telefono', f.telefono), field('Lingua', f.lingua),
+        field('Note', f.note, { full: true })),
+      h('div', { class: 'panel__foot' }, h('a', { class: 'btn', href: '#/clienti' }, 'Annulla'), save));
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      clear(alert);
+      if (!f.nome.value.trim()) {
+        markInvalid(form, new ApiError(400, 'invalid_input', 'nome'));
+        alert.append(h('p', { class: 'alert alert--error', role: 'alert' }, 'Il nome è obbligatorio.'));
+        return;
+      }
+      const body = {
+        nome: f.nome.value.trim(), azienda: f.azienda.value.trim() || null, email: f.email.value.trim() || null,
+        telefono: f.telefono.value.trim() || null, lingua: f.lingua.value, note: f.note.value.trim() || null,
+      };
+      busy(save, async () => {
+        try {
+          const res = await api(id ? `clienti/${encodeURIComponent(id)}` : 'clienti', { method: id ? 'PATCH' : 'POST', body });
+          if (res.cliente) state.clienti.set(res.cliente.id, res.cliente);
+          toast(id ? 'Cliente aggiornato.' : 'Cliente creato.');
+          window.location.hash = '#/clienti';
+        } catch (err) {
+          markInvalid(form, err);
+          alert.append(h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)));
+        }
+      });
+    });
+    page({ title: id ? 'Modifica cliente' : 'Nuovo cliente', back: ['#/clienti', 'Clienti'] }, form);
+  }
+
+  function viewVietato() {
+    page({ title: 'Accesso non consentito' },
+      h('p', { class: 'alert alert--error', role: 'alert' }, 'Questa sezione è riservata agli amministratori.'),
+      h('p', null, h('a', { class: 'btn', href: '#/prossimi' }, 'Torna ai prossimi eventi')));
+  }
+
+  // ------------------------------------------------------------ router
+  const ID = '([0-9A-Za-z-]{1,64})';
+  const ROUTES = [
+    [/^#\/prossimi$/, viewProssimi, false, 'prossimi'],
+    [/^#\/eventi$/, viewEventi, false, 'eventi'],
+    [/^#\/eventi\/nuovo$/, viewEventoForm, true, 'eventi'],
+    [new RegExp(`^#/evento/${ID}$`), viewEvento, false, 'eventi'],
+    [new RegExp(`^#/evento/${ID}/modifica$`), viewEventoForm, true, 'eventi'],
+    [/^#\/richieste$/, viewRichieste, true, 'richieste'],
+    [new RegExp(`^#/richiesta/${ID}$`), viewRichiesta, true, 'richieste'],
+    [/^#\/clienti$/, viewClienti, true, 'clienti'],
+    [/^#\/clienti\/nuovo$/, viewClienteForm, true, 'clienti'],
+    [new RegExp(`^#/cliente/${ID}$`), viewClienteForm, true, 'clienti'],
+  ];
+
+  function route() {
+    const my = ++seq;
+    const alive = () => my === seq;
+    const hash = window.location.hash || '#/prossimi';
+    for (const [re, view, adminOnly, section] of ROUTES) {
+      const m = re.exec(hash);
+      if (!m) continue;
+      nav.querySelectorAll('a').forEach((a) => {
+        if (a.dataset.section === section) a.setAttribute('aria-current', 'page');
+        else a.removeAttribute('aria-current');
+      });
+      if (adminOnly && !isAdmin()) { viewVietato(); return; }
+      Promise.resolve(view(m.slice(1).map(decodeURIComponent), alive)).catch((err) => { if (alive()) failure('Errore', err); });
+      return;
+    }
+    window.location.replace('#/prossimi');
+  }
+
+  function buildShell() {
+    clear(nav);
+    const links = [['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
+    if (isAdmin()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti']);
+    links.forEach(([href, label, section]) => nav.append(h('a', { href, 'data-section': section }, label)));
+    const logout = h('button', { class: 'app__link', type: 'button' }, 'Esci');
+    logout.addEventListener('click', async () => {
+      logout.disabled = true;
+      try { await api('auth/logout', { method: 'POST' }); } catch (err) { /* si esce comunque */ }
+      window.location.replace(LOGIN);
+    });
+    nav.append(logout);
+    clear(userBox);
+    add(userBox, [h('strong', null, state.me.nome || 'Utente'), RUOLI[state.me.ruolo] || '']);
+  }
+
+  async function init() {
+    try {
+      const me = await api('me');
+      if (!me || !me.ruolo) throw new ApiError(500, 'server_error');
+      state.me = me;
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) return;
+      if (err instanceof ApiError && err.status === 403) { window.location.replace(LOGIN); return; }
+      clear(main);
+      add(main, [h('h1', null, 'Area riservata'),
+        h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)),
+        h('p', null, h('button', { class: 'btn', type: 'button', onclick: () => window.location.reload() }, 'Riprova'))]);
+      return;
+    }
+    buildShell();
+    window.addEventListener('hashchange', route);
+    route();
+  }
+
+  init();
+})();

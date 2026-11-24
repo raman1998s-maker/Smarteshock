@@ -56,20 +56,13 @@
     "title": "En direct, sur nos installations",
     "lead": "Quelques moments des événements que nous avons équipés.",
     "video": "Vidéo d'un événement équipé par Meekon Displays",
-    "a1": "Invités sur la piste entre des faisceaux lumineux, mur LED en arrière-plan",
-    "a2": "Faisceaux de lumière blanche au-dessus de la piste, avec structures éclairées",
-    "a3": "Salle de réception en lumière bleue et violette, lyres asservies sur structure",
-    "a4": "Lyres asservies dessinant des faisceaux au-dessus des invités",
-    "a5": "Portrait de la mariée sur mur LED, au-dessus de la console du DJ",
-    "a6": "Scène avec écran et console DJ éclairée",
-    "a7": "Faisceaux lumineux et mur LED au-dessus de la piste",
-    "filters": { "all": "Tous", "matrimoni": "Mariages", "aziende": "Entreprises", "feste": "Fêtes", "palco": "Scène" }
+    "filters": { "all": "Tous", "matrimoni": "Mariages", "aziende": "Entreprises", "feste": "Fêtes", "palco": "Scène", "label": "Filtrer par type d'événement" }
   },
   "regions": {
     "eyebrow": "Zone d'intervention",
     "title": "Dans toute la Suisse, et au-delà",
     "lead": "Nous intervenons dans toutes les régions de Suisse. Sur demande, nous apportons aussi notre technique en Italie, en Allemagne et en France.",
-    "main": { "label": "Suisse", "text": "Tous les cantons, des villes aux stations de montagne." },
+    "main": { "label": "Suisse", "text": "Tous les cantons, des villes aux stations de montagne.", "note": "Zone principale" },
     "onrequest": "sur demande",
     "countries": { "ch": "Suisse", "it": "Italie", "de": "Allemagne", "fr": "France" }
   },
@@ -132,5 +125,6 @@
   },
   "privacy": { "note": "Vos données servent uniquement à répondre à votre demande, conformément à la loi suisse sur la protection des données (LPD)." },
   "footer": { "claim": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France." },
-  "thanks": { "title": "Merci, à bientôt !", "eyebrow": "Demande envoyée", "text": "Nous avons bien reçu votre demande et vous recontacterons rapidement avec une proposition.", "back": "Retour au site" }
+  "thanks": { "title": "Merci, à bientôt !", "eyebrow": "Demande envoyée", "text": "Nous avons bien reçu votre demande et vous recontacterons rapidement avec une proposition.", "back": "Retour au site" },
+  "notfound": { "title": "Page introuvable", "text": "La page que vous cherchez n'existe pas ou a été déplacée.", "back": "Retour au site" }
 }

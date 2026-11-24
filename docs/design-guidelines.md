@@ -80,6 +80,8 @@ Scelta: **tema chiaro** per il contenuto (tabelle e moduli si leggono meglio per
 | `--c-ink-text-2` | `#45474A` | Testo secondario, etichette dei campi | 9.32 · 8.48 |
 | `--c-anthracite` | `#6A6969` | Testo meta, intestazioni tabella | 5.47 · 4.98 |
 | `--c-cyan-ink` | `#146A82` | Link, bottone primario, focus | 6.15 · 5.60; bianco su di esso 6.15 |
+| `--c-cyan-ink-2` | `#0F5468` | Hover del bottone primario | bianco su di esso 8.44 |
+| `--c-cyan-wash` | `#E6F4F8` | Fondo tenue (selezione, evidenza) | cyan-ink su di esso 5.47 |
 | `--c-red-ink` | `#A12C2C` | Errori, bottone elimina | 7.21 · 6.56 |
 | `--c-green-ink` | `#1D6638` | Successo | 6.98 · 6.35 |
 | `--c-stone-1` / `-2` | `#E3DFD6` / `#CBC5B9` | Filetti | decorativi |
@@ -98,6 +100,8 @@ Il ciano puro `#4DC0DE` sul chiaro si usa **solo** come indicatore (filetto nav 
 | `completato` | `#45474A` | `#ECEAE5` | 7.75 | quadrato |
 | `annullato` | `#962A2A` | `#F7E2DF` | 6.35 | trattino |
 
+Colori dei punti di stato (solo indicatori, lo stato è sempre scritto anche nel testo del badge): richiesta `#C98A12`, offerta `#4DC0DE`, confermato `#2E9A57`, completato `#6A6969`, annullato `#C9473F`.
+
 Lo stato non è mai comunicato solo dal colore: c'è sempre l'etichetta testuale e una **forma** diversa del punto. Stati delle richieste web: `.badge--nuova` (come richiesta), `--gestita` (come confermato), `--scartata` (come completato).
 
 ## 4. Tipografia
@@ -111,13 +115,14 @@ Lo stato non è mai comunicato solo dal colore: c'è sempre l'etichetta testuale
 
 **Perché.** Cormorant Garamond resta: è un Garamond da titolazione, raffinato, con un corsivo splendido per la parola-chiave in ciano; parla ai matrimoni senza diventare romantico-kitsch e regge il registro istituzionale di Davos. Manrope viene **sostituito da Jost**: è un geometrico di eredità Futura, con le stesse curve piene e regolari della "M" del logo; in maiuscolo spaziato (eyebrow, bottoni) è più elegante ed "europeo" di un grotesk da startup, e ha le cifre tabellari (`tnum`) per le tabelle del gestionale. Entrambi coprono italiano, tedesco e francese.
 
-**Link da usare** in tutte le pagine (sostituisce quello attuale con Manrope):
+**Caricamento: ospitati in locale.** Per la protezione dei dati (LPD/GDPR) i caratteri **non** si caricano da Google Fonts né da altri servizi esterni: nessun `<link>` a `fonts.googleapis.com` / `fonts.gstatic.com`, nessun `preconnect` verso terzi. I file stanno in `assets/fonts/` e le regole `@font-face` sono in cima a `assets/css/style.css` e `assets/css/admin.css` (tenerle identiche).
 
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
-```
+- Fonte: pacchetti npm `@fontsource/cormorant-garamond@5.3.0` e `@fontsource/jost@5.3.0` (versione fissata), solo WOFF2, sottoinsiemi **latin** e **latin-ext** (bastano per IT, DE, FR, EN).
+- 10 file, ~160 kB in totale; il browser scarica solo i pesi e i sottoinsiemi effettivamente usati nella pagina (`unicode-range`): una pagina in italiano tipica carica 3–5 file latin (~10–23 kB l'uno).
+- `font-display: swap`: il testo appare subito con il carattere di riserva definito nei token `--font-display` / `--font-text`.
+- Licenza SIL Open Font License 1.1: `assets/fonts/OFL-CormorantGaramond.txt`, `assets/fonts/OFL-Jost.txt` (da distribuire insieme ai file).
+- I nomi di famiglia nelle `@font-face` (`"Cormorant Garamond"`, `"Jost"`) devono restare identici a quelli dei token.
+- Per aggiornare: `npm pack` della nuova versione fissata in una cartella temporanea, copiare solo i `.woff2` elencati sopra, aggiornare versione e licenze qui.
 
 Nessun altro peso: il corpo 300 su fondo scuro è troppo sottile; il 600 non serve.
 
@@ -235,7 +240,7 @@ La scritta del logo è composta da punti LED. Lo riprendiamo come **trama decora
 | Barra filtri | `.toolbar` con `.field` / `.field--search`, `.toolbar__count` |
 | Tabella | `.table-wrap` › `table.table`; `th[aria-sort]`; celle `.num` (importi), `.table__primary`, `.table__sub`, `.table__actions`. **Ogni `<td>` deve avere `data-label="…"`**: sotto 720 px ogni riga diventa una scheda con etichetta a sinistra |
 | Badge | `.badge.badge--richiesta|offerta|confermato|completato|annullato` (+ `nuova|gestita|scartata`) |
-| Pannelli | `.panels` (griglia), `.panel`, `.panel__head`, `.panel__foot`, `.dl` (coppie dato/valore) |
+| Pannelli | `.panels` (griglia, spaziatura solo con `gap`), `.panel`, `.panel--full` (occupa tutta la riga di `.panels`, per tabelle o moduli larghi), `.panel__head`, `.panel__foot`, `.dl` (coppie dato/valore) |
 | Campi | `.fields` (griglia), `.field`, `.field--full`, `.field--invalid`, `.field__hint`, `.field__error`, `.check`; `aria-invalid="true"` colora il bordo |
 | Bottoni | `.btn` (secondario), `.btn--primary`, `.btn--dark`, `.btn--ghost`, `.btn--danger`, `.btn--sm`, `.btn--block`; `disabled` / `aria-busy="true"` |
 | Schede | `.tabs` con `button[role="tab"][aria-selected]` (o `a[aria-current]`), contatore `.count` |

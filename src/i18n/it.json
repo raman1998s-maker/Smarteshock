@@ -56,20 +56,13 @@
     "title": "Dal vivo, sulle nostre installazioni",
     "lead": "Alcuni momenti degli eventi che abbiamo allestito.",
     "video": "Video di un evento allestito da Meekon Displays",
-    "a1": "Ospiti in pista tra fasci di luce, con ledwall sullo sfondo",
-    "a2": "Fasci di luce bianca sopra la pista da ballo, con strutture illuminate",
-    "a3": "Sala ricevimento in luce blu e viola, con teste mobili su struttura",
-    "a4": "Teste mobili che disegnano fasci di luce sopra gli ospiti",
-    "a5": "Ritratto della sposa su ledwall, sopra la console del DJ",
-    "a6": "Palco con schermo e console del DJ illuminata",
-    "a7": "Fasci di luce e ledwall sopra la pista",
-    "filters": { "all": "Tutti", "matrimoni": "Matrimoni", "aziende": "Aziende", "feste": "Feste", "palco": "Palco" }
+    "filters": { "all": "Tutti", "matrimoni": "Matrimoni", "aziende": "Aziende", "feste": "Feste", "palco": "Palco", "label": "Filtra per tipo di evento" }
   },
   "regions": {
     "eyebrow": "Dove lavoriamo",
     "title": "In tutta la Svizzera, e oltre",
     "lead": "Raggiungiamo ogni regione della Svizzera. Su richiesta, portiamo la nostra tecnica anche in Italia, in Germania e in Francia.",
-    "main": { "label": "Svizzera", "text": "Tutti i cantoni, dalle città alle località di montagna." },
+    "main": { "label": "Svizzera", "text": "Tutti i cantoni, dalle città alle località di montagna.", "note": "Area principale" },
     "onrequest": "su richiesta",
     "countries": { "ch": "Svizzera", "it": "Italia", "de": "Germania", "fr": "Francia" }
   },
@@ -132,5 +125,6 @@
   },
   "privacy": { "note": "Usiamo i vostri dati solo per rispondere alla richiesta, nel rispetto della legge svizzera sulla protezione dei dati (LPD)." },
   "footer": { "claim": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia." },
-  "thanks": { "title": "Grazie, a presto!", "eyebrow": "Richiesta inviata", "text": "Abbiamo ricevuto la vostra richiesta: vi ricontatteremo al più presto con una proposta.", "back": "Torna al sito" }
+  "thanks": { "title": "Grazie, a presto!", "eyebrow": "Richiesta inviata", "text": "Abbiamo ricevuto la vostra richiesta: vi ricontatteremo al più presto con una proposta.", "back": "Torna al sito" },
+  "notfound": { "title": "Pagina non trovata", "text": "La pagina che cercate non esiste o è stata spostata.", "back": "Torna al sito" }
 }

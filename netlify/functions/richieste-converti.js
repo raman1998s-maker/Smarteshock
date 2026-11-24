@@ -1,5 +1,7 @@
 // POST /api/richieste/:id/converti — crea (o riusa) il cliente e crea l'evento
 // da una richiesta del sito, in un'unica transazione (funzione SQL converti_richiesta).
+// La funzione SQL passa all'evento anche tipo, data, località, paese (se assente
+// 'CH'), ospiti, servizi e messaggio della richiesta (migrazione 0002).
 // Corpo facoltativo: { "titolo": "..." }
 import { createHandler } from './_lib/handler.js';
 import { json, readJson } from './_lib/http.js';

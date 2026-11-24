@@ -56,6 +56,78 @@
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 
+  // Gallery filters (inserted only when JS is available; markup comes from build.py)
+  const filtersTpl = document.getElementById('gallery-filters');
+  const gallery = document.getElementById('gallery');
+  if (filtersTpl && gallery && 'content' in filtersTpl) {
+    gallery.parentNode.insertBefore(filtersTpl.content.cloneNode(true), gallery);
+    const group = gallery.previousElementSibling;
+    const figures = gallery.querySelectorAll('.gallery__item');
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-filter]');
+      if (!btn) return;
+      const cat = btn.dataset.filter;
+      group.querySelectorAll('button[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      figures.forEach((fig) => {
+        const show = cat === 'all' || fig.dataset.cat === cat;
+        fig.hidden = !show;
+        if (show) fig.classList.add('is-visible');
+        if (!show) { const v = fig.querySelector('video'); if (v) v.pause(); }
+      });
+    });
+  }
+
+  // Quote form: JSON to /api/richiesta; without JS the classic POST works too (303 -> grazie.html)
+  const form = document.getElementById('preventivo');
+  if (form && window.fetch && window.FormData) {
+    const submit = form.querySelector('button[type="submit"]');
+    const errorBox = form.querySelector('.form__error');
+    const label = submit.textContent;
+    let busy = false;
+    const setBusy = (on) => {
+      busy = on;
+      submit.disabled = on;
+      submit.setAttribute('aria-busy', String(on));
+      submit.textContent = on ? form.dataset.sending : label;
+    };
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (busy) return;
+      errorBox.hidden = true;
+      form.querySelectorAll('[aria-invalid="true"]').forEach((el) => el.removeAttribute('aria-invalid'));
+      const body = {};
+      new FormData(form).forEach((value, key) => {
+        if (typeof value !== 'string') return;
+        if (key === 'servizi') (body.servizi = body.servizi || []).push(value);
+        else body[key] = value;
+      });
+      setBusy(true);
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'meekon' },
+          body: JSON.stringify(body),
+        });
+        if (res.ok) {
+          window.location.assign(form.dataset.thanks);
+          return;
+        }
+        let field = null;
+        try { field = (await res.json()).field || null; } catch (err) { field = null; }
+        const input = field && /^[a-z_]+$/.test(field) ? form.querySelector(`[name="${field}"]`) : null;
+        if (input && input.type !== 'hidden') {
+          input.setAttribute('aria-invalid', 'true');
+          input.focus();
+        }
+      } catch (err) {
+        /* network error: message below */
+      }
+      setBusy(false);
+      errorBox.hidden = false;
+    });
+  }
+
   // Language: remember choice, suggest the visitor's browser language (no forced redirect)
   const store = {
     get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -65,7 +137,9 @@
     a.addEventListener('click', () => store.set('meekon-lang', a.getAttribute('hreflang')));
   });
 
-  const hints = window.MEEKON_LANGHINTS || {};
+  let hints = {};
+  const hintsEl = document.getElementById('langhints');
+  if (hintsEl) { try { hints = JSON.parse(hintsEl.textContent) || {}; } catch (e) { hints = {}; } }
   const current = document.body.dataset.lang;
   const preferred = (navigator.languages || [navigator.language || ''])
     .map((l) => (l || '').slice(0, 2).toLowerCase())

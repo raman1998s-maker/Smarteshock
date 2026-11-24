@@ -231,13 +231,25 @@ describe('eventi — admin', () => {
     assert.equal(q, '(nome.ilike."*rossi id.eq. x*",azienda.ilike."*rossi id.eq. x*",email.ilike."*rossi id.eq. x*")');
   });
 
+  test('richieste: GET include il paese nel select e nella risposta', async () => {
+    const riga = { id: EV_ID, nome: 'Anna', email: 'anna@example.ch', paese: 'IT', stato: 'nuova' };
+    const calls = mockFetch([staffRoute(PROFILES), ['GET', /^\/rest\/v1\/richieste_web\?/, () => ({ body: [riga] })]]);
+    const res = await richieste(req('/api/richieste?stato=nuova', { cookie: ADMIN }));
+    assert.equal(res.status, 200);
+    const select = new URL(calls.at(-1).url).searchParams.get('select').split(',');
+    assert.ok(select.includes('paese'));
+    assert.equal((await res.json()).richieste[0].paese, 'IT');
+  });
+
   test('converti richiesta → 201 con numero ordine', async () => {
-    mockFetch([
+    const calls = mockFetch([
       staffRoute(PROFILES),
       ['POST', /^\/rest\/v1\/rpc\/converti_richiesta$/, () => ({ body: { cliente_id: 'c', evento_id: 'e', numero_ordine: '2026-0007' } })],
     ]);
     const res = await converti(req(`/api/richieste/${EV_ID}/converti`, { method: 'POST', cookie: ADMIN }));
     assert.equal(res.status, 201);
     assert.equal((await res.json()).numero_ordine, '2026-0007');
+    // Il paese passa all'evento dentro la funzione SQL (migrazione 0002): l'API invia solo id e titolo.
+    assert.deepEqual(calls.at(-1).body, { p_richiesta: EV_ID, p_titolo: null });
   });
 });
