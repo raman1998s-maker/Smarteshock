@@ -5,7 +5,7 @@
   "hint_link": "Voir la version française",
   "meta": {
     "title": "Meekon Displays — Technique événementielle : écrans LED, lumière, son, streaming",
-    "description": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France : mariages, anniversaires, fêtes traditionnelles, événements d'entreprise et WEF de Davos. Murs LED, projecteurs, lumière, structures, son, sonorisation DJ, captation live, streaming et effets spéciaux."
+    "description": "Technique événementielle en Suisse et, sur demande, en Italie, Allemagne et France : écrans LED, digital banner, lumière, son, DJ, streaming et dance floor."
   },
   "a11y": { "skip": "Aller au contenu", "nav": "Navigation principale", "lang": "Langue", "menu": "Ouvrir le menu", "close": "Fermer le menu" },
   "nav": { "events": "Événements", "services": "Prestations", "work": "Réalisations", "venues": "Lieux", "djs": "DJ", "method": "Méthode", "contact": "Contact", "cta": "Demander une offre" },
@@ -44,6 +44,8 @@
   "s4": { "t": "Sonorisation DJ", "d": "Installations complètes pour DJ et préparation de la console, en harmonie avec la lumière et les écrans.", "list": ["Sonorisation pour DJ", "Préparation de la console", "Retour pour le DJ", "Coordination avec lumière et mur LED"] },
   "s5": { "t": "Captation live et streaming", "d": "Nous portons l'instant en direct sur les écrans et le partageons avec ceux qui ne peuvent pas être là.", "list": ["Images live sur les murs LED", "Assistance aux prises de vue sur place", "Streaming en direct", "Raccordement aux écrans et projecteurs"] },
   "s6": { "t": "Effets spéciaux", "d": "L'effet au bon moment : l'entrée des mariés, la découpe du gâteau, l'ouverture du spectacle.", "list": ["Étincelles froides (spark)", "Machines à fumée", "Fumée lourde", "Canons à fumée"] },
+  "s7": { "t": "Dance floor", "d": "Une piste de danse montée sur mesure pour votre salle, pour l'ouverture du bal et pour toute la fête.", "list": ["Piste de danse modulaire", "Dimensions adaptées à la salle", "Montage et démontage", "Coordination avec la lumière et les effets"] },
+  "s8": { "t": "Digital banner", "d": "Des écrans verticaux pour accueillir les invités à l'entrée ou animer les vitrines, avec les contenus de votre choix.", "list": ["Totems numériques pour l'entrée", "Écrans pour vitrines", "Accueil, programme et orientation", "Chargement des contenus"] },
   "davos": {
     "eyebrow": "WEF Davos · Corporate",
     "title": "Support technique pour délégations et entreprises",
@@ -105,6 +107,7 @@
       ["Les étincelles froides et la fumée sont-elles possibles en intérieur ?", "Dans la plupart des salles, oui : les étincelles froides fonctionnent sans flamme nue et nous n'utilisons que du matériel professionnel. Nous vérifions toujours à l'avance les règles du lieu et les détecteurs de fumée."]
     ]
   },
+  "team": { "eyebrow": "Qui sommes-nous", "title": "L'équipe derrière chaque <em>événement</em>", "lead": "Les mêmes personnes suivent votre événement, du premier appel jusqu'au dernier câble.", "alt": "L'équipe de Meekon Displays" },
   "contact": {
     "eyebrow": "Contact",
     "title": "Parlez-nous de votre événement",
@@ -121,7 +124,7 @@
     "sending": "Envoi en cours…",
     "error": "Votre demande n'a pas pu être envoyée. Veuillez réessayer dans un instant ou nous écrire sur WhatsApp.",
     "types": ["Mariage", "Anniversaire / fête privée", "Fête traditionnelle", "Événement d'entreprise", "WEF Davos", "Événement scénique", "Autre"],
-    "chips": ["Écrans LED", "TV / projecteur", "Lumière", "Structures", "Son", "Sono DJ", "Captation live", "Streaming", "Étincelles / fumée"]
+    "chips": ["Écrans LED", "Digital banner", "TV / projecteur", "Lumière", "Structures", "Son", "Sono DJ", "Captation live", "Streaming", "Étincelles / fumée", "Dance floor"]
   },
   "privacy": { "note": "Vos données servent à répondre à votre demande et, si vous le souhaitez, à préparer l'offre et organiser l'événement ; elles ne sont jamais vendues ni utilisées à des fins publicitaires.", "link": "Lire la politique de confidentialité" },
   "footer": { "claim": "Votre vision, mise en scène avec précision.", "privacy": "Confidentialité" },

@@ -60,7 +60,7 @@ def E(value):
 # ---------------------------------------------------------------- testi dal CMS
 # Testi che nei file i18n contengono <em>: solo per queste chiavi un testo del CMS
 # può usare <em> e </em> (esatti); tutto il resto viene escapato.
-EM_KEYS = frozenset({"hero.title", "intro.text"})
+EM_KEYS = frozenset({"hero.title", "intro.text", "team.title"})
 # Chiavi sovrascritte dal CMS per ogni lingua (il loro valore in `t` è testo NON escapato).
 CMS_KEYS = {}
 
@@ -427,7 +427,7 @@ def build_context(lang, t, all_t, data):
         "partners.list": partners_html(data["partner"], lang, t),
         "whatsapp.label": E(t["whatsapp"]["label"]),
     }
-    for k in ["s1", "s2", "s3", "s4", "s5", "s6"]:
+    for k in ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"]:
         ctx[f"{k}.list"] = items(t[k]["list"])
     ctx["davos.list"] = items(t["davos"]["list"])
     return ctx
