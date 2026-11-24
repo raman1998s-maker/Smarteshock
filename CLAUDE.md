@@ -30,5 +30,5 @@ Vedi `docs/architettura.md` (stack, modello dati, API, flusso di autenticazione)
 ## Contatti pubblici (approvati dal titolare)
 - Telefono e WhatsApp: **079 945 00 00** → `tel:+41799450000`, `https://wa.me/41799450000`
 - E-mail: **meekon.display@gmail.com**
-- Instagram: (in attesa del nome utente esatto)
+- Instagram: **@meekon_display** → `https://www.instagram.com/meekon_display/` (motto usato sul profilo: "Bringing your vision to life with precision.")
 - Nessun indirizzo.
