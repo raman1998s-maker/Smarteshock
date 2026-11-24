@@ -1,6 +1,7 @@
 /* Proposta A — "Luce del giorno"
    Tema chiaro editoriale, da rivista. Usa la palette "carta" già approvata
-   per l'area riservata (docs/design-guidelines.md § 3.2). Logo sempre su fascia scura. */
+   per l'area riservata (docs/design-guidelines.md § 3.2). Logo sempre su fascia scura.
+   Carattere: calmo e preciso. Movimento raro e lento, mai rimbalzi. */
 :root {
   --c-paper: #F6F4EF;
   --c-white: #FFFFFF;
@@ -15,7 +16,7 @@
   --color-surface-2: var(--c-stone-1);
   --color-text: var(--c-ink-text);
   --color-text-2: var(--c-ink-text-2);
-  --color-text-3: var(--c-anthracite);
+  --color-text-3: #5E5D5C;                 /* antracite scurito: 6.1:1 su carta (AA anche a 11px) */
   --color-accent: var(--c-cyan-ink);
   --color-accent-soft: #E6F4F8;
   --color-on-light: var(--c-ivory);
@@ -25,9 +26,12 @@
   --color-focus: var(--c-cyan-ink);
   --color-dot: rgb(22 24 27 / .10);
   --color-scrim: rgb(var(--c-ink-0-rgb) / .94);
+
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --head-gap: clamp(48px, 6vw, 80px);
 }
 
-/* Navigazione: fascia scura fissa (il logo ha la scritta bianca) */
+/* ---------- Navigazione: fascia scura fissa (il logo ha la scritta bianca) ---------- */
 .nav { background: var(--c-ink-0); }
 .nav__menu > a:not(.btn) { color: var(--c-ivory-2); }
 .nav__menu > a:not(.btn):hover { color: var(--c-ivory); }
@@ -35,55 +39,117 @@
 .lang a { color: var(--c-ivory-3); }
 .lang a[aria-current], .lang a:hover { color: var(--c-ivory); border-color: var(--c-cyan); }
 .nav .btn { background: var(--c-ivory); color: var(--c-ink-0); border-color: var(--c-ivory); }
-.nav .btn:hover { background: var(--c-cyan); border-color: var(--c-cyan); }
+.nav .btn:hover { background: var(--c-cyan); border-color: var(--c-cyan); color: var(--c-ink-0); }
 .nav__toggle span { background: var(--c-ivory); }
 @media (max-width: 1080px) {
   .nav__menu { background: var(--c-ink-0); }
   .nav__menu > a:not(.btn) { color: var(--c-ivory); border-color: rgb(var(--c-ivory-rgb) / .1); }
 }
 
-/* Hero diviso: testo su carta a sinistra, video/foto incorniciato a destra */
-.hero { min-height: 92svh; grid-template-columns: 1fr; padding-top: var(--nav-h); }
+/* ---------- Bottoni: inchiostro pieno, risposta al tocco ---------- */
+.btn { background: var(--c-ink-text); border-color: var(--c-ink-text); color: var(--c-ivory);
+  transition: background var(--dur-1) ease, color var(--dur-1) ease, border-color var(--dur-1) ease, transform 160ms var(--ease-out); }
+.btn:hover { background: var(--c-cyan-ink); border-color: var(--c-cyan-ink); color: #fff; }
+.btn:active { transform: scale(.97); }
+.btn--line { background: transparent; color: var(--color-text); border-color: var(--color-line-2); }
+.btn--line:hover { background: var(--c-ink-text); border-color: var(--c-ink-text); color: var(--c-ivory); }
+
+/* ---------- Hero diviso: testo su carta, immagine incorniciata come una foto di copertina ---------- */
+.hero { min-height: min(100svh, 940px); grid-template-columns: 1fr; padding-top: var(--nav-h); }
 .hero__shade { display: none; }
 .hero__video {
   --side: max(var(--gutter), calc((100vw - var(--wrap)) / 2));
-  inset: calc(var(--nav-h) + 40px) auto auto 52%;
-  width: calc(48% - var(--side)); height: calc(100% - var(--nav-h) - 170px); z-index: 0; filter: none;
+  inset: calc(var(--nav-h) + 48px) var(--side) auto auto;
+  width: calc(46% - var(--side)); height: calc(100% - var(--nav-h) - 190px); z-index: 0; filter: none;
+  /* doppio filetto: cornice da stampa */
+  outline: 1px solid var(--color-line-2); outline-offset: 10px;
 }
-.hero__content { position: relative; z-index: 1; padding: 60px 0 var(--sp-8); }
-.hero__content > * { max-width: 46%; }
-.hero h1 { font-size: clamp(44px, 5.6vw, 84px); }
+.hero__content { position: relative; z-index: 1; padding: clamp(40px, 6vh, 72px) 0 var(--sp-8); align-self: center; }
+.hero__content > * { max-width: 48%; }
+.hero h1 { font-size: clamp(46px, 5.6vw, 86px); line-height: 1.02; letter-spacing: -.018em; text-wrap: balance; }
 .hero h1 em { color: var(--c-cyan-ink); }
-.hero__foot { position: relative; z-index: 1; background: var(--color-bg); color: var(--color-text-3); }
-.btn { background: var(--c-ink-text); border-color: var(--c-ink-text); color: var(--c-ivory); }
-.btn:hover { background: var(--c-cyan-ink); border-color: var(--c-cyan-ink); color: #fff; }
-.btn--line { background: transparent; color: var(--color-text); border-color: var(--color-line-2); }
+.hero__lead { max-width: 42ch; font-size: clamp(17px, 1.35vw, 19px); }
+.hero__cta { margin-top: 40px; }
+.hero__foot { position: relative; z-index: 1; background: var(--color-bg); color: var(--color-text-3); border-top: 1px solid var(--color-line-2); }
+
+/* Entrata del hero (una volta per visita): il titolo guida, il resto segue; l'immagine si scopre dal basso */
+@keyframes a-rise { from { opacity: 0; transform: translateY(var(--rise, 14px)); } }
+@keyframes a-fade { from { opacity: 0; } }
+@keyframes a-unveil { from { clip-path: inset(100% -24px -24px -24px); } to { clip-path: inset(-24px); } }
+.hero .eyebrow { animation: a-fade 500ms ease both; }
+.hero h1 { animation: a-rise 700ms var(--ease-out) both; --rise: 18px; }
+.hero__lead { animation: a-rise 600ms var(--ease-out) 110ms both; --rise: 10px; }
+.hero__cta { animation: a-rise 600ms var(--ease-out) 190ms both; --rise: 8px; }
+.hero__video { animation: a-unveil 1100ms cubic-bezier(.77, 0, .175, 1) 60ms both; }
+.hero__foot { animation: a-fade 500ms ease 420ms both; }
+
 @media (max-width: 860px) {
-  .hero { min-height: 0; }
-  .hero__video { position: relative; inset: auto; width: calc(100% - 2 * var(--gutter)); margin: var(--sp-5) auto 0; aspect-ratio: 4 / 3; grid-row: 1; }
+  .hero { display: flex; flex-direction: column; min-height: 0; }
+  .hero__video {
+    position: relative; inset: auto; order: -1; width: calc(100% - 2 * var(--gutter)); height: auto;
+    aspect-ratio: 4 / 3; margin: var(--sp-5) auto 0; outline-offset: 6px;
+  }
   .hero__content { padding: var(--sp-7) 0 var(--sp-7); }
   .hero__content > * { max-width: none; }
+  .hero h1 { font-size: clamp(40px, 11vw, 56px); }
+  .hero .eyebrow::before { display: none; }
 }
 
-/* Eventi: schede con foto sopra e testo sotto, come una rivista */
-.events { grid-auto-rows: 420px; }
+/* ---------- Intestazioni di sezione: filetto da rivista sopra l'occhiello ---------- */
+.head .eyebrow { padding-top: var(--sp-5); border-top: 1px solid var(--c-ink-text); display: inline-flex; }
+.head .eyebrow::before, .head .eyebrow::after { display: none; }
+.head h2 { letter-spacing: -.015em; text-wrap: balance; }
+.head__lead { text-wrap: pretty; }
+
+/* ---------- Intro: citazione d'apertura con filetto ciano ---------- */
+.intro__text { text-wrap: pretty; }
+.intro .wrap::before { content: ""; display: block; width: 48px; height: 2px; margin: 0 auto var(--sp-6); background: var(--c-cyan-ink); }
+
+/* ---------- Eventi: schede con foto sopra e didascalia sotto, come una rivista ---------- */
+.events { grid-auto-rows: 420px; gap: var(--sp-5); }
 .event { flex-direction: column; justify-content: flex-end; background: var(--c-white); border: 1px solid var(--color-line); }
 .event::before { display: none; }
-.event img { height: calc(100% - 150px); bottom: auto; filter: none; }
-.event__body { background: var(--c-white); width: 100%; min-height: 150px; }
-.event--lg img { height: calc(100% - 170px); }
-@media (max-width: 600px) { .events { grid-auto-rows: 400px; } }
+.event::after { height: 2px; }
+.event img { height: calc(100% - 156px); bottom: auto; filter: none; }
+.event__body { background: var(--c-white); width: 100%; min-height: 156px; }
+.event--lg img { height: calc(100% - 176px); }
+.event h3 { font-size: clamp(24px, 2.1vw, 30px); text-wrap: balance; }
+.event:hover img { transform: none; }
+@media (hover: hover) and (pointer: fine) { .event:hover img { transform: scale(1.03); } }
+@media (max-width: 600px) { .events { grid-auto-rows: 400px; gap: var(--sp-4); } }
 
-/* Davos e area di lavoro */
+/* ---------- Servizi: indice da rivista, numeri in ciano inchiostro ---------- */
+.services { border-top: 1px solid var(--c-ink-text); }
+.service__n { color: var(--c-cyan-ink); }
+.service h3 { letter-spacing: -.01em; }
+
+/* ---------- Davos: unica fascia scura, come una pagina a tutto colore ---------- */
 .feature { background: var(--c-ink-text); }
 .feature, .feature h2 { color: var(--c-ivory); }
 .feature__body > p:not(.eyebrow), .feature .ticks li { color: var(--c-ivory-2); }
 .feature .eyebrow, .feature h2 em { color: var(--c-cyan); }
 .feature__media::after { background: linear-gradient(90deg, transparent 60%, var(--c-ink-text)); }
 .feature .btn--line { color: var(--c-ivory); border-color: rgb(var(--c-ivory-rgb) / .3); }
+.feature .btn--line:hover { background: var(--c-ivory); color: var(--c-ink-text); border-color: var(--c-ivory); }
 .feature .ticks li::before { border-color: var(--c-cyan); }
 @media (max-width: 860px) { .feature__media::after { background: linear-gradient(0deg, var(--c-ink-text), transparent 50%); } }
 
-/* Il piede resta scuro per il logo */
-.footer { background: var(--c-ink-0); color: var(--c-ivory-2); }
+/* ---------- Il piede resta scuro per il logo ---------- */
+.footer {
+  background: var(--c-ink-0); color: var(--c-ivory-2);
+  --color-text: var(--c-ivory); --color-text-2: var(--c-ivory-2); --color-text-3: var(--c-ivory-3);
+  --color-accent: var(--c-cyan); --color-line: rgb(var(--c-ivory-rgb) / .1); --color-line-2: rgb(var(--c-ivory-rgb) / .22);
+}
 .fab-whatsapp { background: var(--c-ink-text); color: var(--c-ivory); }
+
+/* ---------- Chi siamo: foto di gruppo come pagina d'apertura di un servizio fotografico ---------- */
+.team { background: var(--c-white); border-block: 1px solid var(--color-line); }
+.team__inner { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--sp-7) clamp(32px, 5vw, 72px); align-items: end; }
+.team__text { margin: 0; }
+.team__text .head__lead { max-width: 30ch; }
+.team__photo { margin: 0; outline: 1px solid var(--color-line-2); outline-offset: 10px; }
+.team__photo img { display: block; width: 100%; height: auto; aspect-ratio: 2000 / 1126; object-fit: cover; }
+@media (max-width: 860px) {
+  .team__inner { grid-template-columns: 1fr; }
+  .team__photo { outline-offset: 6px; }
+}

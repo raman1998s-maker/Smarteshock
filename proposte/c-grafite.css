@@ -1,6 +1,7 @@
 /* Proposta C — "Grafite e scena"
    Fotografica e morbida. Fondi grafite caldi derivati dall'antracite del logo,
-   forme arrotondate, foto grandi in primo piano, eventi in una fascia scorrevole. */
+   forme arrotondate, foto grandi in primo piano, eventi in una fascia scorrevole.
+   Carattere: accogliente, da sala. Movimento morbido e lento, come una luce che sale. */
 :root {
   --c-ink-0: #161616;
   --c-ink-0-rgb: 22 22 22;
@@ -11,55 +12,124 @@
   --color-bg-alt: var(--c-ink-1);
   --color-surface: var(--c-ink-2);
   --color-surface-2: var(--c-ink-3);
-  --radius-card: 18px;
+  --radius-card: 20px;
+  --radius-panel: 28px;
   --color-field: #8A8888;
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-soft: cubic-bezier(.32, .72, 0, 1);
 }
 
-/* Hero: foto piena, testo centrato in basso, sfumatura dal basso */
+/* ---------- Navigazione: velo in alto per leggere i link sopra la foto ---------- */
+.nav:not(.is-scrolled):not(.menu-open) { background: linear-gradient(180deg, rgb(var(--c-ink-0-rgb) / .72), transparent) no-repeat; }
+
+/* ---------- Hero: foto piena, testo centrato in basso, sfumatura dal basso ---------- */
 .hero__shade {
   background:
     linear-gradient(0deg, var(--color-bg) 0%, rgb(var(--c-ink-0-rgb) / .86) 45%, rgb(var(--c-ink-0-rgb) / .35) 80%, rgb(var(--c-ink-0-rgb) / .4) 100%);
 }
 .hero__shade::after { display: none; }
 .hero__content { align-self: end; text-align: center; padding-bottom: var(--sp-7); }
-.hero h1 { margin-inline: auto; max-width: 18ch; font-size: clamp(42px, 6.4vw, 92px); }
-.hero__lead { margin-inline: auto; }
-.hero .eyebrow { justify-content: center; }
+.hero h1 { margin-inline: auto; max-width: 18ch; font-size: clamp(42px, 6.4vw, 92px); text-wrap: balance; }
+.hero__lead { margin-inline: auto; text-wrap: pretty; }
+/* occhiello come "etichetta" su vetro fumé */
+.hero .eyebrow {
+  justify-content: center; width: fit-content; margin-inline: auto; padding: 9px 18px;
+  border-radius: var(--radius-round); background: rgb(var(--c-ink-0-rgb) / .55);
+  border: 1px solid rgb(var(--c-ivory-rgb) / .14);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
 .hero .eyebrow::before { display: none; }
 .hero__cta { justify-content: center; }
 .hero__foot { justify-content: center; border-top: 0; }
+@media (max-width: 600px) {
+  .hero .eyebrow { padding: 8px 16px; border-radius: 18px; text-align: center; line-height: 1.7; text-wrap: balance; }
+  .hero__foot { align-items: center; text-align: center; padding-right: 0; padding-bottom: 96px; }
+}
 
-/* Bottoni a pillola */
+/* Entrata: la foto si posa lentamente (come una luce che sale), il testo arriva insieme dal basso */
+@keyframes c-settle { from { transform: scale(1.06); } }
+@keyframes c-rise { from { opacity: 0; transform: translateY(var(--rise, 16px)); } }
+.hero__video { animation: c-settle 2200ms var(--ease-soft) both; }
+.hero .eyebrow { animation: c-rise 600ms var(--ease-out) both; --rise: 8px; }
+.hero h1 { animation: c-rise 800ms var(--ease-out) 60ms both; --rise: 22px; }
+.hero__lead { animation: c-rise 700ms var(--ease-out) 180ms both; --rise: 12px; }
+.hero__cta { animation: c-rise 700ms var(--ease-out) 260ms both; --rise: 10px; }
+.hero__foot { animation: c-rise 600ms ease 400ms both; --rise: 0px; }
+
+/* ---------- Bottoni a pillola, con pressione ---------- */
 .btn, .btn--sm { border-radius: var(--radius-round); }
-.btn { padding: 17px 34px; }
+.btn { padding: 17px 34px; transition: background var(--dur-1) ease, color var(--dur-1) ease, border-color var(--dur-1) ease, transform 160ms var(--ease-out); }
+.btn:active { transform: scale(.97); }
 
-/* Intro su una "card" in rilievo */
-.intro .wrap { background: var(--color-surface); border-radius: 28px; padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 72px); }
+/* ---------- Intro su una "card" in rilievo ---------- */
+.intro .wrap { background: var(--color-surface); border-radius: var(--radius-panel); padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 72px); }
+.intro__text { text-wrap: pretty; }
 
-/* Eventi: fascia orizzontale scorrevole con schede alte */
+/* ---------- Eventi: fascia orizzontale scorrevole con schede alte ---------- */
 .events {
   grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(300px, 30%);
-  grid-auto-rows: 520px; overflow-x: auto; scroll-snap-type: x mandatory;
+  grid-auto-rows: 520px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
   padding-bottom: var(--sp-4); scrollbar-width: thin; scrollbar-color: var(--c-ink-3) transparent;
+  /* sfuma il bordo destro: si capisce che la fascia continua */
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent);
+          mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent);
 }
 .event, .event--lg { grid-row: auto; grid-column: auto; border-radius: var(--radius-card); scroll-snap-align: start; }
 .event--lg { grid-column: span 1; }
+.event:last-child { margin-right: 64px; }
 .event::after { display: none; }
 .event__n { color: var(--c-ivory-3); }
+.event h3 { text-wrap: balance; }
+.event { transition: transform 300ms var(--ease-out); }
+.event:hover img { transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .event:hover { transform: translateY(-4px); }
+  .event:hover img { transform: scale(1.03); }
+}
 @media (max-width: 960px) { .events { grid-template-columns: none; grid-auto-columns: 46%; grid-auto-rows: 460px; } .event--lg { grid-column: auto; } }
-@media (max-width: 600px) { .events { grid-template-columns: none; grid-auto-columns: 82%; grid-auto-rows: 440px; } }
+@media (max-width: 600px) {
+  .events { grid-template-columns: none; grid-auto-columns: 82%; grid-auto-rows: 440px; }
+  .event:last-child { margin-right: 32px; }
+}
 
-/* Servizi in griglia di card */
+/* ---------- Servizi in griglia di card ---------- */
 .services { border: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
-.service { display: block; background: var(--color-surface); border: 0; border-radius: var(--radius-card); padding: var(--sp-6); }
-.service__n { display: inline-block; color: var(--c-cyan); margin-bottom: var(--sp-3); }
-.service h3 { font-size: clamp(26px, 2.2vw, 32px); }
+.service {
+  display: block; background: var(--color-surface); border: 1px solid transparent; border-radius: var(--radius-card); padding: var(--sp-6);
+  transition: border-color var(--dur-1) ease, background var(--dur-1) ease;
+}
+@media (hover: hover) and (pointer: fine) { .service:hover { border-color: rgb(var(--c-cyan-rgb) / .35); background: var(--c-ink-3); } }
+.service__n {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; padding: 0 12px; line-height: 30px;
+  border-radius: var(--radius-round); background: rgb(var(--c-cyan-rgb) / .12); color: var(--c-cyan); margin-bottom: var(--sp-4);
+}
+.service h3 { font-size: clamp(26px, 2.2vw, 32px); text-wrap: balance; }
 .service__list { grid-template-columns: 1fr; margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: var(--border); }
 @media (max-width: 960px) { .services { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .services { grid-template-columns: 1fr; } .service { padding: var(--sp-5); } }
 
-/* Davos: riquadro arrotondato con margine */
-.feature { width: min(var(--wrap), 100% - 2 * var(--gutter)); margin: 0 auto var(--section-y); border-radius: 28px; overflow: hidden; }
+/* ---------- Davos: riquadro arrotondato con margine ---------- */
+.feature { width: min(var(--wrap), 100% - 2 * var(--gutter)); margin: 0 auto var(--section-y); border-radius: var(--radius-panel); overflow: hidden; }
 .feature__media img { filter: none; }
 .regions { border: 0; }
 .gallery__item, .filter, .form__chips span, .form input, .form select, .form textarea { border-radius: 12px; }
+.filter { border-radius: var(--radius-round); }
+.fab-whatsapp { border-radius: var(--radius-round); }
+
+/* ---------- Chi siamo: grande foto arrotondata, testo su vetro fumé in alto a sinistra (sopra il muro, non sulle persone) ---------- */
+.team__inner { position: relative; }
+.team__photo { margin: 0; border-radius: var(--radius-panel); overflow: hidden; }
+.team__photo img { display: block; width: 100%; height: auto; aspect-ratio: 2000 / 1126; object-fit: cover; }
+.team__text {
+  position: absolute; z-index: 1; left: 24px; top: 24px; margin: 0; max-width: 440px;
+  padding: var(--sp-6); border-radius: var(--radius-card);
+  background: rgb(var(--c-ink-0-rgb) / .78); border: 1px solid rgb(var(--c-ivory-rgb) / .12);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+.team__text h2 { font-size: clamp(30px, 3vw, 44px); }
+.team__text .head__lead { margin-top: var(--sp-3); }
+@media (max-width: 860px) {
+  .team__inner { display: grid; }
+  .team__text { position: static; order: 2; max-width: none; margin-top: var(--sp-4); background: var(--color-surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .team__photo { border-radius: var(--radius-card); }
+}
