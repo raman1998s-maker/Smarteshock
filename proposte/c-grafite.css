@@ -1,0 +1,65 @@
+/* Proposta C — "Grafite e scena"
+   Fotografica e morbida. Fondi grafite caldi derivati dall'antracite del logo,
+   forme arrotondate, foto grandi in primo piano, eventi in una fascia scorrevole. */
+:root {
+  --c-ink-0: #161616;
+  --c-ink-0-rgb: 22 22 22;
+  --c-ink-1: #1F1F1F;
+  --c-ink-2: #2A2A2A;
+  --c-ink-3: #343434;
+  --color-bg: var(--c-ink-0);
+  --color-bg-alt: var(--c-ink-1);
+  --color-surface: var(--c-ink-2);
+  --color-surface-2: var(--c-ink-3);
+  --radius-card: 18px;
+  --color-field: #8A8888;
+}
+
+/* Hero: foto piena, testo centrato in basso, sfumatura dal basso */
+.hero__shade {
+  background:
+    linear-gradient(0deg, var(--color-bg) 0%, rgb(var(--c-ink-0-rgb) / .86) 45%, rgb(var(--c-ink-0-rgb) / .35) 80%, rgb(var(--c-ink-0-rgb) / .4) 100%);
+}
+.hero__shade::after { display: none; }
+.hero__content { align-self: end; text-align: center; padding-bottom: var(--sp-7); }
+.hero h1 { margin-inline: auto; max-width: 18ch; font-size: clamp(42px, 6.4vw, 92px); }
+.hero__lead { margin-inline: auto; }
+.hero .eyebrow { justify-content: center; }
+.hero .eyebrow::before { display: none; }
+.hero__cta { justify-content: center; }
+.hero__foot { justify-content: center; border-top: 0; }
+
+/* Bottoni a pillola */
+.btn, .btn--sm { border-radius: var(--radius-round); }
+.btn { padding: 17px 34px; }
+
+/* Intro su una "card" in rilievo */
+.intro .wrap { background: var(--color-surface); border-radius: 28px; padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 72px); }
+
+/* Eventi: fascia orizzontale scorrevole con schede alte */
+.events {
+  grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(300px, 30%);
+  grid-auto-rows: 520px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: var(--sp-4); scrollbar-width: thin; scrollbar-color: var(--c-ink-3) transparent;
+}
+.event, .event--lg { grid-row: auto; grid-column: auto; border-radius: var(--radius-card); scroll-snap-align: start; }
+.event--lg { grid-column: span 1; }
+.event::after { display: none; }
+.event__n { color: var(--c-ivory-3); }
+@media (max-width: 960px) { .events { grid-template-columns: none; grid-auto-columns: 46%; grid-auto-rows: 460px; } .event--lg { grid-column: auto; } }
+@media (max-width: 600px) { .events { grid-template-columns: none; grid-auto-columns: 82%; grid-auto-rows: 440px; } }
+
+/* Servizi in griglia di card */
+.services { border: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+.service { display: block; background: var(--color-surface); border: 0; border-radius: var(--radius-card); padding: var(--sp-6); }
+.service__n { display: inline-block; color: var(--c-cyan); margin-bottom: var(--sp-3); }
+.service h3 { font-size: clamp(26px, 2.2vw, 32px); }
+.service__list { grid-template-columns: 1fr; margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: var(--border); }
+@media (max-width: 960px) { .services { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .services { grid-template-columns: 1fr; } .service { padding: var(--sp-5); } }
+
+/* Davos: riquadro arrotondato con margine */
+.feature { width: min(var(--wrap), 100% - 2 * var(--gutter)); margin: 0 auto var(--section-y); border-radius: 28px; overflow: hidden; }
+.feature__media img { filter: none; }
+.regions { border: 0; }
+.gallery__item, .filter, .form__chips span, .form input, .form select, .form textarea { border-radius: 12px; }

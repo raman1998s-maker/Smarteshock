@@ -1,0 +1,89 @@
+/* Proposta A — "Luce del giorno"
+   Tema chiaro editoriale, da rivista. Usa la palette "carta" già approvata
+   per l'area riservata (docs/design-guidelines.md § 3.2). Logo sempre su fascia scura. */
+:root {
+  --c-paper: #F6F4EF;
+  --c-white: #FFFFFF;
+  --c-ink-text: #16181B;
+  --c-ink-text-2: #45474A;
+  --c-cyan-ink: #146A82;
+  --c-stone-1: #E3DFD6;
+
+  --color-bg: var(--c-paper);
+  --color-bg-alt: var(--c-white);
+  --color-surface: var(--c-white);
+  --color-surface-2: var(--c-stone-1);
+  --color-text: var(--c-ink-text);
+  --color-text-2: var(--c-ink-text-2);
+  --color-text-3: var(--c-anthracite);
+  --color-accent: var(--c-cyan-ink);
+  --color-accent-soft: #E6F4F8;
+  --color-on-light: var(--c-ivory);
+  --color-line: rgb(22 24 27 / .12);
+  --color-line-2: rgb(22 24 27 / .28);
+  --color-field: #8F8A80;
+  --color-focus: var(--c-cyan-ink);
+  --color-dot: rgb(22 24 27 / .10);
+  --color-scrim: rgb(var(--c-ink-0-rgb) / .94);
+}
+
+/* Navigazione: fascia scura fissa (il logo ha la scritta bianca) */
+.nav { background: var(--c-ink-0); }
+.nav__menu > a:not(.btn) { color: var(--c-ivory-2); }
+.nav__menu > a:not(.btn):hover { color: var(--c-ivory); }
+.nav__menu > a:not(.btn)::after { background: var(--c-cyan); }
+.lang a { color: var(--c-ivory-3); }
+.lang a[aria-current], .lang a:hover { color: var(--c-ivory); border-color: var(--c-cyan); }
+.nav .btn { background: var(--c-ivory); color: var(--c-ink-0); border-color: var(--c-ivory); }
+.nav .btn:hover { background: var(--c-cyan); border-color: var(--c-cyan); }
+.nav__toggle span { background: var(--c-ivory); }
+@media (max-width: 1080px) {
+  .nav__menu { background: var(--c-ink-0); }
+  .nav__menu > a:not(.btn) { color: var(--c-ivory); border-color: rgb(var(--c-ivory-rgb) / .1); }
+}
+
+/* Hero diviso: testo su carta a sinistra, video/foto incorniciato a destra */
+.hero { min-height: 92svh; grid-template-columns: 1fr; padding-top: var(--nav-h); }
+.hero__shade { display: none; }
+.hero__video {
+  --side: max(var(--gutter), calc((100vw - var(--wrap)) / 2));
+  inset: calc(var(--nav-h) + 40px) auto auto 52%;
+  width: calc(48% - var(--side)); height: calc(100% - var(--nav-h) - 170px); z-index: 0; filter: none;
+}
+.hero__content { position: relative; z-index: 1; padding: 60px 0 var(--sp-8); }
+.hero__content > * { max-width: 46%; }
+.hero h1 { font-size: clamp(44px, 5.6vw, 84px); }
+.hero h1 em { color: var(--c-cyan-ink); }
+.hero__foot { position: relative; z-index: 1; background: var(--color-bg); color: var(--color-text-3); }
+.btn { background: var(--c-ink-text); border-color: var(--c-ink-text); color: var(--c-ivory); }
+.btn:hover { background: var(--c-cyan-ink); border-color: var(--c-cyan-ink); color: #fff; }
+.btn--line { background: transparent; color: var(--color-text); border-color: var(--color-line-2); }
+@media (max-width: 860px) {
+  .hero { min-height: 0; }
+  .hero__video { position: relative; inset: auto; width: calc(100% - 2 * var(--gutter)); margin: var(--sp-5) auto 0; aspect-ratio: 4 / 3; grid-row: 1; }
+  .hero__content { padding: var(--sp-7) 0 var(--sp-7); }
+  .hero__content > * { max-width: none; }
+}
+
+/* Eventi: schede con foto sopra e testo sotto, come una rivista */
+.events { grid-auto-rows: 420px; }
+.event { flex-direction: column; justify-content: flex-end; background: var(--c-white); border: 1px solid var(--color-line); }
+.event::before { display: none; }
+.event img { height: calc(100% - 150px); bottom: auto; filter: none; }
+.event__body { background: var(--c-white); width: 100%; min-height: 150px; }
+.event--lg img { height: calc(100% - 170px); }
+@media (max-width: 600px) { .events { grid-auto-rows: 400px; } }
+
+/* Davos e area di lavoro */
+.feature { background: var(--c-ink-text); }
+.feature, .feature h2 { color: var(--c-ivory); }
+.feature__body > p:not(.eyebrow), .feature .ticks li { color: var(--c-ivory-2); }
+.feature .eyebrow, .feature h2 em { color: var(--c-cyan); }
+.feature__media::after { background: linear-gradient(90deg, transparent 60%, var(--c-ink-text)); }
+.feature .btn--line { color: var(--c-ivory); border-color: rgb(var(--c-ivory-rgb) / .3); }
+.feature .ticks li::before { border-color: var(--c-cyan); }
+@media (max-width: 860px) { .feature__media::after { background: linear-gradient(0deg, var(--c-ink-text), transparent 50%); } }
+
+/* Il piede resta scuro per il logo */
+.footer { background: var(--c-ink-0); color: var(--c-ivory-2); }
+.fab-whatsapp { background: var(--c-ink-text); color: var(--c-ivory); }
