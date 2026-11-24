@@ -26,3 +26,9 @@ Vedi `docs/architettura.md` (stack, modello dati, API, flusso di autenticazione)
 - Ogni agente lavora solo nei file della sua area (vedi la sua definizione in `.claude/agents/`).
 - Prima di ogni commit: `python3 build.py`, test (`npm test`), e revisione dell'agente **sicurezza**.
 - Comandi utili: `python3 build.py` · `python3 -m http.server 8000` · `npm test`
+
+## Contatti pubblici (approvati dal titolare)
+- Telefono e WhatsApp: **079 945 00 00** → `tel:+41799450000`, `https://wa.me/41799450000`
+- E-mail: **meekon.display@gmail.com**
+- Instagram: (in attesa del nome utente esatto)
+- Nessun indirizzo.
