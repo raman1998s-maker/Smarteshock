@@ -105,6 +105,7 @@
       ["Dürfen Kaltfunken und Nebel in Innenräumen eingesetzt werden?", "In den meisten Sälen ja: Kaltfunken arbeiten ohne offene Flamme, und wir verwenden ausschliesslich professionelle Geräte. Die Vorgaben der Location und die Rauchmelder klären wir immer im Voraus."]
     ]
   },
+  "team": { "eyebrow": "Über uns", "title": "Das Team hinter jedem <em>Anlass</em>", "lead": "Dieselben Menschen betreuen Sie, vom ersten Anruf bis zum letzten Kabel.", "alt": "Das Team von Meekon Displays" },
   "contact": {
     "eyebrow": "Kontakt",
     "title": "Erzählen Sie uns von Ihrem Anlass",

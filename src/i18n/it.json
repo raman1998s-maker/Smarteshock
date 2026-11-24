@@ -105,6 +105,7 @@
       ["Spark e nebbia si possono usare al chiuso?", "Nella maggior parte delle sale sì: le fontane fredde non usano fiamme libere e impieghiamo solo macchine professionali. Verifichiamo sempre in anticipo le regole della location e i rilevatori di fumo."]
     ]
   },
+  "team": { "eyebrow": "Chi siamo", "title": "La squadra dietro ogni <em>evento</em>", "lead": "Le stesse persone seguono il vostro evento, dalla prima telefonata all'ultimo cavo.", "alt": "La squadra di Meekon Displays" },
   "contact": {
     "eyebrow": "Contatti",
     "title": "Raccontateci il vostro evento",

@@ -60,7 +60,7 @@ def E(value):
 # ---------------------------------------------------------------- testi dal CMS
 # Testi che nei file i18n contengono <em>: solo per queste chiavi un testo del CMS
 # può usare <em> e </em> (esatti); tutto il resto viene escapato.
-EM_KEYS = frozenset({"hero.title", "intro.text"})
+EM_KEYS = frozenset({"hero.title", "intro.text", "team.title"})
 # Chiavi sovrascritte dal CMS per ogni lingua (il loro valore in `t` è testo NON escapato).
 CMS_KEYS = {}
 

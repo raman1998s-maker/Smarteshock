@@ -1,7 +1,8 @@
 {
  "con_em": [
   "hero.title",
-  "intro.text"
+  "intro.text",
+  "team.title"
  ],
  "testi": {
   "a11y.close": {
@@ -693,6 +694,30 @@
    "en": "All the technology for your event, from one partner",
    "fr": "Toute la technique d'un événement, un seul partenaire",
    "it": "Tutta la tecnica di un evento, da un unico partner"
+  },
+  "team.alt": {
+   "de": "Das Team von Meekon Displays",
+   "en": "The Meekon Displays team",
+   "fr": "L'équipe de Meekon Displays",
+   "it": "La squadra di Meekon Displays"
+  },
+  "team.eyebrow": {
+   "de": "Über uns",
+   "en": "About us",
+   "fr": "Qui sommes-nous",
+   "it": "Chi siamo"
+  },
+  "team.lead": {
+   "de": "Dieselben Menschen betreuen Sie, vom ersten Anruf bis zum letzten Kabel.",
+   "en": "The same people look after your event, from the first phone call to the last cable.",
+   "fr": "Les mêmes personnes suivent votre événement, du premier appel jusqu'au dernier câble.",
+   "it": "Le stesse persone seguono il vostro evento, dalla prima telefonata all'ultimo cavo."
+  },
+  "team.title": {
+   "de": "Das Team hinter jedem <em>Anlass</em>",
+   "en": "The team behind every <em>event</em>",
+   "fr": "L'équipe derrière chaque <em>événement</em>",
+   "it": "La squadra dietro ogni <em>evento</em>"
   },
   "thanks.back": {
    "de": "Zurück zur Website",

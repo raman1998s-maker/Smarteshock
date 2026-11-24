@@ -105,6 +105,7 @@
       ["Les étincelles froides et la fumée sont-elles possibles en intérieur ?", "Dans la plupart des salles, oui : les étincelles froides fonctionnent sans flamme nue et nous n'utilisons que du matériel professionnel. Nous vérifions toujours à l'avance les règles du lieu et les détecteurs de fumée."]
     ]
   },
+  "team": { "eyebrow": "Qui sommes-nous", "title": "L'équipe derrière chaque <em>événement</em>", "lead": "Les mêmes personnes suivent votre événement, du premier appel jusqu'au dernier câble.", "alt": "L'équipe de Meekon Displays" },
   "contact": {
     "eyebrow": "Contact",
     "title": "Parlez-nous de votre événement",

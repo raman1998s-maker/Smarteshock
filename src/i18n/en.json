@@ -105,6 +105,7 @@
       ["Can cold sparks and fog be used indoors?", "In most venues, yes: cold sparks work without an open flame and we use professional equipment only. We always check the venue's rules and smoke detectors in advance."]
     ]
   },
+  "team": { "eyebrow": "About us", "title": "The team behind every <em>event</em>", "lead": "The same people look after your event, from the first phone call to the last cable.", "alt": "The Meekon Displays team" },
   "contact": {
     "eyebrow": "Contact",
     "title": "Tell us about your event",

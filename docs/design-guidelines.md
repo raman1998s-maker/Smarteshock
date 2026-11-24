@@ -26,22 +26,28 @@ Regola d'oro: **nessun colore, carattere, spaziatura o raggio fuori dai token** 
 
 I valori di contrasto qui sotto sono stati **calcolati con la formula WCAG 2.1** (luminanza relativa) tramite script; AA richiede 4.5:1 per il testo normale, 3:1 per testo grande (≥ 24 px, o ≥ 19 px in grassetto) e per bordi/indicatori di componenti.
 
-### 3.1 Sito pubblico (tema scuro)
+### 3.1 Sito pubblico (tema scuro "grafite")
+
+Fondi **grafite caldi**, neutri, derivati dall'antracite del logo (scelta del referente, 24.11.2026: proposta "C — Grafite e scena" con il titolo del hero della proposta "B").
 
 | Token | Hex | Ruolo |
 |---|---|---|
-| `--c-ink-0` | `#08090B` | Fondo pagina (`--color-bg`) |
-| `--c-ink-1` | `#0E1013` | Fondo sezioni alternate (`--color-bg-alt`) |
-| `--c-ink-2` | `#15181C` | Superfici: modulo, feature Davos, card (`--color-surface`) |
-| `--c-ink-3` | `#1D2126` | Superfici in hover, segnaposto (`--color-surface-2`) |
+| `--c-ink-0` | `#161616` | Fondo pagina (`--color-bg`) |
+| `--c-ink-1` | `#1F1F1F` | Fondo sezioni alternate (`--color-bg-alt`) |
+| `--c-ink-2` | `#2A2A2A` | Superfici: card di intro/servizi/eventi, modulo, riquadro Davos (`--color-surface`) |
+| `--c-ink-3` | `#343434` | Superfici in hover, segnaposto (`--color-surface-2`) |
 | `--c-ivory` | `#F2ECE1` | Testo principale, bottone primario (`--color-text`) |
 | `--c-ivory-2` | `#CDC6BA` | Testo secondario, lead, paragrafi lunghi (`--color-text-2`) |
 | `--c-ivory-3` | `#A29B90` | Meta, etichette, didascalie (`--color-text-3`) |
 | `--c-cyan` | `#4DC0DE` | Accento del logo (`--color-accent`, `--color-focus`) |
-| `--c-anthracite` | `#6A6969` | Grigio del logo: bordo inferiore dei campi (`--color-field`), punti LED |
+| `--c-anthracite` | `#6A6969` | Grigio del logo (riferimento; sul grafite non basta per i bordi) |
+| `--c-anthracite-2` | `#8A8888` | Antracite schiarito: bordo inferiore dei campi (`--color-field`) |
 | `--color-line` | avorio 10 % | Filetti decorativi |
 | `--color-line-2` | avorio 22 % | Bordi di chip, filtri, bottoni "line" |
-| `--color-accent-soft` | ciano 12 % | Fondo di chip/filtri attivi |
+| `--color-accent-soft` | ciano 12 % | Fondo di chip/filtri attivi, pillola del numero dei servizi |
+| `--color-dot-page` | avorio 5 % | Trama LED leggera sul fondo pagina (`--dots-page`) |
+| `--color-glass` / `--color-glass-2` | ink-0 55 % / 78 % | Vetro fumé (con `backdrop-filter: blur`): etichetta del hero / riquadro "Chi siamo" |
+| `--color-glass-line` | avorio 14 % | Bordo dell'etichetta su vetro |
 | `--c-danger` | `#F0948A` | Errori nel modulo |
 | `--c-success` | `#86D3A5` | Conferme nel modulo |
 
@@ -49,20 +55,24 @@ Contrasti misurati (testo su fondo):
 
 | Testo | ink-0 | ink-1 | ink-2 | ink-3 |
 |---|---|---|---|---|
-| ivory `#F2ECE1` | 16.94 | 16.20 | 15.15 | 13.76 |
-| ivory-2 `#CDC6BA` | 11.75 | 11.23 | 10.50 | 9.54 |
-| ivory-3 `#A29B90` | 7.24 | 6.92 | 6.47 | 5.88 |
-| cyan `#4DC0DE` | 9.40 | 8.99 | 8.40 | 7.64 |
-| anthracite `#6A6969` | 3.64 | 3.48 | 3.25 | 2.96 |
-| danger `#F0948A` | 8.83 | 8.44 | 7.89 | 7.17 |
-| success `#86D3A5` | 11.26 | 10.77 | 10.07 | 9.15 |
+| ivory `#F2ECE1` | 15.39 | 14.02 | 12.21 | 10.59 |
+| ivory-2 `#CDC6BA` | 10.67 | 9.72 | 8.46 | 7.34 |
+| ivory-3 `#A29B90` | 6.57 | 5.99 | 5.21 | 4.52 |
+| cyan `#4DC0DE` | 8.54 | 7.78 | 6.77 | 5.88 |
+| anthracite `#6A6969` | 3.31 | 3.01 | 2.62 | 2.27 |
+| anthracite-2 `#8A8888` | 5.13 | 4.68 | 4.07 | 3.53 |
+| danger `#F0948A` | 8.02 | 7.31 | 6.36 | 5.52 |
+| success `#86D3A5` | 10.23 | 9.32 | 8.12 | 7.04 |
 
-- Bottone primario: ink-0 su avorio **16.94**; in hover ink-0 su ciano **9.40**.
-- Lead del hero (`ivory-2`) sopra la sfumatura del video, caso peggiore stimato: **8.45**.
+- Bottone primario: ink-0 su avorio **15.39**; in hover ink-0 su ciano **8.54**.
+- Numero dei servizi: ciano su `--color-accent-soft` sopra ink-2 **5.40**.
+- Bordo dei campi (`anthracite-2`) sulla superficie del modulo (ink-2) **4.07** (≥ 3:1).
+- Lead del hero (`ivory-2`) sulla sfumatura dal basso (ink-0 all'86 % a metà altezza), anche sopra una zona bianca del video: **7.02**.
+- Riquadro "Chi siamo" (vetro ink-0 al 78 %), caso peggiore teorico sopra un muro bianco puro: ivory **7.66**, ivory-2 **5.31**, ciano **4.25**. Misurato nel browser a 1440 px sul pixel più chiaro della foto dietro l'eyebrow: ciano **4.50**, ivory-2 **5.63** (il `blur` del vetro media lo sfondo, quindi in pratica è più alto). Sotto 1280 px il testo esce dalla foto e sta su ink-2.
 
 **Regole d'uso**
-- Il ciano è un accento **raro**: eyebrow, parola in corsivo nei titoli (`<em>`), numeri degli eventi e dei passi, filetti attivi, focus. Mai fondi ciano estesi, mai paragrafi in ciano.
-- L'antracite **non si usa per il testo** sul tema scuro (3.6:1 al massimo): solo bordi dei campi (≥ 3:1 su ink-0/1/2), punti LED, decorazioni. Sotto ink-3 non usarlo nemmeno come bordo.
+- Il ciano è un accento **raro**: eyebrow, parola in `<em>` nei titoli, numero dei servizi e dei passi, filetti attivi, focus. Mai fondi ciano estesi, mai paragrafi in ciano.
+- L'antracite **non si usa per il testo** sul tema scuro. Sul grafite anche come bordo si usa solo `anthracite-2` (≥ 3:1 fino a ink-3).
 - Gerarchia del testo: titoli `ivory`, testo corrente `ivory-2`, etichette e meta `ivory-3`.
 - Nessun altro colore (niente oro, niente viola, niente verde WhatsApp): la vivacità la danno le foto.
 - Trasparenze sui fondi scuri: sempre tramite `rgb(var(--c-ink-0-rgb) / α)` o `rgb(var(--c-ivory-rgb) / α)`.
@@ -87,6 +97,8 @@ Scelta: **tema chiaro** per il contenuto (tabelle e moduli si leggono meglio per
 | `--c-stone-1` / `-2` | `#E3DFD6` / `#CBC5B9` | Filetti | decorativi |
 | `--c-stone-3` | `#8F8A80` | Bordo dei campi | 3.43 su bianco (≥ 3:1) |
 | barra laterale | ink-1 + ivory / ivory-3 | Navigazione | ivory-3 su ink-1: 6.92 |
+
+**Nota.** L'area riservata **non** passa al grafite: `admin.css` tiene i suoi primitivi scuri originali (`--c-ink-0` `#08090B`, `--c-ink-1` `#0E1013`, …) per barra laterale e login. I contrasti di questa tabella si riferiscono a quei valori.
 
 Il ciano puro `#4DC0DE` sul chiaro si usa **solo** come indicatore (filetto nav attiva, bordo superiore, punto di stato), mai come testo.
 
@@ -130,7 +142,7 @@ Nessun altro peso: il corpo 300 su fondo scuro è troppo sottile; il 600 non ser
 
 | Token | Valore | Uso |
 |---|---|---|
-| `--fs-3xl` | clamp(44 → 104 px) | H1 del hero, Cormorant 400 |
+| `--fs-3xl` | clamp(28 px, 4.2vw + 18 px, 84 px) | H1 del hero, **Jost 500 maiuscolo** (31 px a 320, 34 px a 390, ~78 px a 1440) |
 | `--fs-2xl` | clamp(36 → 62 px) | H2 di sezione, Cormorant 400 |
 | `--fs-quote` | clamp(27 → 44 px) | Testo d'introduzione |
 | `--fs-xl` | clamp(26 → 36 px) | H3 (card eventi, servizi) |
@@ -142,7 +154,8 @@ Nessun altro peso: il corpo 300 su fondo scuro è troppo sottile; il 600 non ser
 | `--fs-2xs` | 11.5 px | Etichette maiuscole piccole, meta |
 
 - Titoli: interlinea 1.05, spaziatura −0.012 em, `text-wrap: balance`.
-- Maiuscolo spaziato **solo** con Jost 500: eyebrow `.28em`, bottoni/etichette `.16em`. Mai frasi intere in maiuscolo.
+- **Eccezione: il titolo del hero** è in Jost 500 maiuscolo (stile "matrice LED"), interlinea 1, spaziatura −0.01 em, `max-width: 17ch`, centrato. La parola in `<em>` è ciano **diritta** (non corsiva) con un bagliore leggero (`text-shadow` ciano al 45 %). È l'unico titolo in maiuscolo e l'unico bagliore del sito; gli altri titoli restano in Cormorant.
+- Maiuscolo spaziato **solo** con Jost 500: eyebrow `.28em`, bottoni/etichette `.16em`. Nessun'altra frase intera in maiuscolo oltre al titolo del hero.
 - Corsivo Cormorant + ciano: una sola parola o espressione per titolo (`<em>`).
 - Lunghezza di riga del testo corrente: 45–70 caratteri (`max-width` in `ch`).
 
@@ -151,7 +164,8 @@ Area riservata: corpo Jost 15.5 px / 1.55, tabelle 14 px con cifre tabellari, H1
 ### 4.3 Motivo LED a matrice di punti
 
 La scritta del logo è composta da punti LED. Lo riprendiamo come **trama decorativa discretissima**, mai come carattere:
-- `--dots`: griglia di punti avorio al 9 % (passo 7 px). Usata in: fascia "Area di lavoro" (sfumata da sinistra), segnaposto con iniziali dei DJ, fondo della pagina di login, velatura del video hero (passo 4 px).
+- `--dots`: griglia di punti avorio al 9 % (passo 7 px). Usata in: fascia "Area di lavoro" (sfumata da sinistra), segnaposto con iniziali dei DJ, fondo della pagina di login.
+- `--dots-page`: punti avorio al 5 % (passo 9 px) sul fondo di tutta la pagina (`body`); le sezioni con fondo proprio la coprono.
 - Eyebrow: il filetto iniziale è una riga di 4–5 punti invece di una linea.
 - **Vietato**: font dot-matrix per titoli o testo, punti animati/lampeggianti, trama sopra il testo corrente.
 
@@ -161,14 +175,21 @@ La scritta del logo è composta da punti LED. Lo riprendiamo come **trama decora
 - Ritmo verticale delle sezioni: `--section-y` = clamp(88 → 160 px); distanza intestazione-contenuto `--head-gap` = clamp(56 → 88 px).
 - **Griglia**: contenitore `.wrap` max 1240 px, `.wrap--narrow` 900 px; margine laterale minimo `--gutter` 16 px (da 320 px in su). Griglie interne con CSS Grid e `minmax(min(100%, X), 1fr)` così nulla deborda.
 - Breakpoint di riferimento: 1080 (menu mobile), 960, 900, 860, 720/760, 600, 560, 520 px.
-- **Raggi**: quasi tutto **squadrato** (`--radius-0`). `--radius-1` 2 px solo nell'area riservata (campi, badge, pannelli). Tondo (`--radius-round`) solo per il pulsante WhatsApp e i punti LED/stato.
+- **Raggi (sito pubblico)**: forme morbide.
+  - `--radius-field` 12 px: campi del modulo, chip, foto della galleria.
+  - `--radius-card` 20 px: card degli eventi e dei servizi, riquadro di testo "Chi siamo", foto della squadra sotto 860 px.
+  - `--radius-panel` 28 px: card dell'intro, riquadro Davos, foto della squadra.
+  - `--radius-round` (pillola): bottoni, filtri della galleria, pulsante WhatsApp, etichetta del hero, numero dei servizi, punti LED.
+- Area riservata: invariata, `--radius-1` 2 px / `--radius-2` 4 px (definiti in `admin.css`).
 - **Linee**: filetti di 1 px (`--border` 10 %, `--border-2` 22 %). Niente ombre sul sito pubblico, salvo il pulsante WhatsApp e il suggerimento lingua (elementi flottanti).
 - Area di tocco minima: 44 px (`--tap`).
 
 ## 6. Movimento
 
-- Curva unica `--ease: cubic-bezier(.2,.7,.2,1)`; durate `--dur-1` .2 s (colori), `--dur-2` .4 s (filetti, menu), `--dur-3` .9 s (apparizioni), `--dur-zoom` 1.4 s (zoom lento delle foto, max scala 1.04).
-- Si animano solo `opacity`, `transform`, colori. Nessun parallax, nessun rimbalzo, nessun lampeggio.
+- Curve: `--ease: cubic-bezier(.2,.7,.2,1)` (filetti, menu, apparizioni), `--ease-out: cubic-bezier(.23,1,.32,1)` (entrate e pressioni), `--ease-soft: cubic-bezier(.32,.72,0,1)` (movimenti lenti: foto del hero, bagliore). Durate `--dur-1` .2 s (colori), `--dur-2` .4 s (filetti, menu), `--dur-3` .9 s (apparizioni), `--dur-zoom` 1.4 s (zoom lento delle foto, max scala 1.04).
+- Si animano solo `opacity`, `transform`, `clip-path`, `text-shadow` e colori. Nessun parallax, nessun rimbalzo, nessun lampeggio ripetuto.
+- **Entrata del hero** (una sola volta al caricamento): la foto si posa da scala 1.06 a 1 in 2.2 s (`settle`, `--ease-soft`); eyebrow, titolo, testo, bottoni e piede salgono insieme (`rise`, `--ease-out`) a 0 / 60 / 180 / 260 / 400 ms. Il titolo si accende **a scatti** come un ledwall (`led-scan`: `clip-path` in 10 scatti, 520 ms), poi il ciano della parola in `<em>` si posa sul bagliore di riposo (`led-glow`, 900 ms). Lo scatto riguarda solo la scansione: non è un lampeggio.
+- **Pressione**: `.btn:active` scala .97 in 160 ms. **Hover** solo con mouse (`@media (hover: hover) and (pointer: fine)`): card evento −4 px con foto a 1.03; card servizio con bordo ciano al 35 %.
 - `.reveal`: dissolvenza + 24 px verso l'alto, una sola volta.
 - `prefers-reduced-motion: reduce`: tutte le animazioni e transizioni spente, video hero nascosto e sostituito dal poster.
 
@@ -176,7 +197,8 @@ La scritta del logo è composta da punti LED. Lo riprendiamo come **trama decora
 
 - Soggetti reali dei nostri allestimenti: luce che disegna lo spazio, ospiti (non riconoscibili senza consenso), dettagli tecnici puliti. Niente foto stock riconoscibili.
 - Tono: scuro, contrastato, con fasci di luce; saturazione leggermente ridotta via CSS (`saturate(.8–.85)`), piena al passaggio del mouse.
-- Testo sopra le immagini sempre con sfumatura scura (`rgb(var(--c-ink-0-rgb) / .9+)` sul lato del testo).
+- Testo sopra le immagini sempre con sfumatura scura (`rgb(var(--c-ink-0-rgb) / .86+)` sul lato del testo) oppure su vetro fumé (`--color-glass`, `--color-glass-2`). Nel hero la sfumatura sale dal basso e il testo è centrato in basso.
+- Foto della squadra ("Chi siamo"): `assets/img/team.jpg`, 2000 × 1126; il riquadro di testo sta in alto a sinistra, sopra il muro e non sulle persone.
 - Video hero: muto, in loop, max ~6 MB, con `poster`; nessun testo bruciato nel video.
 - Formati: orizzontali 16:9, verticali 9:16, ritratti DJ 4:5; `object-fit: cover`; sempre `width`/`height` o `aspect-ratio` per evitare salti di layout; `loading="lazy"` sotto la piega.
 - Testo `alt` descrittivo per le foto della galleria; `alt=""` per quelle decorative.
@@ -187,19 +209,23 @@ La scritta del logo è composta da punti LED. Lo riprendiamo come **trama decora
 | Componente | Classi | Note |
 |---|---|---|
 | Eyebrow | `.eyebrow` | Jost 500 12.5 px maiuscolo, ciano, filetto a punti; in `.head` centrata con punti su entrambi i lati |
-| Bottone primario | `.btn` | Avorio pieno, testo ink; hover ciano. Uno solo per schermata |
+| Bottone primario | `.btn` | Pillola, avorio pieno, testo ink; hover ciano; pressione scala .97. Uno solo per schermata |
 | Bottone secondario | `.btn.btn--line` | Bordo 22 %; hover pieno avorio |
 | Varianti | `.btn--sm`, `.btn--block` | |
 | Link con freccia | `.link-arrow` | Maiuscolo spaziato + filetto che si allunga |
 | Intestazione sezione | `.head`, `.head--left`, `.head--split`, `.head__lead` | |
-| Card evento | `.event`, `.event--lg`, `.event__body`, `.event__n` | Foto, sfumatura, filetto ciano in basso in hover |
-| Servizi | `.service`, `.service__n`, `.service__list` | Righe separate da filetti, punti ciano |
+| Hero | `.hero`, `.hero__shade`, `.hero__content`, `.hero__foot` | Foto piena, sfumatura dal basso, testo centrato in basso; eyebrow a pillola su vetro fumé |
+| Intro | `.intro` | Testo dentro una card `--color-surface` con `--radius-panel` |
+| Card evento | `.events` › `.event`, `.event__body`, `.event__n` | Fascia orizzontale scorrevole con aggancio (`scroll-snap`), schede alte 520 px (460 sotto 960, 440 sotto 600), bordo destro sfumato; numero in `ivory-3`. `.event--lg` resta nel markup ma non cambia più la misura |
+| Servizi | `.services` › `.service`, `.service__n`, `.service__list` | Griglia di card (3 / 2 / 1 colonne), numero in pillola ciano, elenco sotto un filetto, punti ciano |
+| Chi siamo | `.team` › `.team__inner`, `.team__text` (con `.head.head--left`), `.team__photo` | Foto grande arrotondata; testo su vetro fumé in alto a sinistra (da 1280 px, quando la foto ha la sua misura piena e il riquadro resta sopra il muro); sotto 1280 px il testo va sotto la foto, su ink-2 |
+| Riquadro Davos | `.feature` | Larghezza del `.wrap`, `--radius-panel`, margine sotto `--section-y`; foto senza desaturazione |
 | Liste | `.ticks` (spunte), `.service__list` (punti) | |
 | Passi | `.steps`, `.step`, `.step__n` | Numeri romani in corsivo ciano |
 | FAQ | `.faq details/summary` | + / − in ciano |
 | Modulo | `.form`, `.form__row`, `.form__chips`, `.form__note`, `.form__error`, `.form__ok` | Campi con solo bordo inferiore antracite, focus ciano |
 | Selettore lingua | `.lang`, `.lang a[aria-current]` | Lingua attiva avorio con filetto ciano |
-| Navigazione | `.nav`, `.nav__menu`, `.nav__toggle` | Trasparente sul hero, velo scuro dopo lo scorrimento; menu a tutta larghezza sotto 1080 px |
+| Navigazione | `.nav`, `.nav__menu`, `.nav__toggle` | Sul hero velo sfumato dall'alto (ink-0 72 % → trasparente), velo scuro pieno dopo lo scorrimento; menu a tutta larghezza sotto 1080 px. "Chi siamo" non è nel menu (un'ottava voce non sta in riga poco sopra 1080 px) |
 | Stato vuoto | `.empty` | Riquadro tratteggiato, testo corsivo meta |
 | Link nel testo | `.form__note a`, `.prose__section a` | Ciano (`--color-accent`, AA su fondo e superfici), sottolineatura 1 px con offset .22em; hover avorio; focus 1 px ciano offset 2 px |
 
@@ -406,12 +432,12 @@ Movimento: rotazione della barra "in corso", barra indeterminata, comparsa della
 - Usare sempre i token (`var(--…)`); aggiungere un token qui prima di usarne uno nuovo.
 - Tanto spazio, pochi elementi, un accento ciano per vista.
 - Foto vere e scure, testo avorio, filetti sottili.
-- Titoli in Cormorant, tutto il resto in Jost.
+- Titoli in Cormorant (tranne il titolo del hero, in Jost maiuscolo), tutto il resto in Jost.
 
 **No**
-- Colori "a mano", gradienti colorati, neon, glow, ombre pesanti.
+- Colori "a mano", gradienti colorati, neon, ombre pesanti; bagliori (glow) fuori dalla parola in ciano del titolo del hero.
 - Ciano su grandi superfici o per paragrafi; antracite come colore del testo sul fondo scuro.
-- Angoli arrotondati sul sito pubblico (eccetto il pulsante WhatsApp).
+- Raggi fuori dai quattro token (`--radius-field`, `--radius-card`, `--radius-panel`, `--radius-round`).
 - Font a matrice di punti, animazioni lampeggianti, effetti "discoteca".
 - Più di due famiglie di caratteri o pesi non elencati.
 - Il logo su fondo chiaro (la scritta bianca sparisce).
