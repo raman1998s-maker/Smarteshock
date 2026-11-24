@@ -124,7 +124,7 @@
     "chips": ["Écrans LED", "TV / projecteur", "Lumière", "Structures", "Son", "Sono DJ", "Captation live", "Streaming", "Étincelles / fumée"]
   },
   "privacy": { "note": "Vos données servent à répondre à votre demande et, si vous le souhaitez, à préparer l'offre et organiser l'événement ; elles ne sont jamais vendues ni utilisées à des fins publicitaires.", "link": "Lire la politique de confidentialité" },
-  "footer": { "claim": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France.", "privacy": "Confidentialité" },
+  "footer": { "claim": "Votre vision, mise en scène avec précision.", "privacy": "Confidentialité" },
   "thanks": { "title": "Merci, à bientôt !", "eyebrow": "Demande envoyée", "text": "Nous avons bien reçu votre demande et vous recontacterons rapidement avec une proposition.", "back": "Retour au site" },
   "notfound": { "title": "Page introuvable", "text": "La page que vous cherchez n'existe pas ou a été déplacée.", "back": "Retour au site" },
   "privacy_page": {

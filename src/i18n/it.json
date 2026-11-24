@@ -124,7 +124,7 @@
     "chips": ["Schermi LED", "TV / beamer", "Luci", "Strutture", "Audio", "Impianto DJ", "Riprese live", "Streaming", "Effetti spark / nebbia"]
   },
   "privacy": { "note": "Usiamo i vostri dati per rispondere alla richiesta e, se lo desiderate, per preparare l'offerta e organizzare l'evento: mai venduti né usati per pubblicità.", "link": "Leggi l'informativa privacy" },
-  "footer": { "claim": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia.", "privacy": "Privacy" },
+  "footer": { "claim": "Diamo vita alla vostra idea, con precisione.", "privacy": "Privacy" },
   "thanks": { "title": "Grazie, a presto!", "eyebrow": "Richiesta inviata", "text": "Abbiamo ricevuto la vostra richiesta: vi ricontatteremo al più presto con una proposta.", "back": "Torna al sito" },
   "notfound": { "title": "Pagina non trovata", "text": "La pagina che cercate non esiste o è stata spostata.", "back": "Torna al sito" },
   "privacy_page": {
