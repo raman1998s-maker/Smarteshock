@@ -12,15 +12,26 @@ Legge  src/template.html,  src/i18n/<lingua>.json  e  data/*.json  e scrive:
 
 I testi si modificano SOLO nei file JSON; poi si rilancia questo script.
 Dei file in data/ si pubblicano solo le voci con "approvato": true.
+
+Se nell'ambiente ci sono SUPABASE_URL e SUPABASE_ANON_KEY (build su Netlify), galleria,
+sale, DJ, partner e i testi modificati arrivano dal CMS (solo contenuti pubblicati,
+vedi scripts/cms_fetch.py); altrimenti si usano data/*.json come sopra.
+Genera anche area-riservata/testi-predefiniti.json (testi modificabili dal CMS
+con i valori dei file i18n, materiale già pubblico).
 """
 import datetime
 import html
 import json
 import re
 import struct
+import sys
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parent
+# scripts/ si importa dalla radice del progetto anche se build.py è lanciato da un'altra cartella
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.cms_fetch import EXCLUDED_KEYS, CmsError, load_cms  # noqa: E402
 SITE = "https://meekondisplay.ch"
 LANGS = ["it", "de", "fr", "en"]  # il primo è la lingua principale (alla radice del sito)
 DEFAULT = LANGS[0]
@@ -39,7 +50,87 @@ FALLBACK = {
                            "fr": "Filtrer par catégorie", "en": "Filter by category"},
 }
 
-E = html.escape  # escape di testi e attributi (quote=True di default)
+def E(value):
+    """Escape di testi e attributi (quote=True). Anche { } e = diventano entità: un testo
+    (es. dal CMS) con "{{...}}", "style=" o "onclick=" non deve sembrare un segnaposto
+    non risolto o un attributo vietato a check_page()."""
+    return html.escape(value).replace("{", "&#123;").replace("}", "&#125;").replace("=", "&#61;")
+
+
+# ---------------------------------------------------------------- testi dal CMS
+# Testi che nei file i18n contengono <em>: solo per queste chiavi un testo del CMS
+# può usare <em> e </em> (esatti); tutto il resto viene escapato.
+EM_KEYS = frozenset({"hero.title", "intro.text"})
+# Chiavi sovrascritte dal CMS per ogni lingua (il loro valore in `t` è testo NON escapato).
+CMS_KEYS = {}
+
+
+def excluded_key(key):
+    return any(key == x or key.startswith(x + ".") for x in EXCLUDED_KEYS)
+
+
+def string_keys(obj, prefix=""):
+    """Chiavi (a.b.c) dei valori di testo di un file i18n (gli elenchi non contano)."""
+    out = []
+    for k, v in obj.items():
+        key = f"{prefix}.{k}" if prefix else k
+        if isinstance(v, str):
+            out.append(key)
+        elif isinstance(v, dict):
+            out.extend(string_keys(v, key))
+    return out
+
+
+def cms_html(key, value):
+    """Testo del CMS pronto per l'HTML: escape completo; <em>/</em> solo per EM_KEYS."""
+    out = E(value)
+    if key in EM_KEYS:
+        tags = re.findall(r"&lt;(/?)em&gt;", out)
+        # solo coppie <em>…</em> ben formate e non annidate, altrimenti restano testo
+        if all(t == ("/" if i % 2 else "") for i, t in enumerate(tags)) and len(tags) % 2 == 0:
+            out = out.replace("&lt;em&gt;", "<em>").replace("&lt;/em&gt;", "</em>")
+        else:
+            print(f"!!  CMS: {key}: tag <em> non bilanciati, mostrati come testo")
+    return out
+
+
+def apply_cms_texts(all_t, testi, allowed):
+    """Sovrascrive i testi i18n con quelli del CMS (solo chiavi ammesse e lingue presenti)."""
+    for lang in LANGS:
+        CMS_KEYS[lang] = set()
+    for key, vals in (testi or {}).items():
+        if key not in allowed or not isinstance(vals, dict):
+            print(f"!!  CMS: testo {key!r} ignorato (chiave non modificabile)")
+            continue
+        for lang in LANGS:
+            v = vals.get(lang)
+            if not isinstance(v, str) or not v.strip():
+                continue
+            parts = key.split(".")
+            cur = all_t[lang]
+            ok = True
+            for part in parts[:-1]:
+                nxt = cur.get(part)
+                if nxt is None:
+                    nxt = cur[part] = {}
+                if not isinstance(nxt, dict):
+                    ok = False
+                    break
+                cur = nxt
+            if not ok or isinstance(cur.get(parts[-1]), (dict, list)):
+                print(f"!!  CMS: testo {key!r} ignorato in {lang} (struttura diversa)")
+                continue
+            cur[parts[-1]] = v
+            CMS_KEYS[lang].add(key)
+
+
+def raw_text(t, lang, key):
+    """Testo da inserire così com'è nel template: i file i18n sono fidati (contengono <em>),
+    i testi del CMS vengono escapati."""
+    value = lookup(t, key)
+    if key in CMS_KEYS.get(lang, ()):
+        return cms_html(key, value)
+    return value
 
 
 def base(lang):
@@ -284,8 +375,12 @@ def jsonld(lang, t):
         "areaServed": [{"@type": "Country", "name": n} for n in ["Switzerland", "Italy", "Germany", "France"]],
         "knowsLanguage": LANGS,
     }
-    # "</" non deve mai comparire dentro <script>
-    return json.dumps(data, ensure_ascii=False, indent=2).replace("<", "\\u003c")
+    out = json.dumps(data, ensure_ascii=False, indent=2)
+    # "</" non deve mai comparire dentro <script>; dentro le stringhe JSON anche { } = > &
+    # diventano \\uXXXX (un testo del CMS con "{{" o "onclick=" non deve far fallire check_page)
+    out = out.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026").replace("=", "\\u003d")
+    return re.sub(r'"(?:[^"\\]|\\.)*"',
+                  lambda m: m.group(0).replace("{", "\\u007b").replace("}", "\\u007d"), out)
 
 
 # ---------------------------------------------------------------- pagine
@@ -338,12 +433,12 @@ def build_context(lang, t, all_t, data):
     return ctx
 
 
-def render(template, ctx, t):
+def render(template, ctx, t, lang):
     def sub(m):
         key = m.group(1).strip()
         if key in ctx:
             return str(ctx[key])
-        return str(lookup(t, key))
+        return str(raw_text(t, lang, key))
 
     out = re.sub(r"\{\{\s*([\w.]+)\s*\}\}", sub, template)
     # <title> e meta non devono contenere tag
@@ -552,18 +647,63 @@ def check_page(name, page):
         raise SystemExit(f"[{name}] attributi style= / on...= non ammessi dalla CSP")
 
 
+def default_texts(all_t):
+    """Testi modificabili dal CMS con i valori dei file i18n (per l'area riservata)."""
+    keys = sorted(k for k in string_keys(all_t[DEFAULT]) if not excluded_key(k))
+    out = {}
+    for k in keys:
+        vals = {}
+        for l in LANGS:
+            try:
+                v = lookup(all_t[l], k)
+            except (KeyError, TypeError):
+                v = ""
+            vals[l] = v if isinstance(v, str) else ""
+        out[k] = vals
+    return {"testi": out, "con_em": sorted(EM_KEYS)}
+
+
+def load_content():
+    """Contenuti dal CMS (Supabase) se configurato, altrimenti None (si usano data/*.json)."""
+    try:
+        return load_cms(ROOT / "assets" / "media")
+    except CmsError as err:
+        raise SystemExit(f"Errore nella lettura dei contenuti dal CMS (Supabase): {err}. "
+                         "Build interrotta: il sito pubblicato resta quello precedente.")
+
+
 def main():
     template = (ROOT / "src" / "template.html").read_text(encoding="utf-8")
     all_t = {l: json.loads((ROOT / "src" / "i18n" / f"{l}.json").read_text(encoding="utf-8")) for l in LANGS}
-    data = {n: load_data(n) for n in ["galleria", "sale", "dj", "partner"]}
+
+    # testi predefiniti per l'editor dell'area riservata (prima delle sovrascritture del CMS)
+    defaults = default_texts(all_t)
+    (ROOT / "area-riservata" / "testi-predefiniti.json").write_text(
+        json.dumps(defaults, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+
+    cms = load_content()
+    if cms is None:
+        source = "data/*.json"
+        data = {n: load_data(n) for n in ["galleria", "sale", "dj", "partner"]}
+        apply_cms_texts(all_t, {}, set())
+    else:
+        source = "CMS (Supabase)"
+        data = {}
+        for n in ["galleria", "sale", "dj", "partner"]:
+            rows = cms.get(n)
+            if not isinstance(rows, list):
+                raise SystemExit(f"CMS: la sezione {n} non è un elenco")
+            data[n] = [r for r in rows if isinstance(r, dict) and r.get("approvato") is True]
+        apply_cms_texts(all_t, cms.get("testi"), set(defaults["testi"]))
     for lang in LANGS:
         t = all_t[lang]
         out_dir = ROOT if lang == DEFAULT else ROOT / lang
         out_dir.mkdir(exist_ok=True)
-        page = render(template, build_context(lang, t, all_t, data), t)
+        page = render(template, build_context(lang, t, all_t, data), t, lang)
         check_page(lang, page)
         (out_dir / "index.html").write_text(page, encoding="utf-8")
-        thanks = THANKS.format(lang=lang, home=base(lang), **t["thanks"])
+        thanks = THANKS.format(lang=lang, home=base(lang),
+                               **{k: raw_text(t, lang, f"thanks.{k}") for k in t["thanks"]})
         check_page(f"{lang}/grazie", thanks)
         (out_dir / "grazie.html").write_text(thanks, encoding="utf-8")
         privacy = privacy_page(lang, t, all_t, datetime.date.today().year)
@@ -581,6 +721,8 @@ def main():
     (ROOT / "404.html").write_text(nf, encoding="utf-8")
     (ROOT / "sitemap.xml").write_text(sitemap(datetime.date.today().isoformat()), encoding="utf-8")
     print("ok  404.html, sitemap.xml")
+    print(f"    contenuti da {source}; testi modificati dal CMS: "
+          f"{sum(len(v) for v in CMS_KEYS.values())}")
     print(f"    pubblicati: galleria {len(data['galleria'])}, sale {len(data['sale'])}, "
           f"dj {len(data['dj'])}, partner {len(data['partner'])}")
     for key in sorted(WARN):

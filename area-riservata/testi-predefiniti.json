@@ -1,0 +1,806 @@
+{
+ "con_em": [
+  "hero.title",
+  "intro.text"
+ ],
+ "testi": {
+  "a11y.close": {
+   "de": "Menü schliessen",
+   "en": "Close menu",
+   "fr": "Fermer le menu",
+   "it": "Chiudi il menu"
+  },
+  "a11y.lang": {
+   "de": "Sprache",
+   "en": "Language",
+   "fr": "Langue",
+   "it": "Lingua"
+  },
+  "a11y.menu": {
+   "de": "Menü öffnen",
+   "en": "Open menu",
+   "fr": "Ouvrir le menu",
+   "it": "Apri il menu"
+  },
+  "a11y.nav": {
+   "de": "Hauptnavigation",
+   "en": "Main navigation",
+   "fr": "Navigation principale",
+   "it": "Navigazione principale"
+  },
+  "a11y.skip": {
+   "de": "Zum Inhalt",
+   "en": "Skip to content",
+   "fr": "Aller au contenu",
+   "it": "Vai al contenuto"
+  },
+  "contact.eyebrow": {
+   "de": "Kontakt",
+   "en": "Contact",
+   "fr": "Contact",
+   "it": "Contatti"
+  },
+  "contact.langs": {
+   "de": "Wir sprechen Italienisch, Deutsch, Französisch und Englisch.",
+   "en": "We speak Italian, German, French and English.",
+   "fr": "Nous parlons italien, allemand, français et anglais.",
+   "it": "Parliamo italiano, tedesco, francese e inglese."
+  },
+  "contact.lead": {
+   "de": "Füllen Sie das Formular aus: Wir antworten Ihnen mit einer massgeschneiderten, unverbindlichen Offerte.",
+   "en": "Fill in the form and we will reply with a tailored, no-obligation proposal.",
+   "fr": "Remplissez le formulaire : nous vous répondrons avec une proposition sur mesure, sans engagement.",
+   "it": "Compilate il modulo: vi risponderemo con una proposta su misura, senza impegno."
+  },
+  "contact.title": {
+   "de": "Erzählen Sie uns von Ihrem Anlass",
+   "en": "Tell us about your event",
+   "fr": "Parlez-nous de votre événement",
+   "it": "Raccontateci il vostro evento"
+  },
+  "contact.whatsapp": {
+   "de": "Schreiben Sie uns auf WhatsApp",
+   "en": "Message us on WhatsApp",
+   "fr": "Écrivez-nous sur WhatsApp",
+   "it": "Scriveteci su WhatsApp"
+  },
+  "davos.cta": {
+   "de": "Ihren Anlass planen",
+   "en": "Plan your event",
+   "fr": "Planifier votre événement",
+   "it": "Pianificate il vostro evento"
+  },
+  "davos.eyebrow": {
+   "de": "WEF Davos · Corporate",
+   "en": "WEF Davos · Corporate",
+   "fr": "WEF Davos · Corporate",
+   "it": "WEF Davos · Corporate"
+  },
+  "davos.text": {
+   "de": "Während des World Economic Forum in Davos und bei Firmenanlässen begleiten wir Delegationen, Vertreter und Unternehmen mit zuverlässiger Technik und diskretem Service, in vier Sprachen.",
+   "en": "During the World Economic Forum in Davos and at corporate events, we support delegations, representatives and companies with dependable technology and discreet service, in four languages.",
+   "fr": "Pendant le World Economic Forum de Davos et lors d'événements d'entreprise, nous accompagnons délégations, représentants et entreprises avec une technique fiable et un service discret, en quatre langues.",
+   "it": "Durante il World Economic Forum di Davos e per eventi aziendali affianchiamo delegazioni, rappresentanti e aziende con tecnica affidabile e un servizio discreto, in quattro lingue."
+  },
+  "davos.title": {
+   "de": "Technischer Support für Delegationen und Unternehmen",
+   "en": "Technical support for delegations and companies",
+   "fr": "Support technique pour délégations et entreprises",
+   "it": "Supporto tecnico per rappresentanti e aziende"
+  },
+  "djs.empty": {
+   "de": "Die Liste der DJs ist in Vorbereitung.",
+   "en": "Our list of DJs is being prepared.",
+   "fr": "La liste des DJ est en préparation.",
+   "it": "L'elenco dei DJ è in preparazione."
+  },
+  "djs.eyebrow": {
+   "de": "DJs",
+   "en": "DJs",
+   "fr": "DJ",
+   "it": "DJ"
+  },
+  "djs.lead": {
+   "de": "Künstler, mit denen wir Bühne, Rhythmus und den Blick fürs Detail teilen.",
+   "en": "Artists with whom we share the stage, the rhythm and an eye for detail.",
+   "fr": "Des artistes avec qui nous partageons la scène, le rythme et le souci du détail.",
+   "it": "Artisti con cui condividiamo palco, ritmo e attenzione al dettaglio."
+  },
+  "djs.listen": {
+   "de": "Anhören / Instagram",
+   "en": "Listen / Instagram",
+   "fr": "Écouter / Instagram",
+   "it": "Ascolta / Instagram"
+  },
+  "djs.title": {
+   "de": "DJs, mit denen wir zusammenarbeiten",
+   "en": "The DJs we work with",
+   "fr": "Les DJ avec qui nous collaborons",
+   "it": "I DJ con cui collaboriamo"
+  },
+  "events.e1.d": {
+   "de": "Stimmungsvolles Licht zum Dinner, LED-Wand für Fotos und Videos, Bodennebel für den ersten Tanz.",
+   "en": "Ambient lighting for dinner, an LED wall for photos and videos, low fog for the first dance.",
+   "fr": "Lumière d'ambiance pour le dîner, mur LED pour photos et vidéos, fumée lourde pour la première danse.",
+   "it": "Luce d'atmosfera per la cena, ledwall per foto e video, nebbia bassa per il primo ballo."
+  },
+  "events.e1.t": {
+   "de": "Hochzeiten",
+   "en": "Weddings",
+   "fr": "Mariages",
+   "it": "Matrimoni"
+  },
+  "events.e2.d": {
+   "de": "Klarer Sound, Licht für die Tanzfläche und ein Bildschirm mit Ihren Erinnerungen.",
+   "en": "Clear sound, lighting for the dance floor and a screen showing your memories.",
+   "fr": "Un son soigné, des lumières pour la piste et un écran avec vos souvenirs.",
+   "it": "Audio impeccabile, luci per la pista e uno schermo con i vostri ricordi."
+  },
+  "events.e2.t": {
+   "de": "Geburtstage und private Feste",
+   "en": "Birthdays and private parties",
+   "fr": "Anniversaires et fêtes privées",
+   "it": "Compleanni e feste private"
+  },
+  "events.e3.d": {
+   "de": "Technik für kulturelle und familiäre Feiern, auch mit vielen Gästen und langen Programmen.",
+   "en": "Set-ups for cultural and family celebrations, even with many guests and long programmes.",
+   "fr": "Installations pour célébrations culturelles et familiales, même avec de nombreux invités et de longs programmes.",
+   "it": "Allestimenti per celebrazioni culturali e familiari, anche con molti ospiti e programmi lunghi."
+  },
+  "events.e3.t": {
+   "de": "Traditionelle Feste",
+   "en": "Traditional celebrations",
+   "fr": "Fêtes traditionnelles",
+   "it": "Feste tradizionali"
+  },
+  "events.e4.d": {
+   "de": "Bildschirme, Beamer und Ton für Präsentationen, Konferenzen und Empfänge.",
+   "en": "Screens, projectors and sound for presentations, conferences and official receptions.",
+   "fr": "Écrans, projecteurs et son pour présentations, conférences et réceptions de représentation.",
+   "it": "Schermi, beamer e audio per presentazioni, conferenze e ricevimenti di rappresentanza."
+  },
+  "events.e4.t": {
+   "de": "Firmen und WEF Davos",
+   "en": "Corporate and WEF Davos",
+   "fr": "Entreprises et WEF Davos",
+   "it": "Aziende e WEF Davos"
+  },
+  "events.e5.d": {
+   "de": "Traversen, Beam-Licht, Ton und Regie für DJs, Künstler und Shows.",
+   "en": "Truss, beam lights, sound and control for DJs, artists and shows.",
+   "fr": "Structures, lumières beam, son et régie pour DJ, artistes et spectacles.",
+   "it": "Strutture, luci beam, audio e regia per DJ, artisti e spettacoli."
+  },
+  "events.e5.t": {
+   "de": "Bühnenevents",
+   "en": "Stage events",
+   "fr": "Événements scéniques",
+   "it": "Eventi da palco"
+  },
+  "events.eyebrow": {
+   "de": "Anlässe",
+   "en": "Events",
+   "fr": "Événements",
+   "it": "Eventi"
+  },
+  "events.lead": {
+   "de": "Jeder Anlass hat seinen eigenen Rhythmus. Wir stimmen Technik, Ästhetik und Organisation auf Ihren Moment ab.",
+   "en": "Every event has its own rhythm. We tailor the technology, the look and the organisation to your moment.",
+   "fr": "Chaque événement a son propre rythme. Nous adaptons la technique, l'esthétique et l'organisation à votre moment.",
+   "it": "Ogni evento ha il suo ritmo. Adattiamo tecnica, estetica e organizzazione al vostro momento."
+  },
+  "events.title": {
+   "de": "Für jeden Anlass",
+   "en": "For every occasion",
+   "fr": "Pour chaque occasion",
+   "it": "Per ogni occasione"
+  },
+  "faq.eyebrow": {
+   "de": "FAQ",
+   "en": "FAQ",
+   "fr": "FAQ",
+   "it": "FAQ"
+  },
+  "faq.title": {
+   "de": "Häufige Fragen",
+   "en": "Frequently asked questions",
+   "fr": "Questions fréquentes",
+   "it": "Domande frequenti"
+  },
+  "footer.claim": {
+   "de": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich.",
+   "en": "Event technology across Switzerland and, on request, in Italy, Germany and France.",
+   "fr": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France.",
+   "it": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia."
+  },
+  "footer.privacy": {
+   "de": "Datenschutz",
+   "en": "Privacy",
+   "fr": "Confidentialité",
+   "it": "Privacy"
+  },
+  "form.country": {
+   "de": "Land",
+   "en": "Country",
+   "fr": "Pays",
+   "it": "Paese"
+  },
+  "form.date": {
+   "de": "Datum",
+   "en": "Date",
+   "fr": "Date",
+   "it": "Data"
+  },
+  "form.email": {
+   "de": "E-Mail",
+   "en": "Email",
+   "fr": "E-mail",
+   "it": "E-mail"
+  },
+  "form.error": {
+   "de": "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es in einem Moment erneut oder schreiben Sie uns auf WhatsApp.",
+   "en": "Your request could not be sent. Please try again in a moment or message us on WhatsApp.",
+   "fr": "Votre demande n'a pas pu être envoyée. Veuillez réessayer dans un instant ou nous écrire sur WhatsApp.",
+   "it": "Non è stato possibile inviare la richiesta. Riprovate tra qualche istante oppure scriveteci su WhatsApp."
+  },
+  "form.guests": {
+   "de": "Anzahl Gäste",
+   "en": "Number of guests",
+   "fr": "Nombre d'invités",
+   "it": "Numero di ospiti"
+  },
+  "form.msg": {
+   "de": "Nachricht",
+   "en": "Message",
+   "fr": "Message",
+   "it": "Messaggio"
+  },
+  "form.msg_ph": {
+   "de": "Erzählen Sie uns mehr über Ihren Anlass…",
+   "en": "Tell us a little more about your event…",
+   "fr": "Dites-nous-en un peu plus sur votre événement…",
+   "it": "Raccontateci qualcosa in più sull'evento…"
+  },
+  "form.name": {
+   "de": "Vor- und Nachname",
+   "en": "Full name",
+   "fr": "Prénom et nom",
+   "it": "Nome e cognome"
+  },
+  "form.needs": {
+   "de": "Was brauchen Sie?",
+   "en": "What do you need?",
+   "fr": "De quoi avez-vous besoin ?",
+   "it": "Di che cosa avete bisogno?"
+  },
+  "form.phone": {
+   "de": "Telefon",
+   "en": "Phone",
+   "fr": "Téléphone",
+   "it": "Telefono"
+  },
+  "form.place": {
+   "de": "Ort oder Saal",
+   "en": "Location or venue",
+   "fr": "Lieu ou salle",
+   "it": "Località o sala"
+  },
+  "form.place_ph": {
+   "de": "Ort oder Name der Location",
+   "en": "Town or name of the venue",
+   "fr": "Localité ou nom du lieu",
+   "it": "Città o nome della location"
+  },
+  "form.sending": {
+   "de": "Wird gesendet…",
+   "en": "Sending…",
+   "fr": "Envoi en cours…",
+   "it": "Invio in corso…"
+  },
+  "form.submit": {
+   "de": "Anfrage senden",
+   "en": "Send request",
+   "fr": "Envoyer la demande",
+   "it": "Invia la richiesta"
+  },
+  "form.type": {
+   "de": "Art des Anlasses",
+   "en": "Type of event",
+   "fr": "Type d'événement",
+   "it": "Tipo di evento"
+  },
+  "hero.cta1": {
+   "de": "Offerte anfragen",
+   "en": "Request a quote",
+   "fr": "Demander une offre",
+   "it": "Richiedi un'offerta"
+  },
+  "hero.cta2": {
+   "de": "Unsere Referenzen ansehen",
+   "en": "See our work",
+   "fr": "Voir nos réalisations",
+   "it": "Guarda i nostri lavori"
+  },
+  "hero.eyebrow": {
+   "de": "LED-Wände · Licht · Ton · Live & Streaming",
+   "en": "LED screens · Lighting · Sound · Live & Streaming",
+   "fr": "Murs LED · Lumière · Son · Live & Streaming",
+   "it": "Schermi LED · Luci · Audio · Live & Streaming"
+  },
+  "hero.foot1": {
+   "de": "Ganze Schweiz · auf Anfrage Italien, Deutschland, Frankreich",
+   "en": "Switzerland-wide · on request Italy, Germany, France",
+   "fr": "Toute la Suisse · sur demande Italie, Allemagne, France",
+   "it": "Tutta la Svizzera · su richiesta Italia, Germania, Francia"
+  },
+  "hero.foot2": {
+   "de": "Aufbau, Betreuung und Abbau",
+   "en": "Set-up, operation and take-down",
+   "fr": "Montage, régie et démontage",
+   "it": "Montaggio, regia e smontaggio"
+  },
+  "hero.foot3": {
+   "de": "Italiano · Deutsch · Français · English",
+   "en": "Italiano · Deutsch · Français · English",
+   "fr": "Italiano · Deutsch · Français · English",
+   "it": "Italiano · Deutsch · Français · English"
+  },
+  "hero.lead": {
+   "de": "Wir planen, installieren und betreuen die gesamte Technik: von der Hochzeit bis zum traditionellen Fest, von der Bühne bis zum WEF in Davos.",
+   "en": "We design, install and look after every technical detail: from weddings to traditional celebrations, from the stage to the WEF in Davos.",
+   "fr": "Nous concevons, installons et suivons toute la partie technique : du mariage à la fête traditionnelle, de la scène au WEF de Davos.",
+   "it": "Progettiamo, installiamo e seguiamo tutta la parte tecnica: dal matrimonio alla festa tradizionale, dal palco al WEF di Davos."
+  },
+  "hero.title": {
+   "de": "Eventtechnik, die Ihren Anlass <em>einzigartig</em> macht.",
+   "en": "The technology that makes your event <em>unforgettable</em>.",
+   "fr": "La technique qui rend votre événement <em>unique</em>.",
+   "it": "La tecnica che rende <em>unico</em> il vostro evento."
+  },
+  "intro.sign": {
+   "de": "— Meekon Displays",
+   "en": "— Meekon Displays",
+   "fr": "— Meekon Displays",
+   "it": "— Meekon Displays"
+  },
+  "intro.text": {
+   "de": "Von einem gelungenen Anlass bleiben die Emotionen in Erinnerung, nicht die Kabel. Deshalb kümmern wir uns um jedes technische Detail, von der Bühnenplanung bis zum letzten Mikrofon, mit <em>Diskretion und Präzision</em>.",
+   "en": "A memorable event is remembered for its emotions, not its cables. That is why we take care of every technical detail, from the stage layout to the very last microphone, with <em>discretion and precision</em>.",
+   "fr": "D'un événement réussi, on retient les émotions, pas les câbles. C'est pourquoi nous soignons chaque détail technique, de l'agencement de la scène au dernier micro, avec <em>discrétion et précision</em>.",
+   "it": "Di un evento riuscito si ricordano le emozioni, non i cavi. Per questo curiamo ogni dettaglio tecnico, dalla disposizione del palco all'ultimo microfono, con <em>discrezione e precisione</em>."
+  },
+  "meta.description": {
+   "de": "Eventtechnik in der ganzen Schweiz und auf Anfrage in Italien, Deutschland und Frankreich: Hochzeiten, Geburtstage, traditionelle Feste, Firmenanlässe und das WEF in Davos. LED-Wände, Beamer, Licht, Traversen, Ton, DJ-Anlagen, Live-Kamera, Streaming und Spezialeffekte.",
+   "en": "Event technology across Switzerland and, on request, in Italy, Germany and France: weddings, birthdays, traditional celebrations, corporate events and the WEF in Davos. LED walls, projectors, lighting, truss, sound, DJ systems, live camera, streaming and special effects.",
+   "fr": "Technique événementielle dans toute la Suisse et, sur demande, en Italie, en Allemagne et en France : mariages, anniversaires, fêtes traditionnelles, événements d'entreprise et WEF de Davos. Murs LED, projecteurs, lumière, structures, son, sonorisation DJ, captation live, streaming et effets spéciaux.",
+   "it": "Tecnica per eventi in tutta la Svizzera e, su richiesta, in Italia, Germania e Francia: matrimoni, compleanni, feste tradizionali, eventi aziendali e WEF di Davos. Schermi LED, beamer, luci, strutture, audio, impianti DJ, riprese live, streaming ed effetti speciali."
+  },
+  "meta.title": {
+   "de": "Meekon Displays — Eventtechnik: LED-Wände, Licht, Ton, Streaming",
+   "en": "Meekon Displays — Event technology: LED screens, lighting, sound, streaming",
+   "fr": "Meekon Displays — Technique événementielle : écrans LED, lumière, son, streaming",
+   "it": "Meekon Displays — Tecnica per eventi: schermi LED, luci, audio, streaming"
+  },
+  "method.eyebrow": {
+   "de": "Ablauf",
+   "en": "Approach",
+   "fr": "Méthode",
+   "it": "Metodo"
+  },
+  "method.lead": {
+   "de": "Technische Anforderungen, Bühnenplanung, Materialorganisation: Wir planen alles im Voraus, damit Sie sich am Tag des Anlasses ganz Ihren Gästen widmen können.",
+   "en": "Technical requirements, stage layout, equipment logistics: we plan everything in advance, so that on the day you can focus entirely on your guests.",
+   "fr": "Exigences techniques, agencement de la scène, organisation du matériel : nous planifions tout à l'avance, pour que le jour J vous puissiez vous consacrer à vos invités.",
+   "it": "Requisiti tecnici, disposizione del palco, organizzazione del materiale: pianifichiamo tutto in anticipo, perché il giorno dell'evento possiate pensare solo agli ospiti."
+  },
+  "method.p1.d": {
+   "de": "Sie erzählen uns von Ihrem Anlass: Location, Gäste, Programm und gewünschte Stimmung.",
+   "en": "You tell us about your event: venue, guests, programme and the atmosphere you have in mind.",
+   "fr": "Vous nous racontez votre événement : lieu, invités, programme et ambiance souhaitée.",
+   "it": "Ci raccontate l'evento: location, ospiti, programma e atmosfera desiderata."
+  },
+  "method.p1.t": {
+   "de": "Zuhören",
+   "en": "Listening",
+   "fr": "Écoute",
+   "it": "Ascolto"
+  },
+  "method.p2.d": {
+   "de": "Ein klares technisches Konzept, bei Bedarf mit Besichtigung vor Ort.",
+   "en": "A clear technical proposal, with a site visit when needed.",
+   "fr": "Une proposition technique claire, avec visite sur place si nécessaire.",
+   "it": "Una proposta tecnica chiara, con sopralluogo quando serve."
+  },
+  "method.p2.t": {
+   "de": "Konzept und Offerte",
+   "en": "Proposal and quote",
+   "fr": "Projet et offre",
+   "it": "Progetto e offerta"
+  },
+  "method.p3.d": {
+   "de": "Transport, Aufbau und Tests, bevor die Gäste eintreffen.",
+   "en": "Transport, set-up and testing before the guests arrive.",
+   "fr": "Transport, montage et essais avant l'arrivée des invités.",
+   "it": "Trasporto, montaggio e prove prima dell'arrivo degli ospiti."
+  },
+  "method.p3.t": {
+   "de": "Installation",
+   "en": "Installation",
+   "fr": "Installation",
+   "it": "Installazione"
+  },
+  "method.p4.d": {
+   "de": "Wir begleiten den Anlass und bauen am Ende ab, die Location bleibt aufgeräumt zurück.",
+   "en": "We look after the event and take everything down at the end, leaving the venue tidy.",
+   "fr": "Nous suivons l'événement puis démontons en fin de soirée, en laissant le lieu en ordre.",
+   "it": "Seguiamo l'evento e, a fine serata, smontiamo lasciando la location in ordine."
+  },
+  "method.p4.t": {
+   "de": "Betreuung und Abbau",
+   "en": "Operation and take-down",
+   "fr": "Régie et démontage",
+   "it": "Regia e smontaggio"
+  },
+  "method.title": {
+   "de": "Präzision in jedem Detail",
+   "en": "Precision in every detail",
+   "fr": "La précision dans chaque détail",
+   "it": "Precisione in ogni dettaglio"
+  },
+  "nav.contact": {
+   "de": "Kontakt",
+   "en": "Contact",
+   "fr": "Contact",
+   "it": "Contatti"
+  },
+  "nav.cta": {
+   "de": "Offerte anfragen",
+   "en": "Request a quote",
+   "fr": "Demander une offre",
+   "it": "Richiedi un'offerta"
+  },
+  "nav.djs": {
+   "de": "DJs",
+   "en": "DJs",
+   "fr": "DJ",
+   "it": "DJ"
+  },
+  "nav.events": {
+   "de": "Anlässe",
+   "en": "Events",
+   "fr": "Événements",
+   "it": "Eventi"
+  },
+  "nav.method": {
+   "de": "Ablauf",
+   "en": "Approach",
+   "fr": "Méthode",
+   "it": "Metodo"
+  },
+  "nav.services": {
+   "de": "Leistungen",
+   "en": "Services",
+   "fr": "Prestations",
+   "it": "Servizi"
+  },
+  "nav.venues": {
+   "de": "Locations",
+   "en": "Venues",
+   "fr": "Lieux",
+   "it": "Location"
+  },
+  "nav.work": {
+   "de": "Referenzen",
+   "en": "Work",
+   "fr": "Réalisations",
+   "it": "Lavori"
+  },
+  "notfound.back": {
+   "de": "Zurück zur Website",
+   "en": "Back to the website",
+   "fr": "Retour au site",
+   "it": "Torna al sito"
+  },
+  "notfound.text": {
+   "de": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+   "en": "The page you are looking for does not exist or has been moved.",
+   "fr": "La page que vous cherchez n'existe pas ou a été déplacée.",
+   "it": "La pagina che cercate non esiste o è stata spostata."
+  },
+  "notfound.title": {
+   "de": "Seite nicht gefunden",
+   "en": "Page not found",
+   "fr": "Page introuvable",
+   "it": "Pagina non trovata"
+  },
+  "partners.empty": {
+   "de": "Die Liste der Partner ist in Vorbereitung.",
+   "en": "Our list of partners is being prepared.",
+   "fr": "La liste des partenaires est en préparation.",
+   "it": "L'elenco dei partner è in preparazione."
+  },
+  "partners.eyebrow": {
+   "de": "Partner",
+   "en": "Partners",
+   "fr": "Partenaires",
+   "it": "Partner"
+  },
+  "partners.lead": {
+   "de": "Vertrauenswürdige Profis, die jeden Anlass noch vollständiger machen.",
+   "en": "Trusted professionals who make every event more complete.",
+   "fr": "Des professionnels de confiance qui rendent chaque événement plus complet.",
+   "it": "Professionisti di fiducia che rendono ogni evento più completo."
+  },
+  "partners.title": {
+   "de": "Unsere Partner",
+   "en": "Our partners",
+   "fr": "Nos partenaires",
+   "it": "I nostri partner"
+  },
+  "regions.countries.ch": {
+   "de": "Schweiz",
+   "en": "Switzerland",
+   "fr": "Suisse",
+   "it": "Svizzera"
+  },
+  "regions.countries.de": {
+   "de": "Deutschland",
+   "en": "Germany",
+   "fr": "Allemagne",
+   "it": "Germania"
+  },
+  "regions.countries.fr": {
+   "de": "Frankreich",
+   "en": "France",
+   "fr": "France",
+   "it": "Francia"
+  },
+  "regions.countries.it": {
+   "de": "Italien",
+   "en": "Italy",
+   "fr": "Italie",
+   "it": "Italia"
+  },
+  "regions.eyebrow": {
+   "de": "Einsatzgebiet",
+   "en": "Where we work",
+   "fr": "Zone d'intervention",
+   "it": "Dove lavoriamo"
+  },
+  "regions.lead": {
+   "de": "Wir sind in allen Regionen der Schweiz für Sie da. Auf Anfrage bringen wir unsere Technik auch nach Italien, Deutschland und Frankreich.",
+   "en": "We work in every region of Switzerland. On request, we also bring our technology to Italy, Germany and France.",
+   "fr": "Nous intervenons dans toutes les régions de Suisse. Sur demande, nous apportons aussi notre technique en Italie, en Allemagne et en France.",
+   "it": "Raggiungiamo ogni regione della Svizzera. Su richiesta, portiamo la nostra tecnica anche in Italia, in Germania e in Francia."
+  },
+  "regions.main.label": {
+   "de": "Schweiz",
+   "en": "Switzerland",
+   "fr": "Suisse",
+   "it": "Svizzera"
+  },
+  "regions.main.note": {
+   "de": "Hauptgebiet",
+   "en": "Main area",
+   "fr": "Zone principale",
+   "it": "Area principale"
+  },
+  "regions.main.text": {
+   "de": "Alle Kantone, von der Stadt bis in die Berge.",
+   "en": "Every canton, from city venues to mountain resorts.",
+   "fr": "Tous les cantons, des villes aux stations de montagne.",
+   "it": "Tutti i cantoni, dalle città alle località di montagna."
+  },
+  "regions.onrequest": {
+   "de": "auf Anfrage",
+   "en": "on request",
+   "fr": "sur demande",
+   "it": "su richiesta"
+  },
+  "regions.title": {
+   "de": "In der ganzen Schweiz und darüber hinaus",
+   "en": "Across Switzerland, and beyond",
+   "fr": "Dans toute la Suisse, et au-delà",
+   "it": "In tutta la Svizzera, e oltre"
+  },
+  "s1.d": {
+   "de": "LED-Wände in verschiedenen Ausführungen und Grössen, dazu TV-Geräte und Beamer für Präsentationen und Projektionen.",
+   "en": "LED walls in various types and sizes, plus TVs and projectors for presentations and projection.",
+   "fr": "Murs LED de différents types et formats, téléviseurs et projecteurs pour présentations et projections.",
+   "it": "Ledwall di diversi tipi e formati, TV e beamer per presentazioni e proiezioni."
+  },
+  "s1.t": {
+   "de": "LED-Wände und Video",
+   "en": "LED screens and video",
+   "fr": "Écrans LED et vidéo",
+   "it": "Schermi LED e video"
+  },
+  "s2.d": {
+   "de": "Vom warmen Licht beim Dinner bis zur Show auf der Tanzfläche, mit verschiedenen Systemen und massgeschneiderten Traversen.",
+   "en": "From the warm glow of a dinner to the show on the dance floor, with various lighting systems and made-to-measure truss.",
+   "fr": "De la lumière chaleureuse d'un dîner au show sur la piste, avec différents systèmes et des structures (truss) sur mesure.",
+   "it": "Dalla luce calda di una cena allo show sulla pista, con sistemi di vario tipo e strutture americane su misura."
+  },
+  "s2.t": {
+   "de": "Licht und Traversen",
+   "en": "Lighting and truss",
+   "fr": "Lumière et structures",
+   "it": "Luci e strutture"
+  },
+  "s3.d": {
+   "de": "Anlagen passend zu jeder Location: vom Mikrofon für die Rede bis zu geflogenen Lautsprechern für grosse Räume.",
+   "en": "Systems designed for each venue: from a microphone for the speeches to flown speakers for large spaces.",
+   "fr": "Des installations pensées pour chaque lieu : du micro pour les discours aux enceintes suspendues pour les grands espaces.",
+   "it": "Impianti pensati per ogni location: dal microfono per i discorsi alle casse appese per i grandi spazi."
+  },
+  "s3.t": {
+   "de": "Ton",
+   "en": "Sound",
+   "fr": "Son",
+   "it": "Audio"
+  },
+  "s4.d": {
+   "de": "Komplette DJ-Anlagen und Vorbereitung des DJ-Pults, abgestimmt auf Licht und Bildschirme.",
+   "en": "Complete DJ systems and DJ booth preparation, in harmony with the lighting and screens.",
+   "fr": "Installations complètes pour DJ et préparation de la console, en harmonie avec la lumière et les écrans.",
+   "it": "Impianti completi per DJ e predisposizione della console, in armonia con luci e schermi."
+  },
+  "s4.t": {
+   "de": "DJ-Anlagen",
+   "en": "DJ systems",
+   "fr": "Sonorisation DJ",
+   "it": "Impianti DJ"
+  },
+  "s5.d": {
+   "de": "Wir bringen den Moment live auf die Bildschirme und übertragen ihn zu allen, die nicht dabei sein können.",
+   "en": "We bring the moment live to the screens and share it with those who cannot be there.",
+   "fr": "Nous portons l'instant en direct sur les écrans et le partageons avec ceux qui ne peuvent pas être là.",
+   "it": "Portiamo il momento sugli schermi in diretta e lo trasmettiamo a chi non può esserci."
+  },
+  "s5.t": {
+   "de": "Live-Kamera und Streaming",
+   "en": "Live camera and streaming",
+   "fr": "Captation live et streaming",
+   "it": "Riprese live e streaming"
+  },
+  "s6.d": {
+   "de": "Der Effekt im richtigen Moment: der Einzug des Brautpaars, der Tortenanschnitt, der Auftakt der Show.",
+   "en": "The right effect at the right moment: the couple's entrance, cutting the cake, opening the show.",
+   "fr": "L'effet au bon moment : l'entrée des mariés, la découpe du gâteau, l'ouverture du spectacle.",
+   "it": "L'effetto al momento giusto: l'ingresso degli sposi, il taglio della torta, l'apertura dello show."
+  },
+  "s6.t": {
+   "de": "Spezialeffekte",
+   "en": "Special effects",
+   "fr": "Effets spéciaux",
+   "it": "Effetti speciali"
+  },
+  "services.eyebrow": {
+   "de": "Leistungen",
+   "en": "Services",
+   "fr": "Prestations",
+   "it": "Servizi"
+  },
+  "services.lead": {
+   "de": "Wir liefern, bauen auf und betreuen die ganze Anlage. Ein Ansprechpartner, von der ersten Idee bis zum letzten Applaus.",
+   "en": "We supply, install and operate the entire set-up. One point of contact, from the first idea to the final applause.",
+   "fr": "Nous fournissons, montons et suivons l'ensemble de l'installation. Un seul interlocuteur, de la première idée au dernier applaudissement.",
+   "it": "Forniamo, montiamo e seguiamo l'intero impianto. Un solo interlocutore, dalla prima idea all'ultimo applauso."
+  },
+  "services.title": {
+   "de": "Die gesamte Eventtechnik aus einer Hand",
+   "en": "All the technology for your event, from one partner",
+   "fr": "Toute la technique d'un événement, un seul partenaire",
+   "it": "Tutta la tecnica di un evento, da un unico partner"
+  },
+  "thanks.back": {
+   "de": "Zurück zur Website",
+   "en": "Back to the website",
+   "fr": "Retour au site",
+   "it": "Torna al sito"
+  },
+  "thanks.eyebrow": {
+   "de": "Anfrage gesendet",
+   "en": "Request sent",
+   "fr": "Demande envoyée",
+   "it": "Richiesta inviata"
+  },
+  "thanks.text": {
+   "de": "Wir haben Ihre Anfrage erhalten und melden uns so bald wie möglich mit einer Offerte.",
+   "en": "We have received your request and will be in touch shortly with a proposal.",
+   "fr": "Nous avons bien reçu votre demande et vous recontacterons rapidement avec une proposition.",
+   "it": "Abbiamo ricevuto la vostra richiesta: vi ricontatteremo al più presto con una proposta."
+  },
+  "thanks.title": {
+   "de": "Vielen Dank!",
+   "en": "Thank you!",
+   "fr": "Merci, à bientôt !",
+   "it": "Grazie, a presto!"
+  },
+  "venues.empty": {
+   "de": "Die Liste der Locations ist in Vorbereitung.",
+   "en": "Our list of venues is being prepared.",
+   "fr": "La liste des lieux est en préparation.",
+   "it": "L'elenco delle location è in preparazione."
+  },
+  "venues.eyebrow": {
+   "de": "Locations",
+   "en": "Venues",
+   "fr": "Lieux",
+   "it": "Location"
+  },
+  "venues.lead": {
+   "de": "Jeder Raum hat seinen eigenen Charakter. Wer ihn kennt, kann ihn zur Geltung bringen.",
+   "en": "Every space has its own character. Knowing it lets us bring it to life.",
+   "fr": "Chaque espace a son caractère. Le connaître nous permet de le mettre en valeur.",
+   "it": "Ogni spazio ha il suo carattere. Conoscerlo ci permette di valorizzarlo."
+  },
+  "venues.title": {
+   "de": "Säle und Locations, in denen wir gearbeitet haben",
+   "en": "Halls and venues we have worked in",
+   "fr": "Salles et lieux où nous avons travaillé",
+   "it": "Sale e location dove abbiamo lavorato"
+  },
+  "work.eyebrow": {
+   "de": "Referenzen",
+   "en": "Work",
+   "fr": "Réalisations",
+   "it": "Lavori"
+  },
+  "work.filters.all": {
+   "de": "Alle",
+   "en": "All",
+   "fr": "Tous",
+   "it": "Tutti"
+  },
+  "work.filters.aziende": {
+   "de": "Firmen",
+   "en": "Corporate",
+   "fr": "Entreprises",
+   "it": "Aziende"
+  },
+  "work.filters.feste": {
+   "de": "Feste",
+   "en": "Parties",
+   "fr": "Fêtes",
+   "it": "Feste"
+  },
+  "work.filters.label": {
+   "de": "Nach Art des Anlasses filtern",
+   "en": "Filter by type of event",
+   "fr": "Filtrer par type d'événement",
+   "it": "Filtra per tipo di evento"
+  },
+  "work.filters.matrimoni": {
+   "de": "Hochzeiten",
+   "en": "Weddings",
+   "fr": "Mariages",
+   "it": "Matrimoni"
+  },
+  "work.filters.palco": {
+   "de": "Bühne",
+   "en": "Stage",
+   "fr": "Scène",
+   "it": "Palco"
+  },
+  "work.lead": {
+   "de": "Einige Momente aus Anlässen, die wir technisch begleitet haben.",
+   "en": "A few moments from events we have equipped.",
+   "fr": "Quelques moments des événements que nous avons équipés.",
+   "it": "Alcuni momenti degli eventi che abbiamo allestito."
+  },
+  "work.title": {
+   "de": "Live, mit unseren Installationen",
+   "en": "Live, on our installations",
+   "fr": "En direct, sur nos installations",
+   "it": "Dal vivo, sulle nostre installazioni"
+  },
+  "work.video": {
+   "de": "Video eines Anlasses mit Technik von Meekon Displays",
+   "en": "Video of an event equipped by Meekon Displays",
+   "fr": "Vidéo d'un événement équipé par Meekon Displays",
+   "it": "Video di un evento allestito da Meekon Displays"
+  }
+ }
+}

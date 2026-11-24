@@ -30,11 +30,12 @@
 
   // ------------------------------------------------------------ API
   class ApiError extends Error {
-    constructor(status, code, field) {
+    constructor(status, code, field, data) {
       super(code);
       this.status = status;
       this.code = code;
       this.field = field || null;
+      this.data = data || null; // corpo della risposta d'errore (es. attesa_secondi per il 429)
     }
   }
 
@@ -59,7 +60,7 @@
     let data = null;
     try { data = await res.json(); } catch (err) { data = null; }
     if (!res.ok) {
-      throw new ApiError(res.status, (data && typeof data.error === 'string' && data.error) || 'server_error', data && data.field);
+      throw new ApiError(res.status, (data && typeof data.error === 'string' && data.error) || 'server_error', data && data.field, data && typeof data === 'object' ? data : null);
     }
     return data || {};
   }
@@ -862,6 +863,16 @@
       h('p', null, h('a', { class: 'btn', href: '#/prossimi' }, 'Torna ai prossimi eventi')));
   }
 
+  // ------------------------------------------------------------ contenuti del sito (CMS, contenuti.js)
+  let cms = null;
+  function viewContenuti(params, alive) {
+    if (!cms) {
+      if (!window.MeekonContenuti) throw new Error('contenuti.js non caricato');
+      cms = window.MeekonContenuti.create({ h, add, clear, api, ApiError, errorMessage, page, toast, nextId, field, busy });
+    }
+    return cms.view(params, alive);
+  }
+
   // ------------------------------------------------------------ router
   const ID = '([0-9A-Za-z-]{1,64})';
   const ROUTES = [
@@ -875,6 +886,8 @@
     [/^#\/clienti$/, viewClienti, true, 'clienti'],
     [/^#\/clienti\/nuovo$/, viewClienteForm, true, 'clienti'],
     [new RegExp(`^#/cliente/${ID}$`), viewClienteForm, true, 'clienti'],
+    [/^#\/contenuti$/, viewContenuti, true, 'contenuti'],
+    [/^#\/contenuti\/(galleria|location|dj|partner|testi)$/, viewContenuti, true, 'contenuti'],
   ];
 
   function route() {
@@ -898,7 +911,7 @@
   function buildShell() {
     clear(nav);
     const links = [['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
-    if (isAdmin()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti']);
+    if (isAdmin()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti'], ['#/contenuti', 'Contenuti', 'contenuti']);
     links.forEach(([href, label, section]) => nav.append(h('a', { href, 'data-section': section }, label)));
     const logout = h('button', { class: 'app__link', type: 'button' }, 'Esci');
     logout.addEventListener('click', async () => {

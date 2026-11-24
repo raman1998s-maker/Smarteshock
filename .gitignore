@@ -9,3 +9,7 @@ node_modules/
 
 # Sistema
 .DS_Store
+
+# Media scaricati dal CMS durante la build
+assets/media/
+__pycache__/

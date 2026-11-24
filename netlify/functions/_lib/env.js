@@ -34,3 +34,22 @@ export function getEnv() {
     allowedOrigins: env.ALLOWED_ORIGIN.split(',').map((s) => s.trim().replace(/\/+$/, '')).filter(Boolean),
   };
 }
+
+/**
+ * URL del build hook di Netlify (segreto, solo nelle functions).
+ * Deve essere https://api.netlify.com/build_hooks/<id>. Mai loggato.
+ */
+export function getBuildHook() {
+  const value = (process.env.NETLIFY_BUILD_HOOK || '').trim();
+  if (!value) throw new ConfigError('NETLIFY_BUILD_HOOK');
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new ConfigError('NETLIFY_BUILD_HOOK (non valida)');
+  }
+  if (url.protocol !== 'https:' || url.hostname !== 'api.netlify.com' || !/^\/build_hooks\/[A-Za-z0-9]{8,64}$/.test(url.pathname)) {
+    throw new ConfigError('NETLIFY_BUILD_HOOK (non valida)');
+  }
+  return url.origin + url.pathname;
+}

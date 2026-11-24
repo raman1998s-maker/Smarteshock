@@ -7,7 +7,7 @@ Questo file vale per **tutti** gli agenti e le persone che lavorano sul progetto
 
 1. **Nessun segreto nel repository o nel browser.** Nessuna chiave API, token, password, IBAN, `.env` committato. Le chiavi esistono solo come variabili d'ambiente di Netlify, lette dalle Netlify Functions. Il codice nel browser non contiene nessuna chiave, nemmeno la "publishable/anon" di Supabase.
 2. **Nessuna ubicazione della ditta sul sito pubblico**: niente indirizzo, città, CAP, mappa, P. IVA o coordinate bancarie. Si comunica solo l'area di lavoro: *tutta la Svizzera, e su richiesta Italia, Germania e Francia*.
-3. **Nessun dato di clienti reali** (nomi, aziende, offerte) nel sito pubblico o nel repository. Sale/location, DJ e partner si pubblicano solo se il titolare li ha approvati (`"approvato": true` nei file `data/*.json`).
+3. **Nessun dato di clienti reali** (nomi, aziende, offerte) nel repository. Sul sito pubblico sale/location, DJ, partner e foto si pubblicano solo se il titolare li ha approvati (`"approvato": true` nei file `data/*.json`, o `pubblicato = true` nel CMS). Il titolare ha confermato (24.11.2026) che i consensi per le foto e i nomi pubblicati sono raccolti nelle offerte accettate dai clienti.
 4. **Area riservata**: autenticazione obbligatoria lato server, cookie `HttpOnly; Secure; SameSite=Strict`, Row Level Security attiva su **tutte** le tabelle, `noindex` e `Disallow` in `robots.txt`.
 5. **Header di sicurezza** (CSP stretta, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy) definiti in `netlify.toml`.
 6. Nessuna dipendenza esterna senza motivo; versioni sempre fissate.
@@ -32,3 +32,7 @@ Vedi `docs/architettura.md` (stack, modello dati, API, flusso di autenticazione)
 - E-mail: **meekon.display@gmail.com**
 - Instagram: **@meekon_display** → `https://www.instagram.com/meekon_display/` (motto usato sul profilo: "Bringing your vision to life with precision.")
 - Nessun indirizzo.
+
+## Persone
+- **Titolare dell'azienda** (e titolare del trattamento dei dati per la privacy): **Arul Mayuran** — Meekon Displays. Contatto per la privacy: meekon.display@gmail.com.
+- **Referente del sito**: la persona che segue il progetto con Claude (non pubblicare il suo nome o la sua e-mail).

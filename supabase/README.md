@@ -27,6 +27,10 @@ supabase link --project-ref <id-progetto>
 supabase db push
 ```
 
+Le migrazioni vanno applicate **in ordine**: `0001_schema.sql`, `0002_richieste_paese.sql`,
+`0003_cms.sql` (contenuti del sito: tabelle del CMS, bucket Storage privato `media` e relative policy).
+Anche 0002 e 0003 sono rieseguibili.
+
 Controllo: in **Database → Tables** ogni tabella deve mostrare "RLS enabled".
 In **Advisors → Security Advisor** non devono comparire avvisi su RLS mancante.
 
@@ -58,6 +62,20 @@ Netlify → *Site configuration → Environment variables*:
 | `SUPABASE_URL` | Project URL (`https://<id>.supabase.co`) |
 | `SUPABASE_ANON_KEY` | chiave `anon` (legacy) oppure *publishable key* |
 | `ALLOWED_ORIGIN` | `https://meekondisplay.ch` (più origin separati da virgola) |
+| `NETLIFY_BUILD_HOOK` | Netlify → *Site configuration → Build & deploy → Build hooks → Add build hook* (segreto) |
+
+`SUPABASE_URL` e `SUPABASE_ANON_KEY` devono essere disponibili sia alle **Functions** sia alle
+**Builds** (scope delle variabili su Netlify): la build legge i contenuti pubblicati del CMS.
+
+## 6. Contenuti del sito (CMS)
+- Dopo `0003_cms.sql`, in **Storage** deve comparire il bucket `media` **non pubblico**.
+- Importazione iniziale dei contenuti di `data/*.json` (una sola volta, dal proprio computer):
+  ```bash
+  SUPABASE_URL=https://<id>.supabase.co SUPABASE_ANON_KEY=<chiave anon> node scripts/importa-dati.mjs --prova
+  SUPABASE_URL=https://<id>.supabase.co SUPABASE_ANON_KEY=<chiave anon> node scripts/importa-dati.mjs
+  ```
+  Lo script chiede e-mail e password dell'amministratore (non le salva).
+- In `netlify.toml` sostituire `https://*.supabase.co` nella CSP dell'area riservata con l'host esatto del progetto.
 
 ## Cosa garantisce lo schema (riassunto)
 - **admin**: legge e scrive tutto.
@@ -65,5 +83,6 @@ Netlify → *Site configuration → Environment variables*:
   (senza `importo_chf`, `acconto_pagato`, `saldo_pagato`; del cliente solo nome e telefono),
   vede checklist e colleghi di quegli eventi, può modificare **solo** `caricato` e `note`
   della checklist (trigger `checklist_limita_tecnico`). Nessun accesso diretto a `eventi` e `clienti`.
-- **anon** (visitatore del sito): solo `INSERT` su `richieste_web`, nessuna lettura.
+- **anon** (visitatore del sito / build): solo `INSERT` su `richieste_web`; lettura delle sole righe
+  pubblicate del CMS (colonne pubbliche), dei testi e dei soli file pubblicati del bucket `media`.
 - `numero_ordine` è generato in automatico (`AAAA-NNNN`, riparte ogni anno) e non è modificabile.

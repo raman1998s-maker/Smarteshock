@@ -9,7 +9,7 @@
 | Database e login | Supabase (Postgres + Auth), schema in `supabase/migrations/` |
 | Area riservata | `/area-riservata/` — pagine statiche che parlano **solo** con `/api/*` |
 
-Il browser **non parla mai direttamente con Supabase** e non riceve nessuna chiave.
+Il browser **non parla mai direttamente con Supabase** e non riceve nessuna chiave. Unica eccezione, solo nell'area riservata e solo per l'admin: caricamento e anteprima dei media del CMS tramite URL firmati monouso/brevi generati dalle functions (nessuna chiave nel browser).
 
 ```
 Browser ──(cookie HttpOnly)──> /api/* (Netlify Functions) ──(chiave da env + JWT utente)──> Supabase
@@ -101,8 +101,100 @@ Codici d'errore: `invalid_input` (400, con `field`), `invalid_json` (400), `unau
 
 **Modulo pubblico `POST /api/richiesta`**: campi `nome`, `email` (obbligatori), `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi` (ripetibile), `messaggio`, `lingua`, `paese` (facoltativo, `CH`/`IT`/`DE`/`FR`), honeypot `bot-field`; altri campi (es. `form-name`) ignorati. Accetta JSON oppure un normale `<form method="POST" action="/api/richiesta">` (urlencoded o multipart): senza `X-Requested-With: meekon` risponde `303` verso `/grazie.html` (it) o `/{lingua}/grazie.html`, in caso di errore una piccola pagina HTML 400 con link al modulo. Con JSON/`X-Requested-With` risponde `{ok:true}`. `Origin` obbligatorio e uguale ad `ALLOWED_ORIGIN`; `X-Requested-With` non è richiesto qui (un form HTML non può inviarlo) — l'endpoint non usa cookie e scrive solo con il ruolo `anon`. Limite 24 KB.
 
-## Contenuti pubblici gestiti da file
-`data/sale.json` (location dove abbiamo lavorato), `data/dj.json` (DJ con cui collaboriamo), `data/partner.json` (partner), `data/galleria.json` (foto e video). Ogni voce ha `"approvato": true|false`; `build.py` pubblica solo le voci approvate.
+## Contenuti pubblici modificabili (CMS nell'area riservata)
+
+Il titolare (ruolo `admin`) modifica i contenuti del sito pubblico **dall'area riservata**, senza toccare il codice. Il sito resta statico (veloce, buono per Google, CSP stretta): le modifiche diventano visibili quando l'admin preme **"Pubblica sul sito"**, che fa ricostruire il sito su Netlify.
+
+```
+Admin ──> /api/contenuti/* ──> Supabase (tabelle + Storage)        [bozza]
+Admin ──> POST /api/pubblica ──> Netlify build hook ──> build.py ──> legge Supabase (solo dati pubblicati) ──> HTML statico + media copiati in /assets/media/
+```
+
+### Cosa si può modificare
+| Sezione | Tabella | Campi |
+|---|---|---|
+| Galleria (foto e video) | `media_galleria` | `id`, `file_path` (in Storage), `poster_path` (video), `tipo` (`foto`/`video`), `categoria` (`matrimoni`/`aziende`/`feste`/`palco`), `formato` (`wide`/`tall`/`reel`), `alt_it`, `alt_de`, `alt_fr`, `alt_en`, `ordine`, `pubblicato` |
+| Location / sale | `sale` | `id`, `nome`, `luogo`, `paese` (`CH`/`IT`/`DE`/`FR`), `tipo_it/de/fr/en`, `ordine`, `pubblicato` |
+| DJ | `dj` | `id`, `nome`, `genere_it/de/fr/en`, `foto_path`, `link` (solo `https://`), `ordine`, `pubblicato` |
+| Partner | `partner` | `id`, `nome`, `logo_path`, `link` (solo `https://`), `ordine`, `pubblicato` |
+| Testi del sito | `testi` | `chiave` (es. `hero.title`, la stessa dei file `src/i18n/*.json`), `it`, `de`, `fr`, `en`, `updated_at` — sovrascrivono i testi dei file; se un campo è vuoto vale il testo del file |
+| Registro pubblicazioni | `pubblicazioni` | `id`, `richiesta_da`, `created_at`, `esito` |
+
+Tutte con `updated_at`, `updated_by`. I contatti (telefono, e-mail, Instagram), il titolare e le regole di privacy **non** sono modificabili dal CMS (restano nel codice, revisionati dal mastino).
+
+### Media (Supabase Storage)
+- Bucket privato `media`. Caricamento: l'admin chiede `POST /api/media/upload-url` `{nome_file, tipo_mime, dimensione}` → la function verifica ruolo admin, tipo (`image/jpeg`, `image/png`, `image/webp`, `video/mp4`) e dimensione (immagini ≤ 10 MB, video ≤ 200 MB), genera un percorso casuale e restituisce un **URL di caricamento firmato** di Supabase per quel solo file. Il browser carica il file direttamente su quell'URL (nessuna chiave, solo un token monouso con scadenza).
+- La CSP dell'**area riservata** (solo lì) aggiunge l'host di Supabase a `connect-src` (caricamento e lettura delle anteprime), `img-src` e `media-src` (anteprime con URL firmato), più `blob:` in `img-src`/`media-src` per le anteprime locali prima del caricamento. La CSP pubblica resta `'self'`. Vedi "Dettagli d'implementazione del CMS".
+- Il sito pubblico **non** carica mai file da Supabase: durante la build `build.py` scarica i media pubblicati e li copia in `/assets/media/` (nomi con hash del contenuto), così la CSP pubblica resta `img-src 'self'; media-src 'self'`.
+- Le immagini vanno ridotte prima del caricamento nel browser (canvas, lato lungo max 2000 px, JPEG/WebP qualità 0.82) per non caricare file enormi.
+
+### Pubblicazione
+- `POST /api/pubblica` (solo admin, CSRF come le altre scritture, max 1 ogni 2 minuti): registra la richiesta in `pubblicazioni` e chiama il build hook di Netlify (`NETLIFY_BUILD_HOOK`, variabile d'ambiente segreta).
+- Su Netlify il comando di build è `python3 build.py`: se ci sono `SUPABASE_URL` e `SUPABASE_ANON_KEY` nell'ambiente di build, legge da Supabase **solo le righe con `pubblicato = true`** (policy di lettura per `anon` solo su quelle righe e solo sulle colonne pubbliche) e scarica **solo i media pubblicati** (policy di Storage, vedi sotto); altrimenti (sviluppo locale) usa i file `data/*.json` come oggi.
+- Ogni campo letto da Supabase passa dagli stessi controlli di oggi: `html.escape`, link solo `https://`, percorsi media solo dal bucket, verifica che la build non contenga script inline.
+
+### API del CMS (solo admin)
+| Metodo e percorso | Descrizione |
+|---|---|
+| `GET/POST /api/contenuti/:sezione`, `PATCH/DELETE /api/contenuti/:sezione/:id` | sezione = `galleria` \| `sale` \| `dj` \| `partner` |
+| `PUT /api/contenuti/ordine/:sezione` | `{ids:[...]}` nuovo ordine |
+| `GET /api/testi`, `PUT /api/testi/:chiave` | testi del sito in 4 lingue (`{it, de, fr, en}`, max 2000 caratteri ciascuno, solo testo; i pochi testi che ammettono `<em>` sono elencati in una lista fissa e il resto viene escapato) |
+| `POST /api/media/upload-url` | URL di caricamento firmato (vedi sopra) |
+| `GET /api/media/anteprima/:path` | URL firmato breve per vedere un file nell'area riservata |
+| `POST /api/pubblica` | ricostruisce il sito |
+| `GET /api/pubblicazioni` | ultime pubblicazioni e esito |
+
+### Variabili d'ambiente aggiuntive
+| Nome | Uso |
+|---|---|
+| `NETLIFY_BUILD_HOOK` | URL del build hook (segreto: solo nelle functions), formato `https://api.netlify.com/build_hooks/<id>` |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | servono **anche nell'ambiente di build** (scope "Builds" su Netlify) per leggere i contenuti pubblicati |
+
+I file `data/*.json` restano come contenuto iniziale e per lo sviluppo locale; uno script `scripts/importa-dati.mjs` (eseguito una volta dall'admin) li carica in Supabase.
+
+### Dettagli d'implementazione del CMS
+Schema: `supabase/migrations/0003_cms.sql`. Functions: `contenuti.js`, `testi.js`, `media.js`, `pubblica.js`. Lettura in build: `scripts/cms_fetch.py`.
+
+**Database e RLS**
+- Le 6 tabelle hanno RLS attiva. `admin`: tutto. `tecnico`: nessuna policy → nessun accesso (anche via PostgREST con il proprio JWT).
+- `anon`: `SELECT` solo con `pubblicato = true` su `media_galleria`, `sale`, `dj`, `partner` e solo sulle colonne pubbliche (privilegi di colonna: niente `id`, `updated_by`, date); `testi`: tutte le righe, colonne `chiave, it, de, fr, en`. Nessuna scrittura.
+- Vincoli nel DB: enum (`tipo`, `categoria`, `formato`, `paese`), lunghezze, `link` solo `^https://` senza spazi/virgolette/`<>`, percorsi media solo `^(galleria|dj|partner)/<uuid>.(jpg|png|webp|mp4)$` (poster/foto/logo solo immagini), foto ↔ file immagine e video ↔ `.mp4`, chiave dei testi `^[a-z0-9_]+(\.[a-z0-9_]+)*$`.
+- `updated_at`, `updated_by`, `created_at` e `pubblicazioni.richiesta_da` li imposta il trigger `cms_audit()` (il client non può falsificarli).
+- Funzioni: `cms_riordina(sezione, ids)` (invoker, controlla `is_admin()`), `registra_pubblicazione()` (invoker, `is_admin()`, lock transazionale + limite di 2 minuti; le pubblicazioni finite in `errore` non contano), `media_pubblicato(path)` (`SECURITY DEFINER`, `search_path = public`, eseguibile da `anon` perché usata dalla policy Storage `media_anon_pubblicati`: restituisce solo un booleano) e `media_pubblicati()` (`SECURITY DEFINER`, `search_path = public`, eseguibile solo da `authenticated`: elenco dei percorsi pubblicati).
+
+**Media pubblici: meccanismo scelto**
+- Bucket **privato** `media` (limiti del bucket: 200 MB e solo i 4 tipi MIME ammessi, validi anche per gli URL firmati). Scrittura (`insert/update/delete`) solo admin; `insert` solo con percorso nel formato previsto.
+- `anon` può leggere **solo** gli oggetti per cui `media_pubblicato(name)` è vero, cioè referenziati da una riga pubblicata (galleria, poster, foto DJ, logo partner). Le bozze non sono mai leggibili. La build li scarica con la sola chiave anon da `/storage/v1/object/authenticated/media/<path>`.
+- Scelto rispetto alle alternative perché è il più semplice e sempre coerente con `pubblicato`: una funzione SQL non può firmare URL di Storage (servirebbe il segreto JWT del progetto nel DB); un secondo bucket pubblico `media-pubblici` richiederebbe copie e cancellazioni a ogni pubblicazione (file obsoleti se una copia fallisce) e renderebbe i file leggibili da chiunque con un URL fisso. Anche qui, i file leggibili da `anon` sono esattamente quelli già pubblicati sul sito.
+- `cms_fetch.py` ricontrolla tutto: righe con `pubblicato = true` (filtro anche nella query), enum, link `https://`, percorsi del bucket, dimensione massima per tipo (immagini 10 MB, video 200 MB), firma dei file (JPEG/PNG/WebP/MP4), nessun redirect (la chiave non va ad altri host), nome di destinazione = `sha256(contenuto).<ext>` dentro `dest_media_dir` (nessun percorso esterno). Una voce non valida viene saltata con un avviso; un errore di rete fa fallire la build (Netlify continua a servire la versione precedente).
+- Gli URL di caricamento firmati di Supabase scadono dopo **2 ore** (valore fisso di Supabase, non configurabile) e valgono per un solo percorso casuale, senza sovrascrittura. Le anteprime (`/api/media/anteprima/<path>`) durano 5 minuti.
+- Limite noto: il browser potrebbe caricare un file diverso da quello dichiarato (es. un'immagine > 10 MB, entro i 200 MB e i tipi del bucket). La build lo scarta (dimensione e firma del file). I file eliminati dal CMS restano nel bucket privato (non pubblici); pulizia manuale dalla dashboard se serve.
+
+**CSP dell'area riservata** (`netlify.toml`)
+- `connect-src 'self' https://*.supabase.co; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co`.
+- Il wildcard è temporaneo: appena il progetto è collegato va sostituito con l'host esatto (`https://<id>.supabase.co`, lo stesso di `SUPABASE_URL`), perché `netlify.toml` non può leggere variabili d'ambiente e il wildcard ammetterebbe qualsiasi progetto Supabase.
+- La CSP non è più nella regola `/*`: se più regole corrispondono a un percorso Netlify le applica tutte, e due CSP valgono come intersezione (l'area riservata non potrebbe contattare Supabase). La CSP pubblica è quindi assegnata a un elenco esplicito di percorsi pubblici (`/`, pagine `.html` alla radice, `/de/*`, `/fr/*`, `/en/*`, `/assets/*`, `robots.txt`, `sitemap.xml`): **ogni nuova pagina pubblica alla radice va aggiunta all'elenco**.
+
+**API del CMS: corpi e risposte**
+| Endpoint | Corpo / risposta |
+|---|---|
+| `GET /api/contenuti/:sezione` | `{voci:[…]}` ordinate per `ordine` |
+| `POST /api/contenuti/:sezione` | campi della tabella (senza `id`, `updated_*`) → `201 {voce}` |
+| `PATCH /api/contenuti/:sezione/:id` | campi da cambiare → `{voce}`; in galleria, se cambia `file_path` va inviato anche `tipo` |
+| `DELETE /api/contenuti/:sezione/:id` | → `{ok:true}` (il file resta nel bucket privato) |
+| `PUT /api/contenuti/ordine/:sezione` | `{ids:[uuid…]}` (max 1000, senza doppioni) → `{ok:true, aggiornate}`; `ordine` = 10, 20, 30… |
+| `GET /api/testi` | `{testi:[{chiave,it,de,fr,en,updated_at}], chiavi:[…chiavi modificabili]}` |
+| `PUT /api/testi/:chiave` | `{it?, de?, fr?, en?}` (max 2000 caratteri; le lingue assenti o vuote diventano vuote = testo del file) → `{testo}`; tutte vuote → la riga viene eliminata, `{testo:null}`. La chiave deve esistere come testo in `src/i18n/it.json` (incluso nel bundle della function) e non essere esclusa |
+| `POST /api/media/upload-url` | `{nome_file, tipo_mime, dimensione, cartella?}` (`cartella` = `galleria` (default) \| `dj` \| `partner`) → `{path, upload_url, metodo:"PUT", headers:{Content-Type, x-upsert}, scadenza_secondi}` |
+| `GET /api/media/anteprima/<cartella>/<uuid>.<ext>` | → `{url, scadenza_secondi:300}` |
+| `POST /api/pubblica` | nessun corpo → `202 {ok, pubblicazione:{id, created_at, esito}}`; `429 {error:"too_many_requests", attesa_secondi}` + `Retry-After`; `502` se il build hook fallisce (esito `errore`) |
+| `GET /api/pubblicazioni` | `{pubblicazioni:[{id, created_at, esito, richiesta_da}]}` (ultime 20; `richiesta_da` = nome) |
+
+Chiavi di testo **non** modificabili (`CHIAVI_ESCLUSE` in `_lib/cms.js`, uguale in `cms_fetch.py`): `locale`, `label`, `hint`, `hint_link`, `privacy.*`, `privacy_page.*`, `form.note`, `contact.phone`, `whatsapp.*`. Le chiavi con elenchi (es. `s1.list`, `faq.items`) non sono modificabili.
+
+**Build (`scripts/cms_fetch.py`)**: `load_cms(dest_media_dir, public_prefix="assets/media")` → `None` senza variabili; altrimenti `{"galleria", "sale", "dj", "partner"}` nel formato di `data/*.json` (con `approvato: true`, percorsi `assets/media/<sha256>.<ext>`, lingue mancanti = testo italiano) e `"testi": {chiave: {lingua: testo}}` (solo lingue non vuote). Solleva `CmsError` se Supabase non risponde. I testi **non** sono escapati: l'escape (e la lista fissa dei testi che ammettono `<em>`) resta compito di `build.py`.
+
+**Importazione iniziale** (`scripts/importa-dati.mjs`): `SUPABASE_URL=… SUPABASE_ANON_KEY=… node scripts/importa-dati.mjs [--prova] [--forza]`. Chiede e-mail e password dell'admin (password non mostrata, mai salvata), verifica il ruolo admin, carica nel bucket i file di `assets/` usati dalle voci con `"approvato": true` e crea le righe già pubblicate; si ferma se le tabelle contengono già dati (salvo `--forza`). Le voci di esempio e le bozze non vengono importate.
 
 ## Pagine
 - `/`, `/de/`, `/fr/`, `/en/` — sito pubblico
@@ -110,7 +202,7 @@ Codici d'errore: `invalid_input` (400, con `field`), `invalid_json` (400), `unau
 - `/area-riservata/` — login · `/area-riservata/app.html` — gestionale (noindex)
 
 ## Pubblicazione (`netlify.toml`)
-- `publish = "."`: per questo le cartelle interne (`/netlify/`, `/supabase/`, `/tests/`, `/docs/`, `/src/`, `/data/`, `/.claude/`) e i file di progetto (`CLAUDE.md`, `README.md`, `build.py`, `package.json`, `netlify.toml`, …) sono bloccati con un redirect forzato `404` verso `/404.html` (pagina da creare a cura del frontend). `/data/` contiene anche voci non approvate e non deve mai essere servita.
+- `publish = "."`: per questo le cartelle interne (`/netlify/`, `/supabase/`, `/tests/`, `/docs/`, `/src/`, `/data/`, `/scripts/`, `/.claude/`) e i file di progetto (`CLAUDE.md`, `README.md`, `build.py`, `package.json`, `netlify.toml`, …) sono bloccati con un redirect forzato `404` verso `/404.html` (pagina da creare a cura del frontend). `/data/` contiene anche voci non approvate e non deve mai essere servita.
 - CSP senza `'unsafe-inline'` per script e stili: nessuno script inline (JSON-LD `type="application/ld+json"` è ammesso perché non viene eseguito), nessun attributo `style=`. Caratteri ospitati in locale (`/assets/fonts/`): `style-src 'self'; font-src 'self'`, nessun dominio esterno.
 - Cache: immagini/video 1 anno; CSS/JS 1 giorno (i nomi dei file non hanno hash); `/api/*` e `/area-riservata/*` `no-store` + `noindex`.
 - Test: `npm test` = `node --test tests/*/*.test.js` (da Node 21 `node --test` non accetta più una cartella come argomento).
