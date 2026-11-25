@@ -404,6 +404,8 @@
     const e = data.evento || {};
     const admin = isGestione();
     const actions = [];
+    const cal = G().calendarLink(e, 'btn');
+    if (cal) actions.push(cal);
     if (admin) actions.push(h('a', { class: 'btn', href: `#/evento/${encodeURIComponent(e.id)}/modifica` }, 'Modifica'));
     if (isAdmin()) {
       const del = h('button', { class: 'btn btn--danger', type: 'button' }, 'Elimina');
@@ -462,11 +464,13 @@
       : null;
 
     const offerte = admin ? wide(G().offertePanel(e)) : null;
+    const paga = admin ? wide(G().compensiPanel(e, data.staff || [])) : null;
     // ruolo base: niente checklist (l'API non la restituisce)
     const lista = state.me.ruolo === 'base' ? [] : [].concat(checklistPanel(e, data.checklist || [])).map(wide);
     page({ title: e.titolo || 'Evento', sub, actions, back: ['#/eventi', 'Eventi'] },
       panels(dati, cliente, economia, programma, noteSquadra, note, offerte,
         wide(staffPanel(e, data.staff || [])),
+        paga,
         lista));
   }
 
@@ -1128,6 +1132,7 @@
     [new RegExp(`^#/offerta/${ID}$`), (p, a) => G().viewOfferta(p, a), 'gestione', 'eventi'],
     [/^#\/utenti$/, (p, a) => G().viewUtenti(p, a), 'admin', 'utenti'],
     [/^#\/impostazioni$/, (p, a) => G().viewImpostazioni(p, a), 'admin', 'impostazioni'],
+    [/^#\/paga$/, (p, a) => G().viewPaga(p, a), 'tutti', 'paga'],
   ];
 
   function route() {
@@ -1154,8 +1159,8 @@
       ? [['#/agenda', 'Agenda di oggi', 'agenda']]
       : [['#/agenda', 'Agenda', 'agenda'], ['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
     if (isGestione()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti'], ['#/magazzino', 'Magazzino', 'magazzino']);
-    links.push(['#/assenze', 'Giorni di assenza', 'assenze']);
-    if (isAdmin()) links.push(['#/utenti', 'Utenti e ruoli', 'utenti'], ['#/impostazioni', 'Impostazioni offerte', 'impostazioni'], ['#/contenuti', 'Contenuti del sito', 'contenuti']);
+    links.push(['#/assenze', 'Giorni di assenza', 'assenze'], ['#/paga', 'Paga e spese', 'paga']);
+    if (isAdmin()) links.push(['#/utenti', 'Utenti e ruoli', 'utenti'], ['#/impostazioni', 'Impostazioni', 'impostazioni'], ['#/contenuti', 'Contenuti del sito', 'contenuti']);
     links.forEach(([href, label, section]) => nav.append(h('a', { href, 'data-section': section }, label)));
     const logout = h('button', { class: 'app__link', type: 'button' }, 'Esci');
     logout.addEventListener('click', async () => {

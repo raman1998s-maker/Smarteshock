@@ -133,7 +133,8 @@
       }
       return h('article', { class: 'agenda__evento' },
         h('h3', null, h('a', { href }, ev.titolo || 'Evento'), ' ', badge(ev.stato, STATI)),
-        dl(righe));
+        dl(righe),
+        h('p', null, calendarLink({ ...e, ...ev }, 'btn btn--ghost btn--sm')));
     }
 
     // ---------------------------------------------------------------- assenze
@@ -866,6 +867,29 @@
             field('Saluti finali', testi[l].saluti, { full: true }),
             field('AGB / condizioni generali (seconda pagina del PDF)', testi[l].agb, { full: true })));
       });
+      // tariffe proposte per la paga della squadra
+      const tariffe = (dati.tariffe || []).map((t) => ({ ...t }));
+      const tbTar = h('tbody');
+      const disegnaTariffe = () => {
+        clear(tbTar);
+        tariffe.forEach((t, i) => {
+          const ru = h('input', { type: 'text', maxlength: '80', value: t.ruolo || '', 'aria-label': `Ruolo ${i + 1}`, placeholder: 'es. Autista + Installatore' });
+          const ta = h('input', { inputmode: 'decimal', class: 'input--num', value: t.tariffa ?? '', 'aria-label': `Tariffa ${i + 1}` });
+          const pg = h('input', { type: 'checkbox', checked: !!t.per_giorno, 'aria-label': `Al giorno ${i + 1}` });
+          ru.addEventListener('input', () => { t.ruolo = ru.value; });
+          ta.addEventListener('input', () => { t.tariffa = numero(ta.value); });
+          pg.addEventListener('change', () => { t.per_giorno = pg.checked; });
+          tbTar.append(h('tr', null, h('td', { 'data-label': 'Ruolo' }, ru), h('td', { 'data-label': 'CHF', class: 'num' }, ta),
+            h('td', { 'data-label': 'Al giorno' }, h('label', { class: 'check' }, pg, h('span', null, 'al giorno'))),
+            h('td', { 'data-label': '' }, h('button', { class: 'btn btn--ghost btn--sm', type: 'button', onclick: () => { tariffe.splice(i, 1); disegnaTariffe(); } }, '×'))));
+        });
+      };
+      disegnaTariffe();
+      const pannelloTariffe = h('section', { class: 'panel' },
+        h('div', { class: 'panel__head' }, h('h2', null, 'Tariffe della squadra'),
+          h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { tariffe.push({ ruolo: '', tariffa: 0, per_giorno: false }); disegnaTariffe(); } }, 'Aggiungi tariffa')),
+        h('p', { class: 'muted' }, 'Proposte quando si assegna la paga sull\'evento; si possono sempre cambiare caso per caso.'),
+        tabella(['Ruolo', 'CHF', 'Al giorno', ''], tbTar));
       const alert = h('div');
       const save = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Salva impostazioni');
       const form = h('form', { novalidate: true },
@@ -877,12 +901,15 @@
             field('Telefono', f.telefono), field('E-mail', f.email),
             field('Riga in fondo alle AGB', f.piede, { full: true, hint: 'es. banca, IBAN, TWINT. Resta nel database, non nel codice del sito.' }))),
         schede,
+        pannelloTariffe,
         h('div', { class: 'panel__foot' }, save));
       form.addEventListener('submit', (ev) => {
         ev.preventDefault();
         clear(alert);
         const val = (x) => x.value.trim() || null;
-        const body = { ditta: {}, testi: {} };
+        const errTar = tariffe.findIndex((t) => !String(t.ruolo || '').trim() || !(Number.isFinite(t.tariffa) && t.tariffa >= 0));
+        if (errTar >= 0) { alert.append(alertBox(`Controllate la tariffa ${errTar + 1}: ruolo e importo sono obbligatori.`)); return; }
+        const body = { ditta: {}, testi: {}, tariffe: tariffe.map((t) => ({ ruolo: t.ruolo.trim(), tariffa: t.tariffa, per_giorno: !!t.per_giorno })) };
         Object.entries(f).forEach(([k, el]) => { body.ditta[k] = val(el); });
         Object.entries(testi).forEach(([l, campi]) => {
           const o = {};
@@ -893,7 +920,219 @@
           try { await api('impostazioni', { method: 'PUT', body }); toast('Impostazioni salvate: valgono per tutte le nuove offerte e i PDF.'); } catch (err) { markInvalid(form, err); alert.append(alertBox(errorMessage(err))); }
         });
       });
-      page({ title: 'Impostazioni offerte', sub: 'Intestazione, testi predefiniti e AGB dei PDF, per lingua' }, form);
+      page({ title: 'Impostazioni', sub: 'Intestazione, testi e AGB delle offerte; tariffe della squadra' }, form);
+    }
+
+    // ---------------------------------------------------------------- Google Calendar
+    /** Link "Aggiungi a Google Calendar" (nessun prezzo nei dettagli). */
+    function calendarUrl(e) {
+      if (!e || !e.data_inizio) return null;
+      const compatto = (v) => String(v).slice(0, 19).replace(/[-:]/g, '');
+      const senzaOra = (v) => String(v).length <= 10 || String(v).slice(11, 16) === '00:00';
+      let dates;
+      if (senzaOra(e.data_inizio) && (!e.data_fine || senzaOra(e.data_fine))) {
+        const fine = isoDate(addDays(parseDate(giorno(e.data_fine) || giorno(e.data_inizio)), 1));
+        dates = `${giorno(e.data_inizio).replace(/-/g, '')}/${fine.replace(/-/g, '')}`;
+      } else {
+        const fine = e.data_fine || `${giorno(e.data_inizio)}T${String(Math.min(23, Number(String(e.data_inizio).slice(11, 13)) + 3)).padStart(2, '0')}${String(e.data_inizio).slice(13, 19) || ':00:00'}`;
+        dates = `${compatto(e.data_inizio)}/${compatto(fine)}`;
+      }
+      const q = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: `${e.titolo || 'Evento'}${e.numero_ordine ? ` (N. ${e.numero_ordine})` : ''}`,
+        dates,
+        ctz: 'Europe/Zurich',
+        location: [e.sala, e.indirizzo || e.localita].filter(Boolean).join(', '),
+        details: `Meekon Displays — ${window.location.origin}/area-riservata/app.html#/evento/${e.id}`,
+      });
+      return `https://calendar.google.com/calendar/render?${q}`;
+    }
+    function calendarLink(e, cls = 'btn btn--sm') {
+      const url = calendarUrl(e);
+      return url ? h('a', { class: cls, href: url, target: '_blank', rel: 'noopener noreferrer' }, 'Aggiungi a Google Calendar') : null;
+    }
+
+    // ---------------------------------------------------------------- paga della squadra (sull'evento)
+    function compensiPanel(e, staff) {
+      const panel = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Paga della squadra')), h('p', { class: 'muted' }, 'Caricamento…'));
+      Promise.all([api(`eventi/${encodeURIComponent(e.id)}/compensi`), api('impostazioni')]).then(([c, imp]) => {
+        const tariffe = (imp.impostazioni && imp.impostazioni.tariffe) || [];
+        const righe = (c.compensi || []).map((x) => ({ staff_id: x.staff_id, ruolo: x.ruolo, quantita: Number(x.quantita), tariffa_chf: Number(x.tariffa_chf) }));
+        // proposta iniziale: una riga per ogni persona assegnata, con il suo ruolo nell'evento
+        if (!righe.length) staff.forEach((s) => righe.push({ staff_id: s.staff_id, ruolo: s.ruolo_evento || '', quantita: 1, tariffa_chf: 0 }));
+        const tbody = h('tbody');
+        const totale = h('strong');
+        const ricalcola = () => { totale.textContent = chf(righe.reduce((t, r) => t + round2((r.quantita || 0) * (r.tariffa_chf || 0)), 0)); };
+        const persone = staff.map((s) => [s.staff_id, s.nome || '—']);
+        const disegna = () => {
+          clear(tbody);
+          righe.forEach((r, i) => {
+            const chi = select('staff_id', persone.length ? persone : [['', '— nessuno assegnato —']], r.staff_id);
+            chi.addEventListener('change', () => { r.staff_id = chi.value; });
+            const ruolo = h('input', { type: 'text', maxlength: '80', value: r.ruolo, list: 'mk-tariffe', 'aria-label': `Ruolo riga ${i + 1}`, placeholder: 'es. Autista + Installatore' });
+            const qta = h('input', { inputmode: 'decimal', class: 'input--num', value: String(r.quantita), 'aria-label': `Quantità o giorni riga ${i + 1}` });
+            const tar = h('input', { inputmode: 'decimal', class: 'input--num', value: String(r.tariffa_chf), 'aria-label': `Tariffa riga ${i + 1}` });
+            const imp2 = h('span', null, fmtMoney(round2(r.quantita * r.tariffa_chf)));
+            const agg = () => { imp2.textContent = fmtMoney(round2((r.quantita || 0) * (r.tariffa_chf || 0))); ricalcola(); };
+            ruolo.addEventListener('input', () => {
+              r.ruolo = ruolo.value;
+              const t = tariffe.find((x) => x.ruolo === ruolo.value);
+              if (t) { r.tariffa_chf = Number(t.tariffa); tar.value = String(t.tariffa); agg(); }
+            });
+            qta.addEventListener('input', () => { const n = numero(qta.value); if (Number.isFinite(n)) { r.quantita = n; agg(); } });
+            tar.addEventListener('input', () => { const n = numero(tar.value); if (Number.isFinite(n)) { r.tariffa_chf = n; agg(); } });
+            tbody.append(h('tr', null,
+              h('td', { 'data-label': 'Persona' }, chi),
+              h('td', { 'data-label': 'Ruolo' }, ruolo),
+              h('td', { 'data-label': 'Q.tà / giorni', class: 'num' }, qta),
+              h('td', { 'data-label': 'Tariffa CHF', class: 'num' }, tar),
+              h('td', { 'data-label': 'Importo CHF', class: 'num' }, imp2),
+              h('td', { 'data-label': '' }, h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Togli riga ${i + 1}`, onclick: () => { righe.splice(i, 1); disegna(); ricalcola(); } }, '×'))));
+          });
+        };
+        const lista = h('datalist', { id: 'mk-tariffe' }, tariffe.map((t) => h('option', { value: t.ruolo }, `${fmtMoney(t.tariffa)} CHF${t.per_giorno ? ' al giorno' : ''}`)));
+        const add1 = h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { righe.push({ staff_id: persone[0] ? persone[0][0] : '', ruolo: '', quantita: 1, tariffa_chf: 0 }); disegna(); } }, 'Aggiungi riga');
+        const save = h('button', { class: 'btn btn--primary btn--sm', type: 'button' }, 'Salva paga');
+        save.addEventListener('click', () => busy(save, async () => {
+          const valide = righe.filter((r) => r.staff_id && r.ruolo.trim());
+          try {
+            await api(`eventi/${encodeURIComponent(e.id)}/compensi`, { method: 'PUT', body: { compensi: valide.map((r) => ({ ...r, ruolo: r.ruolo.trim() })) } });
+            toast('Paga salvata: ognuno la vede in "Paga e spese".');
+          } catch (err) { toast(errorMessage(err), 'error'); }
+        }));
+        clear(panel);
+        put(panel,
+          h('div', { class: 'panel__head' }, h('h2', null, 'Paga della squadra'), h('span', null, 'Totale ', totale)),
+          lista,
+          tabella(['Persona', 'Ruolo', 'Q.tà / giorni', 'Tariffa CHF', 'Importo CHF', ''], tbody),
+          tariffe.length ? null : h('p', { class: 'muted' }, 'Le tariffe proposte (es. Autista 150 CHF) si impostano in "Impostazioni offerte".'),
+          h('div', { class: 'panel__foot' }, add1, save));
+        disegna();
+        ricalcola();
+      }).catch((err) => { panel.lastChild.textContent = errorMessage(err); });
+      return panel;
+    }
+
+    // ---------------------------------------------------------------- paga e spese
+    const TIPI_SPESA = { cibo: 'Cibo', diesel: 'Diesel', materiale: 'Materiale', altro: 'Altro' };
+    const STATI_SPESA = { inviata: 'In attesa', approvata: 'Approvata', rifiutata: 'Rifiutata' };
+    const BADGE_SPESA = { inviata: 'richiesta', approvata: 'confermato', rifiutata: 'annullato' };
+    const badgeSpesa = (s) => h('span', { class: `badge badge--${BADGE_SPESA[s]}` }, STATI_SPESA[s] || s);
+    let mesePaga = null;
+
+    async function viewPaga(_, alive) {
+      loading();
+      const gestione = isGestione();
+      if (!mesePaga) mesePaga = oggi().slice(0, 7);
+      const [y, m] = mesePaga.split('-').map(Number);
+      const da = `${mesePaga}-01`;
+      const a = isoDate(new Date(y, m, 0));
+      let comp;
+      let mie;
+      let tutte = [];
+      let eventi = [];
+      try {
+        [comp, mie, eventi] = await Promise.all([
+          api(`compensi?da=${da}&a=${a}`),
+          api(`spese?da=${da}&a=${a}`),
+          api(`eventi?da=${isoDate(addDays(new Date(), -60))}&a=${isoDate(addDays(new Date(), 30))}`).then((r) => r.eventi || []).catch(() => []),
+        ]);
+        if (gestione) tutte = (await api(`spese?tutte=1&da=${da}&a=${a}`)).spese || [];
+      } catch (err) { if (alive()) failure('Paga e spese', err); return; }
+      if (!alive()) return;
+      const compensi = comp.compensi || [];
+      const spese = mie.spese || [];
+      const nomeEvento = new Map(eventi.map((e) => [e.id, e.titolo]));
+
+      const mese = h('input', { type: 'month', value: mesePaga, 'aria-label': 'Mese' });
+      mese.addEventListener('change', () => { if (mese.value) { mesePaga = mese.value; viewPaga([], alive); } });
+
+      const totPaga = compensi.reduce((t, c) => t + round2(Number(c.quantita) * Number(c.tariffa_chf)), 0);
+      const totSpese = spese.filter((s) => s.stato === 'approvata').reduce((t, s) => t + Number(s.importo_chf), 0);
+      const riepilogo = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Il mio mese')),
+        dl([['Paga per gli eventi', chf(totPaga)], ['Spese approvate da rimborsare', chf(totSpese)], ['Totale', h('strong', null, chf(totPaga + totSpese))]]));
+
+      const tabPaga = compensi.length
+        ? tabella(['Data', 'Evento', 'Ruolo', 'Q.tà', 'Tariffa CHF', 'Importo CHF'], compensi.map((c) => h('tr', null,
+          td('Data', fmtDate(giorno(c.data_inizio))), td('Evento', c.titolo || '—'), td('Ruolo', c.ruolo),
+          h('td', { class: 'num', 'data-label': 'Q.tà' }, h('span', null, Number(c.quantita))),
+          h('td', { class: 'num', 'data-label': 'Tariffa CHF' }, h('span', null, fmtMoney(c.tariffa_chf))),
+          h('td', { class: 'num', 'data-label': 'Importo CHF' }, h('span', null, fmtMoney(round2(c.quantita * c.tariffa_chf)))))))
+        : h('p', { class: 'muted' }, 'Nessuna paga registrata in questo mese.');
+
+      // le mie spese + modulo
+      const tbody = h('tbody');
+      const rigaSpesa = (s) => {
+        const tr = h('tr', null, td('Data', fmtDate(s.data)), td('Tipo', TIPI_SPESA[s.tipo] || s.tipo), td('Evento', s.evento_id ? (nomeEvento.get(s.evento_id) || '—') : '—'),
+          td('Descrizione', dash(s.descrizione)), h('td', { class: 'num', 'data-label': 'CHF' }, h('span', null, fmtMoney(s.importo_chf))), td('Stato', badgeSpesa(s.stato)));
+        const azione = h('td', { 'data-label': '' });
+        if (s.stato === 'inviata') {
+          const del = h('button', { class: 'btn btn--ghost btn--sm', type: 'button' }, 'Ritira');
+          del.addEventListener('click', () => busy(del, async () => {
+            try { await api(`spese/${encodeURIComponent(s.id)}`, { method: 'DELETE' }); tr.remove(); toast('Spesa ritirata.'); } catch (err) { toast(errorMessage(err), 'error'); }
+          }));
+          azione.append(del);
+        }
+        tr.append(azione);
+        return tr;
+      };
+      spese.forEach((s) => tbody.append(rigaSpesa(s)));
+      const fData = h('input', { type: 'date', value: oggi(), required: true });
+      const fTipo = select('tipo', Object.entries(TIPI_SPESA), 'diesel');
+      const fImporto = h('input', { inputmode: 'decimal', required: true, placeholder: '0.00' });
+      const fEvento = select('evento_id', [['', '— nessun evento —'], ...eventi.filter((e) => e.stato !== 'annullato').map((e) => [e.id, `${fmtDate(giorno(e.data_inizio))} · ${e.titolo}`])], '');
+      const fDesc = h('input', { type: 'text', maxlength: '300', placeholder: 'es. pieno furgone, pranzo squadra' });
+      const invia = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Invia spesa');
+      const form = h('form', { class: 'panel', novalidate: true },
+        h('div', { class: 'panel__head' }, h('h2', null, 'Nuova spesa')),
+        h('div', { class: 'fields' }, field('Data', fData), field('Tipo', fTipo), field('Importo CHF', fImporto), field('Evento', fEvento), field('Descrizione', fDesc, { full: true })),
+        h('p', { class: 'muted' }, 'Tenete lo scontrino: l\'ufficio approva la spesa e la rimborsa.'),
+        h('div', { class: 'panel__foot' }, invia));
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        const imp = numero(fImporto.value);
+        if (!(imp > 0)) { fImporto.setAttribute('aria-invalid', 'true'); fImporto.focus(); return; }
+        fImporto.removeAttribute('aria-invalid');
+        busy(invia, async () => {
+          try {
+            const r = await api('spese', { method: 'POST', body: { data: fData.value || null, tipo: fTipo.value, importo_chf: imp, evento_id: fEvento.value || null, descrizione: fDesc.value.trim() || null } });
+            if (r.spesa && r.spesa.data >= da && r.spesa.data <= a) tbody.prepend(rigaSpesa(r.spesa));
+            fImporto.value = ''; fDesc.value = '';
+            toast('Spesa inviata all\'ufficio.');
+          } catch (err) { markInvalid(form, err); toast(errorMessage(err), 'error'); }
+        });
+      });
+
+      // gestione: tutte le spese del mese da approvare
+      let approvazioni = null;
+      if (gestione) {
+        const righe = tutte.map((s) => {
+          const stato = h('span', null, badgeSpesa(s.stato));
+          const bott = (nuovo, label) => {
+            const b = h('button', { class: 'btn btn--sm', type: 'button' }, label);
+            b.addEventListener('click', () => busy(b, async () => {
+              try { const r = await api(`spese/${encodeURIComponent(s.id)}`, { method: 'PATCH', body: { stato: nuovo } }); s.stato = r.spesa.stato; clear(stato); stato.append(badgeSpesa(s.stato)); } catch (err) { toast(errorMessage(err), 'error'); }
+            }));
+            return b;
+          };
+          return h('tr', null, td('Persona', dash(s.nome)), td('Data', fmtDate(s.data)), td('Tipo', TIPI_SPESA[s.tipo] || s.tipo),
+            td('Descrizione', dash(s.descrizione)), h('td', { class: 'num', 'data-label': 'CHF' }, h('span', null, fmtMoney(s.importo_chf))),
+            h('td', { 'data-label': 'Stato' }, stato), h('td', { 'data-label': '' }, bott('approvata', 'Approva'), ' ', bott('rifiutata', 'Rifiuta')));
+        });
+        const perPersona = new Map();
+        tutte.filter((s) => s.stato === 'approvata').forEach((s) => perPersona.set(s.nome || '—', (perPersona.get(s.nome || '—') || 0) + Number(s.importo_chf)));
+        approvazioni = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Spese della squadra')),
+          righe.length ? tabella(['Persona', 'Data', 'Tipo', 'Descrizione', 'CHF', 'Stato', ''], righe) : h('p', { class: 'muted' }, 'Nessuna spesa in questo mese.'),
+          perPersona.size ? dl([...perPersona].map(([n, v]) => [`Da rimborsare a ${n}`, chf(v)])) : null);
+      }
+
+      page({ title: 'Paga e spese', sub: 'Paga per evento e spese da rimborsare, mese per mese', actions: [mese] },
+        riepilogo,
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'La mia paga')), tabPaga),
+        form,
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Le mie spese')),
+          tabella(['Data', 'Tipo', 'Evento', 'Descrizione', 'CHF', 'Stato', ''], tbody)),
+        approvazioni);
     }
 
     // ---------------------------------------------------------------- utenti e ruoli
@@ -939,7 +1178,7 @@
           h('p', { class: 'muted' }, 'Per aggiungere una persona: create il suo account in Supabase (Authentication → Users → Add user, con la sua e-mail), poi aggiungete la riga nella tabella "staff" con lo stesso id, il nome e il ruolo. Da qui potete poi cambiare ruolo e stato.')));
     }
 
-    return { viewAgenda, viewAssenze, viewMagazzino, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, offertePanel };
+    return { viewAgenda, viewAssenze, viewMagazzino, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, viewPaga, offertePanel, compensiPanel, calendarLink };
   }
 
   window.MeekonGestionale = { create };

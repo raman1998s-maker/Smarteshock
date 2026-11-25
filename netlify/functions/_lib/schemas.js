@@ -189,6 +189,22 @@ export const rigaOffertaSchema = {
   sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, default: 0, empty: 0 }),
 };
 
+export const compensoSchema = {
+  staff_id: t.uuid({ required: true }),
+  ruolo: t.string({ max: 80, required: true }),
+  quantita: t.decimal({ min: 0.01, max: 365, decimals: 2, default: 1, empty: 1 }),
+  tariffa_chf: t.money({ max: 100000, required: true }),
+};
+
+export const TIPI_SPESA = ['cibo', 'diesel', 'materiale', 'altro'];
+export const spesaSchema = {
+  evento_id: t.uuid(),
+  data: t.date(),
+  tipo: t.enumOf(TIPI_SPESA, { required: true }),
+  importo_chf: t.money({ max: 10000, required: true }),
+  descrizione: t.string({ max: 300 }),
+};
+
 export const assenzaSchema = {
   staff_id: t.uuid(),
   dal: t.date({ required: true }),

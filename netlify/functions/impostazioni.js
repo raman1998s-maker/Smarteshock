@@ -1,4 +1,5 @@
-// GET /api/impostazioni — intestazione della ditta, testi predefiniti e AGB delle offerte (gestione).
+// GET /api/impostazioni — intestazione della ditta, testi predefiniti e AGB delle offerte,
+// tariffe della squadra (gestione).
 // PUT /api/impostazioni — li sostituisce (solo admin).
 // Stanno nel database (tabella impostazioni, riga unica) e non nel codice: indirizzo,
 // coordinate bancarie e AGB non devono finire nel repository.
@@ -26,10 +27,19 @@ const testiSchema = {
   agb: t.string({ max: 20000, multiline: true }),
 };
 
+// Tariffe proposte per la paga della squadra (es. "Autista + Installatore", 300 CHF; "Magazzino", 150 CHF al giorno).
+const tariffaSchema = {
+  ruolo: t.string({ max: 80, required: true }),
+  tariffa: t.money({ max: 100000, required: true }),
+  per_giorno: t.bool({ default: false, empty: false }),
+};
+
 export function validaImpostazioni(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'invalid_input');
-  if (Object.keys(body).some((k) => k !== 'ditta' && k !== 'testi')) throw new HttpError(400, 'invalid_input');
-  const out = { ditta: validate(body.ditta ?? {}, dittaSchema), testi: {} };
+  if (Object.keys(body).some((k) => !['ditta', 'testi', 'tariffe'].includes(k))) throw new HttpError(400, 'invalid_input');
+  const tariffe = body.tariffe ?? [];
+  if (!Array.isArray(tariffe) || tariffe.length > 30) throw new HttpError(400, 'invalid_input', { field: 'tariffe' });
+  const out = { ditta: validate(body.ditta ?? {}, dittaSchema), testi: {}, tariffe: tariffe.map((x) => validate(x, tariffaSchema)) };
   const testi = body.testi ?? {};
   if (typeof testi !== 'object' || Array.isArray(testi)) throw new HttpError(400, 'invalid_input', { field: 'testi' });
   for (const k of Object.keys(testi)) {

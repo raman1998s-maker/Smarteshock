@@ -956,6 +956,7 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .toolbar input[type="search"] { flex: 3 1 220px; }
 .toolbar > span { align-self: center; font-size: var(--fs-sm); color: var(--color-text-2); }
 .input--num { width: 6.5em; text-align: right; }
+.table input[type="text"] { min-width: 200px; }
 .text-danger { color: var(--color-danger); font-weight: 500; }
 .alert--info { background: var(--color-primary-wash); color: var(--st-offerta-fg); }
 .alert + .panels, .alert + .alert { margin-top: var(--sp-4); }

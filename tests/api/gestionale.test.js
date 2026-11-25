@@ -14,6 +14,9 @@ const offerte = offerteMod.default;
 const righe = (await import('../../netlify/functions/offerte-righe.js')).default;
 const assenze = (await import('../../netlify/functions/assenze.js')).default;
 const impostazioni = (await import('../../netlify/functions/impostazioni.js')).default;
+const eventiCompensi = (await import('../../netlify/functions/eventi-compensi.js')).default;
+const compensi = (await import('../../netlify/functions/compensi.js')).default;
+const spese = (await import('../../netlify/functions/spese.js')).default;
 
 const UFF_ID = '00000000-0000-4000-8000-00000000000c';
 const BASE_ID = '00000000-0000-4000-8000-00000000000d';
@@ -251,5 +254,53 @@ describe('impostazioni delle offerte', () => {
     assert.equal(res.status, 200);
     assert.equal(writes(calls).length, 1);
     assert.equal(writes(calls)[0].body.dati.testi.de.agb, '1. Punto\n2. Punto');
+  });
+});
+
+describe('paga e spese', () => {
+  beforeEach(setEnv);
+
+  test('la paga della squadra la imposta solo la gestione', async () => {
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/rpc\/imposta_compensi_evento$/, () => ({ status: 204 })]]);
+    const body = { compensi: [{ staff_id: TEC_ID, ruolo: 'Autista + Installatore', tariffa_chf: 300 }] };
+    assert.equal((await eventiCompensi(req(`/api/eventi/${EV_ID}/compensi`, { method: 'PUT', cookie: TEC, body }))).status, 403);
+    assert.equal((await eventiCompensi(req(`/api/eventi/${EV_ID}/compensi`, { method: 'GET', cookie: BASE }))).status, 403);
+    const res = await eventiCompensi(req(`/api/eventi/${EV_ID}/compensi`, { method: 'PUT', cookie: UFF, body }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls.at(-1).body.p_compensi[0], { staff_id: TEC_ID, ruolo: 'Autista + Installatore', quantita: 1, tariffa_chf: 300 });
+  });
+
+  test('ognuno legge i propri compensi tramite la funzione del DB', async () => {
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/rpc\/miei_compensi$/, () => ({ body: [] })]]);
+    const res = await compensi(req('/api/compensi?da=2026-11-01&a=2026-11-30', { cookie: BASE }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls.at(-1).body, { p_da: '2026-11-01', p_a: '2026-11-30' });
+  });
+
+  test('la spesa nasce sempre "inviata" e di chi la inserisce', async () => {
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/spese\?/, (c) => ({ status: 201, body: [{ id: EV_ID, ...c.body }] })]]);
+    let res = await spese(req('/api/spese', { method: 'POST', cookie: TEC, body: { tipo: 'diesel', importo_chf: 80, stato: 'approvata' } }));
+    assert.equal(res.status, 400); // "stato" non è un campo ammesso
+    res = await spese(req('/api/spese', { method: 'POST', cookie: TEC, body: { tipo: 'diesel', importo_chf: '80.50' } }));
+    assert.equal(res.status, 201);
+    const w = writes(calls).at(-1).body;
+    assert.equal(w.stato, 'inviata');
+    assert.equal(w.staff_id, TEC_ID);
+    res = await spese(req('/api/spese', { method: 'POST', cookie: TEC, body: { tipo: 'diesel', importo_chf: 0 } }));
+    assert.equal(res.status, 400);
+  });
+
+  test('approvare è della gestione; l\'elenco di un operaio è sempre il suo', async () => {
+    const calls = mockFetch([
+      staffRoute(P),
+      ['PATCH', /^\/rest\/v1\/spese\?id=eq\./, (c) => ({ body: [{ id: EV_ID, ...c.body }] })],
+      ['GET', /^\/rest\/v1\/spese\?/, () => ({ body: [] })],
+    ]);
+    assert.equal((await spese(req(`/api/spese/${EV_ID}`, { method: 'PATCH', cookie: TEC, body: { stato: 'approvata' } }))).status, 403);
+    assert.equal((await spese(req(`/api/spese/${EV_ID}`, { method: 'PATCH', cookie: UFF, body: { stato: 'approvata' } }))).status, 200);
+    await spese(req('/api/spese?tutte=1', { cookie: TEC }));
+    assert.ok(calls.at(-1).path.includes(`staff_id=eq.${TEC_ID}`));
+    await spese(req('/api/spese?tutte=1', { cookie: UFF }));
+    assert.ok(!calls.at(-1).path.includes('staff_id=eq.'));
   });
 });

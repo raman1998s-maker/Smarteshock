@@ -149,6 +149,12 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 ### Assenze (`0009_assenze.sql`)
 - `assenze` (`staff_id`, `dal`, `al`, `motivo`): ognuno gestisce le proprie, la gestione vede e segna quelle di tutti. Quando si assegna la squadra l'interfaccia mostra chi è assente e chiede conferma.
 
+### Paga e spese (`0010_paga_spese.sql`)
+- `compensi` (paga per evento: `staff_id`, `ruolo`, `quantita` × `tariffa_chf`): gestione legge e scrive (RPC `imposta_compensi_evento`, una transazione); ognuno legge solo i propri, anche con titolo e data dell'evento tramite `miei_compensi(da, a)` (SECURITY DEFINER). Le tariffe proposte (es. Autista 150, Magazzino 150 al giorno) stanno in `impostazioni.dati.tariffe`.
+- `spese` (`tipo` cibo/diesel/materiale/altro, `importo_chf`, `data`, `evento_id` facoltativo, `stato` inviata/approvata/rifiutata): l'operaio inserisce solo spese proprie, sempre "inviate" e solo su eventi a cui è assegnato, e può ritirarle finché non sono decise; approvare/rifiutare è della gestione.
+- "Aggiungi a Google Calendar": link `calendar.google.com/calendar/render?action=TEMPLATE…` su evento e agenda (titolo, orario, luogo, link al gestionale; nessun prezzo).
+- Numero d'ordine: resta `AAAA-NNNN`, l'offerta è `AAAA-NNNN/versione` (deciso con il referente il 25.11.2026).
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|
@@ -159,7 +165,10 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 | `GET /api/offerte?evento=` · `GET /api/offerte/:id` · `POST /api/offerte` `{evento_id, copia_da?}` · `PATCH /api/offerte/:id` · `DELETE` (solo bozza) | gestione | `offerte.js` |
 | `PUT /api/offerte/:id/righe` `{righe:[…]}` (max 200) | gestione | `offerte-righe.js` |
 | `GET /api/assenze?da=&a=` · `POST /api/assenze` · `DELETE /api/assenze/:id` | tutti (RLS) | `assenze.js` |
-| `GET /api/impostazioni` · `PUT /api/impostazioni` `{ditta, testi:{de,it,fr,en}}` | gestione · admin | `impostazioni.js` |
+| `GET /api/impostazioni` · `PUT /api/impostazioni` `{ditta, testi:{de,it,fr,en}, tariffe:[…]}` | gestione · admin | `impostazioni.js` |
+| `GET/PUT /api/eventi/:id/compensi` `{compensi:[{staff_id, ruolo, quantita, tariffa_chf}]}` | gestione | `eventi-compensi.js` |
+| `GET /api/compensi?da=&a=` (i propri) | tutti | `compensi.js` |
+| `GET /api/spese?da=&a=&stato=&tutte=1` · `POST /api/spese` · `PATCH /api/spese/:id` `{stato}` (gestione) · `DELETE` | tutti (RLS) | `spese.js` |
 | `DELETE /api/checklist/:id`; `PATCH` accetta anche `rientrato`; `POST /api/eventi/:id/checklist` accetta `articolo_id` | gestione / assegnati | `checklist.js`, `eventi-checklist.js` |
 
 Interfaccia: `area-riservata/gestionale.js` (agenda settimanale o di oggi per il ruolo base, assenze, magazzino con importazione da Excel, offerte, utenti e ruoli, impostazioni delle offerte), caricato da `app.html` e creato da `app.js` (`MeekonGestionale.create`). Le rotte in `app.js` hanno un livello di accesso `tutti` / `gestione` / `admin`.
