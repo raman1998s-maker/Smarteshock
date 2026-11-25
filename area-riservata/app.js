@@ -251,6 +251,8 @@
   function failure(title, err) {
     page({ title },
       h('p', { class: 'alert alert--error', role: 'alert' }, errorMessage(err)),
+      // errore del programma (non del server): dettaglio tecnico per la segnalazione
+      !(err instanceof ApiError) && err ? h('p', { class: 'muted', 'data-no-tr': '' }, `Dettaglio tecnico: ${String(err.message || err).slice(0, 300)} · ${String(err.stack || '').split(/\n/)[1] || ''}`.slice(0, 500)) : null,
       h('p', null, h('button', { class: 'btn', type: 'button', onclick: route }, 'Riprova')));
   }
   function empty(title, text) { return h('div', { class: 'empty' }, h('strong', null, title), text ? h('p', null, text) : null); }
