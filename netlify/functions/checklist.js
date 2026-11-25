@@ -14,7 +14,7 @@ export default createHandler(
       auth: 'user',
       async fn({ req, params, sb, token }) {
         const data = validate(await readJson(req), checklistUpdateSchema, { partial: true });
-        const rows = await sb.rest(`checklist?id=eq.${params.id}&select=id,evento_id,voce,quantita,articolo_id,caricato,rientrato,note,updated_at`, {
+        const rows = await sb.rest(`checklist?id=eq.${params.id}&select=id,evento_id,voce,quantita,articolo_id,caricato,rientrato,mancanti,danneggiati,note,updated_at`, {
           method: 'PATCH',
           token,
           body: data,

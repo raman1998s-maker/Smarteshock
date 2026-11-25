@@ -30,7 +30,10 @@ export default createHandler(
             throw err;
           }
         });
-        await sb.rest('articoli', { method: 'POST', token, body: righe, prefer: 'return=minimal' });
+        // PostgREST vuole le stesse chiavi in ogni riga di un inserimento multiplo
+        const chiavi = Object.keys(articoloSchema);
+        const uniformi = righe.map((r) => Object.fromEntries(chiavi.map((k) => [k, r[k] ?? articoloSchema[k].default ?? null])));
+        await sb.rest('articoli', { method: 'POST', token, body: uniformi, prefer: 'return=minimal' });
         return json(201, { ok: true, importati: righe.length });
       },
     },

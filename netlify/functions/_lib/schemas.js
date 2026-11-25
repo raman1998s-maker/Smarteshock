@@ -54,10 +54,12 @@ export const checklistCreateSchema = {
   note: t.string({ max: 1000, multiline: true }),
 };
 
-// Il tecnico può cambiare solo caricato, rientrato e note (trigger nel DB).
+// Il tecnico può cambiare solo caricato, rientrato, mancanti, danneggiati e note (trigger nel DB).
 export const checklistUpdateSchema = {
   caricato: t.bool(),
   rientrato: t.bool(),
+  mancanti: t.int({ min: 0, max: 100000, empty: 0 }),
+  danneggiati: t.int({ min: 0, max: 100000, empty: 0 }),
   note: t.string({ max: 1000, multiline: true }),
 };
 
@@ -157,12 +159,15 @@ export function perTecnico(obj) {
 // Gestionale: magazzino, offerte, assenze
 // ---------------------------------------------------------------------
 export const articoloSchema = {
+  codice: t.string({ max: 40 }), // codice dell'etichetta, es. E000006623 (unico)
   categoria: t.string({ max: 60, required: true }),
+  sottocategoria: t.string({ max: 60 }),
   marca: t.string({ max: 80 }),
   descrizione: t.string({ max: 300, required: true }),
   accessori: t.string({ max: 1000, multiline: true }),
   note: t.string({ max: 1000, multiline: true }),
   quantita: t.int({ min: 0, max: 100000, default: 0, empty: 0 }),
+  danneggiati: t.int({ min: 0, max: 100000, default: 0, empty: 0 }),
   prezzo_noleggio_giorno: t.money(),
   prezzo_vendita: t.money(),
   in_vendita: t.bool({ default: false, empty: false }),

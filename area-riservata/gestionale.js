@@ -213,7 +213,7 @@
       const articoli = cat.articoli || [];
       const d = new Map((disp.disponibilita || []).map((x) => [x.articolo_id, x]));
 
-      const q = h('input', { type: 'search', placeholder: 'Cerca articolo, marca, categoria', value: filtroMag.q, 'aria-label': 'Cerca' });
+      const q = h('input', { type: 'search', placeholder: 'Cerca codice, articolo, marca, categoria', value: filtroMag.q, 'aria-label': 'Cerca' });
       const vendita = check('vendita', 'Solo materiale in vendita', filtroMag.vendita);
       const da = h('input', { type: 'date', value: filtroMag.da, 'aria-label': 'Disponibilità dal' });
       const a = h('input', { type: 'date', value: filtroMag.a, 'aria-label': 'Disponibilità al' });
@@ -223,15 +223,16 @@
       const render = () => {
         clear(tbody);
         const testo = q.value.trim().toLowerCase();
+        const cerca = (x) => `${x.codice || ''} ${x.categoria} ${x.sottocategoria || ''} ${x.marca || ''} ${x.descrizione}`.toLowerCase();
         const soloVendita = vendita.querySelector('input').checked;
         const lista = articoli.filter((x) => (!soloVendita || x.in_vendita)
-          && (!testo || `${x.categoria} ${x.marca || ''} ${x.descrizione}`.toLowerCase().includes(testo)));
+          && (!testo || cerca(x).includes(testo)));
         lista.forEach((x) => {
           const y = d.get(x.id);
           const tr = h('tr', { class: 'is-link' },
-            td('Categoria', x.categoria),
+            td('Categoria', x.categoria, x.sottocategoria ? h('span', { class: 'table__sub' }, x.sottocategoria) : null),
             h('td', { 'data-label': 'Articolo', class: 'table__primary' }, h('span', null, x.descrizione,
-              h('span', { class: 'table__sub' }, [x.marca, x.in_vendita ? 'in vendita' : null, x.note].filter(Boolean).join(' · ')))),
+              h('span', { class: 'table__sub' }, [x.codice, x.marca, x.in_vendita ? 'in vendita' : null, x.danneggiati ? `${x.danneggiati} danneggiati` : null, x.note].filter(Boolean).join(' · ')))),
             h('td', { 'data-label': 'Q.tà', class: 'num' }, h('span', null, x.quantita)),
             h('td', { 'data-label': 'Liberi', class: 'num' }, h('span', { class: y && y.disponibili < 0 ? 'text-danger' : null }, y ? y.disponibili : x.quantita)),
             h('td', { 'data-label': 'Fuori', class: 'num' }, h('span', null, y ? y.fuori : 0)),
@@ -268,7 +269,7 @@
       render();
       page({
         title: 'Magazzino',
-        sub: 'Catalogo del materiale, disponibilità e materiale in vendita (prezzi esclusa IVA)',
+        sub: 'Catalogo del materiale con codici, disponibilità, pezzi fuori e danneggiati, materiale in vendita',
         actions: [
           h('a', { class: 'btn', href: '#/magazzino/importa' }, 'Importa una lista'),
           h('button', { class: 'btn btn--primary', type: 'button', onclick: () => apriEditor(null) }, 'Nuovo articolo'),
@@ -286,7 +287,10 @@
       const v = x || {};
       const inp = (name, attrs = {}) => h('input', { name, type: 'text', ...attrs });
       const f = {
+        codice: inp('codice', { maxlength: '40', value: v.codice || '', placeholder: 'es. E000006623' }),
         categoria: inp('categoria', { maxlength: '60', required: true, value: v.categoria || '', list: 'mk-categorie' }),
+        sottocategoria: inp('sottocategoria', { maxlength: '60', value: v.sottocategoria || '', placeholder: 'es. Cables, Box, Truss' }),
+        danneggiati: inp('danneggiati', { type: 'number', min: '0', max: '100000', inputmode: 'numeric', value: v.danneggiati ?? 0 }),
         marca: inp('marca', { maxlength: '80', value: v.marca || '' }),
         descrizione: inp('descrizione', { maxlength: '300', required: true, value: v.descrizione || '' }),
         quantita: inp('quantita', { type: 'number', min: '0', max: '100000', inputmode: 'numeric', value: v.quantita ?? 0 }),
@@ -326,10 +330,13 @@
         h('div', { class: 'panel__head' }, h('h2', null, x ? 'Modifica articolo' : 'Nuovo articolo')),
         alert,
         h('div', { class: 'fields' },
-          field('Categoria *', f.categoria, { hint: 'es. Audio, Licht, Rigging, Video, LED Wand' }),
+          field('Codice etichetta', f.codice, { hint: 'Unico per articolo, come sulle etichette del magazzino.' }),
+          field('Categoria *', f.categoria, { hint: 'es. LED, AUDIO, LIGHTING, Rigging' }),
+          field('Sottocategoria', f.sottocategoria),
           field('Marca', f.marca),
           field('Descrizione *', f.descrizione, { full: true }),
           field('Quantità in magazzino', f.quantita),
+          field('Di cui danneggiati', f.danneggiati, { hint: 'Non contano come disponibili.' }),
           field('Noleggio CHF al giorno', f.prezzo_noleggio_giorno),
           field('Prezzo di vendita CHF', f.prezzo_vendita),
           h('div', { class: 'field' }, inVendita),
@@ -340,7 +347,10 @@
         ev.preventDefault();
         clear(alert);
         const body = {
+          codice: f.codice.value.trim() || null,
           categoria: f.categoria.value.trim(),
+          sottocategoria: f.sottocategoria.value.trim() || null,
+          danneggiati: f.danneggiati.value === '' ? 0 : Number(f.danneggiati.value),
           marca: f.marca.value.trim() || null,
           descrizione: f.descrizione.value.trim(),
           quantita: f.quantita.value === '' ? 0 : Number(f.quantita.value),
@@ -357,7 +367,11 @@
             const r = await api(x ? `articoli/${encodeURIComponent(v.id)}` : 'articoli', { method: x ? 'PATCH' : 'POST', body });
             toast(x ? 'Articolo salvato.' : 'Articolo aggiunto.');
             onDone(r.articolo);
-          } catch (err) { markInvalid(form, err); alert.append(alertBox(errorMessage(err))); }
+          } catch (err) {
+            markInvalid(form, err);
+            alert.append(alertBox(err instanceof ApiError && err.status === 409 ? 'Questo codice etichetta esiste già nel catalogo.'
+              : err instanceof ApiError && err.status === 400 && body.danneggiati > body.quantita ? 'I danneggiati non possono superare la quantità.' : errorMessage(err)));
+          }
         });
       });
       return form;
@@ -383,14 +397,18 @@
       if (cell || row.length) { row.push(cell); rows.push(row); }
       return rows.map((r) => r.map((x) => x.trim()));
     }
+    // colonne riconosciute: liste in tedesco/italiano e il vecchio magazzino (magazzino.ods, in inglese)
     const COLONNE = {
-      categoria: /^(kategorie|categoria|category|catégorie)$/i,
+      codice: /^(code|codice|code-?nr\.?|art\.?-?nr\.?|artikelnummer|items? code)$/i,
+      sottocategoria: /^(sub ?cat[ae]gory|sottocategoria|unterkategorie)$/i,
+      categoria: /^(kategorie|categoria|cat[ae]gory|catégorie)$/i,
       marca: /^(marke|marca|brand|marque|hersteller)$/i,
-      descrizione: /^(bezeichnung|descrizione|articolo|description|artikel|désignation)$/i,
-      quantita: /^(anzahl|quantit[aà]|q\.?t[aà]|menge|stk|pezzi|quantité)$/i,
+      descrizione: /^(bezeichnung|descrizione|articolo|description|artikel|désignation|item|item name)$/i,
+      quantita: /^(anzahl|quantit[aà]|q\.?t[aà]|menge|stk|pezzi|quantité|total quantity|quantity)$/i,
+      danneggiati: /^(damaged( quantity)?|danneggiati|beschädigt)$/i,
       prezzo: /^(preis|prezzo|price|prix)/i,
       accessori: /^(zubeh[oö]r|accessori|accessoires)$/i,
-      note: /^(bemerkung|note|osservazioni|remarque|zustand)$/i,
+      note: /^(bemerkung|note|notes|osservazioni|remarque|zustand)$/i,
     };
     function righeImport(rows) {
       const iHead = rows.findIndex((r) => r.some((c) => COLONNE.descrizione.test(c)));
@@ -409,9 +427,13 @@
         }
         const q = numero(get('quantita'));
         const p = numero(get('prezzo'));
+        const dn = numero(get('danneggiati'));
         out.push({
           riga: iHead + n + 2,
-          categoria: (get('categoria') || 'Varie').slice(0, 60),
+          codice: get('codice').slice(0, 40) || null,
+          categoria: (get('categoria') || (idx.sottocategoria !== undefined ? 'Altro' : 'Varie')).slice(0, 60),
+          sottocategoria: get('sottocategoria').slice(0, 60) || null,
+          danneggiati: Number.isInteger(dn) && dn > 0 ? dn : 0,
           marca: get('marca').slice(0, 80) || null,
           descrizione: descrizione.slice(0, 300),
           quantita: Number.isInteger(q) && q >= 0 ? q : 0,
@@ -420,12 +442,23 @@
           note: get('note').slice(0, 1000) || null,
         });
       });
-      return { righe: out, scartate };
+      return { righe: out, scartate, conPrezzo: idx.prezzo !== undefined };
     }
 
-    function viewImporta() {
+    async function viewImporta(_, alive) {
+      // codici già nel catalogo: quelle righe si saltano (si può reimportare la stessa lista senza doppioni)
+      let esistenti = new Set();
+      let nomi = new Set();
+      try {
+        const tutti = (await api('articoli?tutti=1')).articoli || [];
+        esistenti = new Set(tutti.map((a) => a.codice).filter(Boolean));
+        nomi = new Set(tutti.filter((a) => !a.codice).map((a) => a.descrizione.toLowerCase()));
+      } catch (err) { /* si prova comunque */ }
+      if (alive && !alive()) return;
       const area = h('textarea', { rows: '12', 'aria-label': 'Lista da importare', placeholder: 'Selezionate la tabella in Excel (con la riga delle intestazioni), copiatela e incollatela qui.' });
-      const tipoPrezzo = select('tipo_prezzo', [['vendita', 'Prezzo di vendita (materiale in vendita)'], ['noleggio', 'Prezzo di noleggio al giorno']], 'vendita');
+      const tipoPrezzo = select('tipo_prezzo', [['vendita', 'Prezzo di vendita (materiale in vendita)'], ['noleggio', 'Prezzo di noleggio al giorno'], ['nessuno', 'Nessun prezzo (inventario)']], 'vendita');
+      let sceltoAMano = false;
+      tipoPrezzo.addEventListener('change', () => { sceltoAMano = true; });
       const anteprima = h('div');
       const importa = h('button', { class: 'btn btn--primary', type: 'button', disabled: true }, 'Importa nel catalogo');
       let pronte = [];
@@ -437,14 +470,20 @@
         if (!area.value.trim()) return;
         const res = righeImport(parseTsv(area.value));
         if (res.errore) { put(anteprima, alertBox(res.errore)); return; }
-        pronte = res.righe;
+        // lista senza colonna prezzo (es. inventario): niente prezzi e niente "in vendita"
+        if (!sceltoAMano) tipoPrezzo.value = res.conPrezzo ? 'vendita' : 'nessuno';
+        const visti = new Set();
+        // doppioni: stesso codice, oppure (senza codice) stessa descrizione di un articolo senza codice
+        const chiave = (x) => (x.codice ? `c:${x.codice}` : `d:${x.descrizione.toLowerCase()}`);
+        const doppi = res.righe.filter((x) => (x.codice ? esistenti.has(x.codice) : nomi.has(x.descrizione.toLowerCase())) || visti.has(chiave(x)) || !visti.add(chiave(x)));
+        pronte = res.righe.filter((x) => !doppi.includes(x));
         const vendita = tipoPrezzo.value === 'vendita';
-        put(anteprima, 
-          alertBox(`${pronte.length} articoli pronti da importare${res.scartate.length ? `, ${res.scartate.length} righe senza descrizione saltate (es. note a piè di pagina)` : ''}.`, 'info'),
-          tabella(['Riga', 'Categoria', 'Marca', 'Descrizione', 'Q.tà', vendita ? 'Vendita CHF' : 'Noleggio CHF/giorno', 'Accessori', 'Note'],
-            pronte.slice(0, 300).map((r) => h('tr', null, td('Riga', r.riga), td('Categoria', r.categoria), td('Marca', dash(r.marca)),
+        put(anteprima,
+          alertBox(`${pronte.length} articoli pronti da importare${doppi.length ? `, ${doppi.length} già nel catalogo o doppi nella lista, saltati` : ''}${res.scartate.length ? `, ${res.scartate.length} righe senza descrizione saltate (es. note a piè di pagina)` : ''}.`, 'info'),
+          tabella(['Riga', 'Codice', 'Categoria', 'Marca', 'Descrizione', 'Q.tà', vendita ? 'Vendita CHF' : 'Noleggio CHF/giorno', 'Accessori', 'Note'],
+            pronte.slice(0, 300).map((r) => h('tr', null, td('Riga', r.riga), td('Codice', dash(r.codice)), td('Categoria', [r.categoria, r.sottocategoria].filter(Boolean).join(' · ')), td('Marca', dash(r.marca)),
               h('td', { 'data-label': 'Descrizione', class: 'table__primary' }, h('span', null, r.descrizione)),
-              h('td', { class: 'num', 'data-label': 'Q.tà' }, h('span', null, r.quantita)),
+              h('td', { class: 'num', 'data-label': 'Q.tà' }, h('span', null, r.quantita, r.danneggiati ? ` (${r.danneggiati} danneggiati)` : '')),
               h('td', { class: 'num', 'data-label': 'Prezzo' }, h('span', null, r.prezzo == null ? '—' : fmtMoney(r.prezzo))),
               td('Accessori', dash(r.accessori)), td('Note', dash(r.note))))),
           pronte.length > 300 ? h('p', { class: 'muted' }, `… e altri ${pronte.length - 300}.`) : null);
@@ -455,12 +494,14 @@
 
       importa.addEventListener('click', () => {
         const vendita = tipoPrezzo.value === 'vendita';
+        const senzaPrezzo = tipoPrezzo.value === 'nessuno';
         if (!window.confirm(`Aggiungere ${pronte.length} articoli al catalogo?`)) return;
         busy(importa, async () => {
           const articoli = pronte.map((r) => ({
-            categoria: r.categoria, marca: r.marca, descrizione: r.descrizione, quantita: r.quantita,
+            codice: r.codice, categoria: r.categoria, sottocategoria: r.sottocategoria, danneggiati: Math.min(r.danneggiati, r.quantita),
+            marca: r.marca, descrizione: r.descrizione, quantita: r.quantita,
             accessori: r.accessori, note: r.note, in_vendita: vendita,
-            ...(vendita ? { prezzo_vendita: r.prezzo } : { prezzo_noleggio_giorno: r.prezzo }),
+            ...(senzaPrezzo ? {} : vendita ? { prezzo_vendita: r.prezzo } : { prezzo_noleggio_giorno: r.prezzo }),
           }));
           let fatti = 0;
           try {
@@ -479,7 +520,7 @@
 
       page({ title: 'Importa una lista', sub: 'Da Excel al catalogo del magazzino', back: ['#/magazzino', 'Magazzino'] },
         h('section', { class: 'panel' },
-          h('p', null, 'Colonne riconosciute (tedesco o italiano): Kategorie/Categoria, Marke/Marca, Bezeichnung/Descrizione, Anzahl/Quantità, Preis/Prezzo, Zubehör/Accessori, Bemerkung/Note. Le altre colonne vengono ignorate. I prezzi si intendono esclusa IVA.'),
+          h('p', null, 'Colonne riconosciute (tedesco, italiano o inglese come nel vecchio magazzino): Code/Codice, Kategorie/Category, Sub Category, Marke/Marca, Bezeichnung/Item, Anzahl/Total Quantity, Damaged Quantity, Preis/Prezzo, Zubehör/Accessori, Bemerkung/Notes. Le altre colonne vengono ignorate. Gli articoli con un codice già presente vengono saltati.'),
           h('div', { class: 'fields' }, field('Lista copiata da Excel', area, { full: true }), field('La colonna del prezzo è', tipoPrezzo)),
           anteprima,
           h('div', { class: 'panel__foot' }, h('a', { class: 'btn', href: '#/magazzino' }, 'Annulla'), importa)));

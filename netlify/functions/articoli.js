@@ -12,7 +12,7 @@ export const config = {
 };
 
 export const SELECT_ARTICOLO =
-  'id,categoria,marca,descrizione,accessori,note,quantita,prezzo_noleggio_giorno,prezzo_vendita,in_vendita,attivo,updated_at';
+  'id,codice,categoria,sottocategoria,marca,descrizione,accessori,note,quantita,danneggiati,prezzo_noleggio_giorno,prezzo_vendita,in_vendita,attivo,updated_at';
 
 function testoRicerca(raw) {
   if (raw == null) return null;
@@ -31,7 +31,7 @@ export default createHandler(
         const testo = testoRicerca(url.searchParams.get('q'));
         if (testo) {
           const v = `"*${testo}*"`;
-          q.set('or', `(descrizione.ilike.${v},marca.ilike.${v},categoria.ilike.${v})`);
+          q.set('or', `(descrizione.ilike.${v},marca.ilike.${v},categoria.ilike.${v},sottocategoria.ilike.${v},codice.ilike.${v})`);
         }
         if (url.searchParams.get('in_vendita') === '1') q.set('in_vendita', 'is.true');
         if (url.searchParams.get('tutti') !== '1') q.set('attivo', 'is.true');

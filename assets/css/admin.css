@@ -956,6 +956,10 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .toolbar input[type="search"] { flex: 3 1 220px; }
 .toolbar > span { align-self: center; font-size: var(--fs-sm); color: var(--color-text-2); }
 .input--num { width: 6.5em; text-align: right; }
+.rientro { display: flex; gap: var(--sp-2); }
+.rientro label { display: grid; gap: 2px; }
+.rientro__label { font-size: var(--fs-xs); color: var(--color-text-3); }
+.rientro .input--num { width: 4.5em; }
 .table input[type="text"] { min-width: 200px; }
 .text-danger { color: var(--color-danger); font-weight: 500; }
 .alert--info { background: var(--color-primary-wash); color: var(--st-offerta-fg); }

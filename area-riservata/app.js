@@ -576,6 +576,15 @@
           toast(errorMessage(err), 'error');
         }
       });
+      // al rientro: quanti pezzi mancano e quanti sono danneggiati
+      const contatore = (campo, label) => {
+        const el = h('input', { type: 'number', min: '0', max: String(item.quantita || 100000), class: 'input--num', value: String(item[campo] || 0), 'aria-label': `${label}: ${item.voce || ''}`, title: label });
+        el.addEventListener('change', async () => {
+          const n = Math.max(0, Math.floor(Number(el.value) || 0));
+          try { await api(`checklist/${encodeURIComponent(item.id)}`, { method: 'PATCH', body: { [campo]: n } }); item[campo] = n; el.value = String(n); } catch (err) { el.value = String(item[campo] || 0); toast(errorMessage(err), 'error'); }
+        });
+        return h('label', null, h('span', { class: 'rientro__label' }, label), el);
+      };
       const back = h('input', { type: 'checkbox', checked: !!item.rientrato, 'aria-label': `Rientrato: ${item.voce || ''}` });
       back.addEventListener('change', async () => {
         const value = back.checked;
@@ -593,6 +602,7 @@
         h('td', { 'data-label': 'Voce', class: 'table__primary' }, h('span', null, dash(item.voce), item.articolo_id ? h('span', { class: 'table__sub' }, 'dal magazzino') : null)),
         h('td', { 'data-label': 'Quantità', class: 'num' }, h('span', null, dash(item.quantita))),
         h('td', { 'data-label': 'Rientrato' }, h('label', { class: 'check' }, back, h('span', { class: 'sr-only' }, 'Rientrato'))),
+        h('td', { 'data-label': 'Mancanti / danneggiati' }, h('div', { class: 'rientro' }, contatore('mancanti', 'Mancanti'), contatore('danneggiati', 'Danneggiati'))),
         h('td', { 'data-label': 'Note' }, h('div', { class: 'field' }, note)));
       if (isGestione()) {
         const del = h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Togli ${item.voce || 'voce'}` }, 'Togli');
@@ -615,7 +625,7 @@
     updateCount();
 
     const table = h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
-      h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Caricato'), h('th', { scope: 'col' }, 'Voce'), h('th', { scope: 'col', class: 'num' }, 'Quantità'), h('th', { scope: 'col' }, 'Rientrato'), h('th', { scope: 'col' }, 'Note'), isGestione() ? h('th', { scope: 'col' }, h('span', { class: 'sr-only' }, 'Azioni')) : null)),
+      h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Caricato'), h('th', { scope: 'col' }, 'Voce'), h('th', { scope: 'col', class: 'num' }, 'Quantità'), h('th', { scope: 'col' }, 'Rientrato'), h('th', { scope: 'col' }, 'Mancanti / danneggiati'), h('th', { scope: 'col' }, 'Note'), isGestione() ? h('th', { scope: 'col' }, h('span', { class: 'sr-only' }, 'Azioni')) : null)),
       tbody));
     const emptyMsg = h('p', { class: 'muted' }, 'La lista del materiale è vuota.');
     const body = h('div', null, items.length ? table : emptyMsg);

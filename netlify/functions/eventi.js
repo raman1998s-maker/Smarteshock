@@ -67,7 +67,7 @@ async function dettaglio({ params, sb, token, user }) {
       : sb.rest(`eventi_tecnico?id=eq.${id}&select=${encodeURIComponent(DETAIL_TECNICO)}`, { token }),
     sb.rest(`eventi_staff?evento_id=eq.${id}&select=staff_id,ruolo_evento,staff(nome,telefono)`, { token }),
     // ruolo base: la RLS non restituisce la checklist
-    sb.rest(`checklist?evento_id=eq.${id}&select=id,voce,quantita,articolo_id,caricato,rientrato,note,updated_at&order=created_at.asc`, { token }),
+    sb.rest(`checklist?evento_id=eq.${id}&select=id,voce,quantita,articolo_id,caricato,rientrato,mancanti,danneggiati,note,updated_at&order=created_at.asc`, { token }),
   ]);
   if (!Array.isArray(eventi) || eventi.length !== 1) throw new HttpError(404, 'not_found');
   const evento = isAdmin ? eventi[0] : perTecnico(eventi[0]);
