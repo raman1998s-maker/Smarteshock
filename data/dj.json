@@ -84,8 +84,15 @@
   {
     "nome": "DJ JENE",
     "genere": null,
-    "logo": null,
-    "nome_nel_riquadro": true,
+    "logo": "assets/img/dj/dj-jene.webp",
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "DJ M-Jay",
+    "genere": null,
+    "logo": "assets/img/dj/dj-m-jay.webp",
     "foto": null,
     "link": null,
     "approvato": true
