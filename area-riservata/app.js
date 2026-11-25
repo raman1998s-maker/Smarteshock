@@ -41,7 +41,7 @@
     ['altezza_m', 'Altezza della sala', (v) => `${String(v).replace('.', ',')} m`],
     ['accesso', 'Accesso per il materiale', { piano_terra: 'Piano terra senza gradini', ascensore: 'Ascensore', scale: 'Scale', non_so: 'Non so' }],
     ['scarico', 'Parcheggio / scarico vicino', SNN],
-    ['prese', 'Prese di corrente', { '230v': 'Normali 230 V', cee400: 'CEE 400 V (forza)', non_so: 'Non so' }],
+    ['prese', 'Prese di corrente', { '230v': 'Normali 230 V', cee16: 'CEE 16 A', cee32: 'CEE 32 A', cee63: 'CEE 63 A', cee125: 'CEE 125 A', cee400: 'CEE 400 V (forza)', non_so: 'Non so' }],
     ['prese_vicine', 'Prese vicine al punto di installazione', { si: 'Sì', no: 'No, a più di ~20 m', non_so: 'Non so' }],
     ['montaggio_giorno_prima', 'Montaggio il giorno prima', { possibile: 'Possibile', richiesto: 'Richiesto dalla location', non_possibile: 'Non possibile', non_so: 'Non so' }],
     ['montaggio_dalle', 'Montaggio possibile dalle', null],

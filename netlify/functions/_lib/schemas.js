@@ -97,7 +97,7 @@ export const dettagliTecniciSchema = {
   altezza_m: t.decimal({ min: 1, max: 40, decimals: 1 }),
   accesso: t.enumOf(['piano_terra', 'ascensore', 'scale', 'non_so']),
   scarico: t.enumOf(SI_NO_NONSO),
-  prese: t.array(t.enumOf(['230v', 'cee400', 'non_so']), { max: 3 }),
+  prese: t.array(t.enumOf(['230v', 'cee16', 'cee32', 'cee63', 'cee125', 'non_so']), { max: 6 }), // CEE per amperaggio
   prese_vicine: t.enumOf(SI_NO_NONSO), // "no" = a più di ~20 m
   montaggio_dalle: t.string({ max: 80 }),
   smontaggio_entro: t.string({ max: 80 }),

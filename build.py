@@ -183,7 +183,7 @@ TECH_GROUPS = [
         ("radio", "scarico", YNN, None),
     ]),
     ("corrente", TECH_ALL, [
-        ("check", "prese", ["230v", "cee400", "non_so"], None),
+        ("check", "prese", ["230v", "cee16", "cee32", "cee63", "cee125", "non_so"], None),  # prese industriali CEE per amperaggio
         ("radio", "prese_vicine", YNN, None),
     ]),
     ("orari", TECH_ALL, [

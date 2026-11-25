@@ -186,7 +186,10 @@
       },
       "prese": {
         "230v": "Standard 230 V",
-        "cee400": "Industrial CEE 400 V (three-phase)"
+        "cee16": "CEE 16 A",
+        "cee32": "CEE 32 A",
+        "cee63": "CEE 63 A",
+        "cee125": "CEE 125 A"
       },
       "prese_vicine": {
         "no": "No, more than ~20 m away"

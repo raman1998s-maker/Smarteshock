@@ -923,11 +923,29 @@
    "fr": "Normales 230 V",
    "it": "Normali 230 V"
   },
-  "tech.o.prese.cee400": {
-   "de": "Industrie CEE 400 V (Kraftstrom)",
-   "en": "Industrial CEE 400 V (three-phase)",
-   "fr": "Industrielles CEE 400 V (force)",
-   "it": "Industriali CEE 400 V (forza)"
+  "tech.o.prese.cee125": {
+   "de": "CEE 125 A",
+   "en": "CEE 125 A",
+   "fr": "CEE 125 A",
+   "it": "CEE 125 A"
+  },
+  "tech.o.prese.cee16": {
+   "de": "CEE 16 A",
+   "en": "CEE 16 A",
+   "fr": "CEE 16 A",
+   "it": "CEE 16 A"
+  },
+  "tech.o.prese.cee32": {
+   "de": "CEE 32 A",
+   "en": "CEE 32 A",
+   "fr": "CEE 32 A",
+   "it": "CEE 32 A"
+  },
+  "tech.o.prese.cee63": {
+   "de": "CEE 63 A",
+   "en": "CEE 63 A",
+   "fr": "CEE 63 A",
+   "it": "CEE 63 A"
   },
   "tech.o.prese_vicine.no": {
    "de": "Nein, mehr als ca. 20 m",
