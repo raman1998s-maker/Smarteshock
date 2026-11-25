@@ -14,6 +14,62 @@
     "approvato": true
   },
   {
+    "file": "assets/video/ledwall-console.mp4",
+    "tipo": "video",
+    "poster": "assets/img/ledwall-console-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video: ledwall dietro la console DJ con frontale LED Meekon Displays e fasci di luce dalle teste mobili",
+      "de": "Video: LED-Wand hinter dem DJ-Pult mit LED-Front von Meekon Displays und Lichtstrahlen der Moving Heads",
+      "fr": "Vidéo : mur LED derrière la console DJ à façade LED Meekon Displays, avec les faisceaux des lyres",
+      "en": "Video: LED wall behind the DJ booth with a Meekon Displays LED front and beams from moving heads"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/matrimonio-pista.mp4",
+    "tipo": "video",
+    "poster": "assets/img/matrimonio-pista-poster.jpg",
+    "categoria": "matrimoni",
+    "formato": "reel",
+    "alt": {
+      "it": "Video di un matrimonio: ingresso degli sposi tra le fontane di spark e primo ballo in pista",
+      "de": "Video einer Hochzeit: Einzug des Brautpaars zwischen Kaltfunken und erster Tanz",
+      "fr": "Vidéo d'un mariage : entrée des mariés entre les étincelles froides et première danse",
+      "en": "Wedding video: the couple's entrance between cold sparks and their first dance"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/allestimento-prima-dopo.mp4",
+    "tipo": "video",
+    "poster": "assets/img/allestimento-prima-dopo-poster.jpg",
+    "categoria": "matrimoni",
+    "formato": "reel",
+    "alt": {
+      "it": "Video prima e dopo: una sala vuota trasformata per un matrimonio con tende di luci, colonne illuminate e spark",
+      "de": "Video vorher und nachher: eine leere Halle, verwandelt für eine Hochzeit mit Lichtervorhängen, beleuchteten Säulen und Kaltfunken",
+      "fr": "Vidéo avant et après : une salle vide transformée pour un mariage avec rideaux lumineux, colonnes éclairées et étincelles",
+      "en": "Before-and-after video: an empty hall transformed for a wedding with light curtains, lit columns and sparks"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/torta-nebbia-spark.mp4",
+    "tipo": "video",
+    "poster": "assets/img/torta-nebbia-spark-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video di un compleanno: taglio della torta con nebbia bassa e fontane di spark",
+      "de": "Video eines Geburtstags: Tortenanschnitt mit Bodennebel und Kaltfunken",
+      "fr": "Vidéo d'un anniversaire : découpe du gâteau avec fumée lourde et étincelles froides",
+      "en": "Birthday video: cutting the cake with low fog and cold sparks"
+    },
+    "approvato": true
+  },
+  {
     "file": "assets/img/event-party.jpg",
     "tipo": "foto",
     "categoria": "feste",
