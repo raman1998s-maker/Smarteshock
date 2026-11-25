@@ -59,6 +59,8 @@ export const checklistUpdateSchema = {
   caricato: t.bool(),
   rientrato: t.bool(),
   mancanti: t.int({ min: 0, max: 100000, empty: 0 }),
+  veicolo_id: t.uuid(), // su quale furgone va la voce (solo la gestione: trigger nel DB)
+  quantita: t.int({ min: 1, max: 100000 }), // per dividere una voce su più veicoli (solo la gestione: trigger nel DB)
   danneggiati: t.int({ min: 0, max: 100000, empty: 0 }),
   note: t.string({ max: 1000, multiline: true }),
 };
@@ -168,6 +170,7 @@ export const articoloSchema = {
   note: t.string({ max: 1000, multiline: true }),
   quantita: t.int({ min: 0, max: 100000, default: 0, empty: 0 }),
   danneggiati: t.int({ min: 0, max: 100000, default: 0, empty: 0 }),
+  peso_kg: t.decimal({ min: 0, max: 100000, decimals: 2 }),
   prezzo_noleggio_giorno: t.money(),
   prezzo_vendita: t.money(),
   in_vendita: t.bool({ default: false, empty: false }),

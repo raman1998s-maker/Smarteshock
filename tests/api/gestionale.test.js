@@ -366,3 +366,27 @@ describe('accettazione online (pubblica)', () => {
     assert.equal(res.status, 403);
   });
 });
+
+describe('difettoso e veicoli', () => {
+  beforeEach(setEnv);
+  test('guasti e veicoli: scrive solo la gestione; il partner non vede i veicoli', async () => {
+    const guasti = (await import('../../netlify/functions/guasti.js')).default;
+    const veicoli = (await import('../../netlify/functions/veicoli.js')).default;
+    const P2 = { ...P, '00000000-0000-4000-8000-0000000000d9': { id: '00000000-0000-4000-8000-0000000000d9', nome: 'DJ', ruolo: 'partner', attivo: true } };
+    const calls = mockFetch([
+      staffRoute(P2),
+      ['POST', /^\/rest\/v1\/guasti\?/, (c) => ({ status: 201, body: [c.body] })],
+      ['POST', /^\/rest\/v1\/veicoli\?/, (c) => ({ status: 201, body: [c.body] })],
+      ['GET', /^\/rest\/v1\/veicoli\?/, () => ({ body: [] })],
+    ]);
+    const g = { articolo_id: EV_ID, quantita: 2, descrizione: 'Pannello rotto' };
+    assert.equal((await guasti(req('/api/guasti', { method: 'POST', cookie: TEC, body: g }))).status, 403);
+    assert.equal((await guasti(req('/api/guasti', { method: 'POST', cookie: UFF, body: g }))).status, 201);
+    assert.equal(writes(calls).at(-1).body.stato, 'da_riparare');
+    assert.equal((await veicoli(req('/api/veicoli', { method: 'POST', cookie: TEC, body: { nome: 'Sprinter', portata_kg: 1000 } }))).status, 403);
+    assert.equal((await veicoli(req('/api/veicoli', { method: 'POST', cookie: UFF, body: { nome: 'Sprinter', portata_kg: 0 } }))).status, 400);
+    assert.equal((await veicoli(req('/api/veicoli', { method: 'POST', cookie: UFF, body: { nome: 'Sprinter', targa: 'SG 1', portata_kg: 1100 } }))).status, 201);
+    assert.equal((await veicoli(req('/api/veicoli', { cookie: TEC }))).status, 200);
+    assert.equal((await veicoli(req('/api/veicoli', { cookie: cookieFor('00000000-0000-4000-8000-0000000000d9') }))).status, 403);
+  });
+});

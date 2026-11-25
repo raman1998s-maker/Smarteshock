@@ -467,13 +467,15 @@
 
     const offerte = admin ? wide(G().offertePanel(e)) : null;
     const paga = admin ? wide(G().compensiPanel(e, data.staff || [])) : null;
+    const carico = admin ? wide(G().caricoPanel(e, data.checklist || [])) : null;
     // ruolo base: niente checklist (l'API non la restituisce)
     const lista = state.me.ruolo === 'base' ? [] : [].concat(checklistPanel(e, data.checklist || [])).map(wide);
     page({ title: e.titolo || 'Evento', sub, actions, back: ['#/eventi', 'Eventi'] },
       panels(dati, cliente, economia, programma, noteSquadra, note, offerte,
         wide(staffPanel(e, data.staff || [])),
         paga,
-        lista));
+        lista,
+        carico));
   }
 
   function staffPanel(e, staff) {
@@ -1187,6 +1189,9 @@
     [/^#\/assenze$/, (p, a) => G().viewAssenze(p, a), 'tutti', 'assenze'],
     [/^#\/magazzino$/, (p, a) => G().viewMagazzino(p, a), 'gestione', 'magazzino'],
     [/^#\/magazzino\/importa$/, (p, a) => G().viewImporta(p, a), 'gestione', 'magazzino'],
+    [/^#\/magazzino\/modelli$/, (p, a) => G().viewModelli(p, a), 'gestione', 'magazzino'],
+    [/^#\/magazzino\/difettoso$/, (p, a) => G().viewDifettoso(p, a), 'gestione', 'magazzino'],
+    [/^#\/magazzino\/veicoli$/, (p, a) => G().viewVeicoli(p, a), 'gestione', 'magazzino'],
     [new RegExp(`^#/offerta/${ID}$`), (p, a) => G().viewOfferta(p, a), 'gestione', 'eventi'],
     [/^#\/utenti$/, (p, a) => G().viewUtenti(p, a), 'admin', 'utenti'],
     [/^#\/impostazioni$/, (p, a) => G().viewImpostazioni(p, a), 'admin', 'impostazioni'],

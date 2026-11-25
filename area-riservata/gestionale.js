@@ -232,7 +232,7 @@
           const tr = h('tr', { class: 'is-link' },
             td('Categoria', x.categoria, x.sottocategoria ? h('span', { class: 'table__sub' }, x.sottocategoria) : null),
             h('td', { 'data-label': 'Articolo', class: 'table__primary' }, h('span', null, x.descrizione,
-              h('span', { class: 'table__sub' }, [x.codice, x.marca, x.in_vendita ? 'in vendita' : null, x.danneggiati ? `${x.danneggiati} danneggiati` : null, x.note].filter(Boolean).join(' · ')))),
+              h('span', { class: 'table__sub' }, [x.codice, x.marca, x.peso_kg != null ? `${Number(x.peso_kg)} kg` : null, x.in_vendita ? 'in vendita' : null, x.danneggiati ? `${x.danneggiati} danneggiati` : null, x.note].filter(Boolean).join(' · ')))),
             h('td', { 'data-label': 'Q.tà', class: 'num' }, h('span', null, x.quantita)),
             h('td', { 'data-label': 'Liberi', class: 'num' }, h('span', { class: y && y.disponibili < 0 ? 'text-danger' : null }, y ? y.disponibili : x.quantita)),
             h('td', { 'data-label': 'Fuori', class: 'num' }, h('span', null, y ? y.fuori : 0)),
@@ -275,13 +275,13 @@
           h('button', { class: 'btn btn--primary', type: 'button', onclick: () => apriEditor(null) }, 'Nuovo articolo'),
         ],
       },
+      schedeMagazzino('articoli'),
       editor,
       h('section', { class: 'panel' },
         h('div', { class: 'toolbar' }, q, vendita, h('span', null, 'Disponibilità dal '), da, h('span', null, ' al '), a, conta),
         articoli.length
           ? tabella(['Categoria', 'Articolo', 'Q.tà', 'Liberi', 'Fuori', 'Noleggio CHF/giorno', 'Vendita CHF'], tbody)
-          : empty('Il catalogo è vuoto', 'Aggiungete gli articoli uno alla volta o importate una lista da Excel.')),
-      pannelloModelli(articoli));
+          : empty('Il catalogo è vuoto', 'Aggiungete gli articoli uno alla volta o importate una lista da Excel.')));
     }
 
     function formArticolo(x, onDone, onCancel) {
@@ -297,6 +297,7 @@
         quantita: inp('quantita', { type: 'number', min: '0', max: '100000', inputmode: 'numeric', value: v.quantita ?? 0 }),
         prezzo_noleggio_giorno: inp('prezzo_noleggio_giorno', { inputmode: 'decimal', value: v.prezzo_noleggio_giorno ?? '', placeholder: '0.00' }),
         prezzo_vendita: inp('prezzo_vendita', { inputmode: 'decimal', value: v.prezzo_vendita ?? '', placeholder: '0.00' }),
+        peso_kg: inp('peso_kg', { inputmode: 'decimal', value: v.peso_kg ?? '', placeholder: 'es. 12.5' }),
         accessori: h('textarea', { name: 'accessori', rows: '2', maxlength: '1000' }),
         note: h('textarea', { name: 'note', rows: '2', maxlength: '1000' }),
       };
@@ -340,6 +341,7 @@
           field('Di cui danneggiati', f.danneggiati, { hint: 'Non contano come disponibili.' }),
           field('Noleggio CHF al giorno', f.prezzo_noleggio_giorno),
           field('Prezzo di vendita CHF', f.prezzo_vendita),
+          field('Peso di un pezzo (kg)', f.peso_kg, { hint: 'Serve per il carico dei veicoli (sovrappeso).' }),
           h('div', { class: 'field' }, inVendita),
           field('Accessori inclusi', f.accessori, { full: true }),
           field('Note (stato, difetti…)', f.note, { full: true })),
@@ -357,12 +359,13 @@
           quantita: f.quantita.value === '' ? 0 : Number(f.quantita.value),
           prezzo_noleggio_giorno: numero(f.prezzo_noleggio_giorno.value),
           prezzo_vendita: numero(f.prezzo_vendita.value),
+          peso_kg: numero(f.peso_kg.value),
           in_vendita: inVendita.querySelector('input').checked,
           accessori: f.accessori.value.trim() || null,
           note: f.note.value.trim() || null,
         };
         if (!body.categoria || !body.descrizione) { alert.append(alertBox('Categoria e descrizione sono obbligatorie.')); return; }
-        if (Number.isNaN(body.prezzo_noleggio_giorno) || Number.isNaN(body.prezzo_vendita)) { alert.append(alertBox('Controllate i prezzi: usate solo numeri, es. 1600.00')); return; }
+        if (Number.isNaN(body.prezzo_noleggio_giorno) || Number.isNaN(body.prezzo_vendita) || Number.isNaN(body.peso_kg)) { alert.append(alertBox('Controllate i prezzi: usate solo numeri, es. 1600.00')); return; }
         busy(save, async () => {
           try {
             const r = await api(x ? `articoli/${encodeURIComponent(v.id)}` : 'articoli', { method: x ? 'PATCH' : 'POST', body });
@@ -456,6 +459,266 @@
         put(panel, h('div', { class: 'panel__head' }, h('h2', null, m ? 'Modifica modello' : 'Nuovo modello')), form);
       };
       carica();
+      return panel;
+    }
+
+    // ---------------------------------------------------------------- menu interno del magazzino
+    function schedeMagazzino(attiva) {
+      const voci = [['#/magazzino', 'Articoli', 'articoli'], ['#/magazzino/modelli', 'Modelli di allestimento', 'modelli'],
+        ['#/magazzino/difettoso', 'Materiale difettoso', 'difettoso'], ['#/magazzino/veicoli', 'Veicoli', 'veicoli']];
+      return h('nav', { class: 'schede', 'aria-label': 'Magazzino' },
+        voci.map(([href, label, k]) => h('a', { href, class: 'schede__voce', 'aria-current': k === attiva ? 'page' : null }, label)));
+    }
+
+    async function viewModelli(_, alive) {
+      loading();
+      let articoli;
+      try { articoli = (await api('articoli')).articoli || []; } catch (err) { if (alive()) failure('Modelli di allestimento', err); return; }
+      if (!alive()) return;
+      page({ title: 'Magazzino', sub: 'Modelli di allestimento' }, schedeMagazzino('modelli'), pannelloModelli(articoli));
+    }
+
+    // ---------------------------------------------------------------- materiale difettoso
+    const STATI_GUASTO = { da_riparare: 'Da riparare', in_riparazione: 'In riparazione', riparato: 'Riparato', da_buttare: 'Da buttare' };
+    const BADGE_GUASTO = { da_riparare: 'annullato', in_riparazione: 'richiesta', riparato: 'confermato', da_buttare: 'completato' };
+    let filtroGuasti = 'aperti';
+    async function viewDifettoso(_, alive) {
+      loading();
+      let guasti;
+      let articoli;
+      try {
+        [guasti, articoli] = await Promise.all([api(`guasti?stato=${filtroGuasti}`), api('articoli')]);
+      } catch (err) { if (alive()) failure('Materiale difettoso', err); return; }
+      if (!alive()) return;
+      const lista = guasti.guasti || [];
+      const arts = articoli.articoli || [];
+      const filtro = select('filtro', [['aperti', 'Da sistemare (da riparare, in riparazione)'], ['tutti', 'Tutti'], ...Object.entries(STATI_GUASTO)], filtroGuasti);
+      filtro.addEventListener('change', () => { filtroGuasti = filtro.value; viewDifettoso([], alive); });
+
+      // nuova segnalazione
+      const art = select('articolo', [['', '— Articolo —'], ...arts.map((a) => [a.id, `${a.codice ? `${a.codice} · ` : ''}${a.descrizione}`])], '');
+      const qta = h('input', { type: 'number', min: '1', max: '100000', value: '1', class: 'input--num', 'aria-label': 'Quantità' });
+      const desc = h('input', { type: 'text', maxlength: '1000', placeholder: 'Cosa non va (es. pannello con pixel spenti, cassa che gracchia)' });
+      const add1 = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Segnala guasto');
+      const form = h('form', { class: 'panel', novalidate: true },
+        h('div', { class: 'panel__head' }, h('h2', null, 'Segnala materiale difettoso')),
+        h('div', { class: 'fields' }, field('Articolo', art, { full: true }), field('Pezzi', qta), field('Guasto', desc, { full: true })),
+        h('div', { class: 'panel__foot' }, add1));
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        if (!art.value) { art.setAttribute('aria-invalid', 'true'); art.focus(); return; }
+        busy(add1, async () => {
+          try { await api('guasti', { method: 'POST', body: { articolo_id: art.value, quantita: Math.max(1, Number(qta.value) || 1), descrizione: desc.value.trim() || null } }); toast('Guasto segnalato: il pezzo non conta più come disponibile.'); viewDifettoso([], alive); } catch (err) { toast(errorMessage(err), 'error'); }
+        });
+      });
+
+      const righe = lista.map((g) => {
+        const stato = select('stato', Object.entries(STATI_GUASTO), g.stato);
+        const costo = h('input', { inputmode: 'decimal', class: 'input--num', value: g.costo_chf ?? '', placeholder: '0.00', 'aria-label': 'Costo CHF' });
+        const save = h('button', { class: 'btn btn--sm', type: 'button' }, 'Salva');
+        save.addEventListener('click', () => busy(save, async () => {
+          const c = numero(costo.value);
+          if (Number.isNaN(c)) { costo.setAttribute('aria-invalid', 'true'); return; }
+          try { await api(`guasti/${encodeURIComponent(g.id)}`, { method: 'PATCH', body: { stato: stato.value, costo_chf: c } }); toast(stato.value === 'riparato' ? 'Riparato: il pezzo torna disponibile.' : 'Salvato.'); } catch (err) { toast(errorMessage(err), 'error'); }
+        }));
+        return h('tr', null,
+          td('Data', fmtDate(giorno(g.created_at))),
+          h('td', { 'data-label': 'Articolo', class: 'table__primary' }, h('span', null, (g.articolo && g.articolo.descrizione) || '—',
+            h('span', { class: 'table__sub' }, [g.articolo && g.articolo.codice, g.evento ? `${g.evento.titolo} (N. ${g.evento.numero_ordine})` : null].filter(Boolean).join(' · ')))),
+          h('td', { class: 'num', 'data-label': 'Pezzi' }, h('span', null, g.quantita)),
+          td('Guasto', dash(g.descrizione)),
+          h('td', { 'data-label': 'Stato' }, h('span', { class: `badge badge--${BADGE_GUASTO[g.stato]}` }, STATI_GUASTO[g.stato]), ' ', stato),
+          h('td', { class: 'num', 'data-label': 'Costo CHF' }, costo),
+          h('td', { 'data-label': '' }, save));
+      });
+      const totCosto = lista.reduce((t, g) => t + (Number(g.costo_chf) || 0), 0);
+      page({ title: 'Magazzino', sub: 'Materiale difettoso: finché non è riparato non conta come disponibile', actions: [filtro] },
+        schedeMagazzino('difettoso'), form,
+        h('section', { class: 'panel' },
+          h('div', { class: 'panel__head' }, h('h2', null, 'Segnalazioni'), totCosto ? h('span', null, `Costi: ${chf(totCosto)}`) : null),
+          lista.length ? tabella(['Data', 'Articolo', 'Pezzi', 'Guasto', 'Stato', 'Costo CHF', ''], righe) : h('p', { class: 'muted' }, 'Nessun materiale difettoso. 👍')));
+    }
+
+    // ---------------------------------------------------------------- veicoli
+    const scade = (d) => {
+      if (!d) return null;
+      const giorni = Math.round((parseDate(d) - parseDate(oggi())) / 86400000);
+      if (giorni < 0) return h('span', { class: 'badge badge--annullato' }, `Scaduto il ${fmtDate(d)}`);
+      if (giorni <= 30) return h('span', { class: 'badge badge--richiesta' }, `Scade il ${fmtDate(d)}`);
+      return fmtDate(d);
+    };
+    async function viewVeicoli(_, alive) {
+      loading();
+      let lista;
+      try { lista = (await api('veicoli')).veicoli || []; } catch (err) { if (alive()) failure('Veicoli', err); return; }
+      if (!alive()) return;
+      const editor = h('div');
+      const apri = (v) => {
+        const x = v || {};
+        const inp = (k, attrs = {}) => h('input', { type: 'text', value: x[k] ?? '', ...attrs });
+        const f = {
+          nome: inp('nome', { maxlength: '80', required: true, placeholder: 'es. Sprinter bianco' }), targa: inp('targa', { maxlength: '20', placeholder: 'SG 123456' }),
+          portata_kg: inp('portata_kg', { type: 'number', min: '1', max: '100000', inputmode: 'numeric' }), volume_m3: inp('volume_m3', { inputmode: 'decimal' }),
+          scadenza_collaudo: inp('scadenza_collaudo', { type: 'date' }), scadenza_assicurazione: inp('scadenza_assicurazione', { type: 'date' }),
+          note: h('textarea', { rows: '2', maxlength: '1000' }),
+        };
+        f.note.value = x.note || '';
+        const att = check('attivo', 'In uso', x.attivo !== false);
+        const save = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Salva veicolo');
+        const foot = h('div', { class: 'panel__foot' }, h('button', { class: 'btn', type: 'button', onclick: () => clear(editor) }, 'Annulla'));
+        if (v) {
+          const del = h('button', { class: 'btn btn--danger', type: 'button' }, 'Elimina');
+          del.addEventListener('click', () => { if (!window.confirm(`Eliminare il veicolo "${v.nome}"?`)) return; busy(del, async () => { try { await api(`veicoli/${encodeURIComponent(v.id)}`, { method: 'DELETE' }); viewVeicoli([], alive); } catch (err) { toast(errorMessage(err), 'error'); } }); });
+          foot.append(del);
+        }
+        foot.append(save);
+        const form = h('form', { class: 'panel', novalidate: true }, h('div', { class: 'panel__head' }, h('h2', null, v ? 'Modifica veicolo' : 'Nuovo veicolo')),
+          h('div', { class: 'fields' }, field('Nome', f.nome), field('Targa', f.targa), field('Portata utile (kg)', f.portata_kg, { hint: 'Quanto può caricare: peso totale ammesso meno il peso a vuoto (dalla licenza di circolazione).' }),
+            field('Volume di carico (m³)', f.volume_m3), field('Prossimo collaudo (MFK)', f.scadenza_collaudo), field('Scadenza assicurazione', f.scadenza_assicurazione),
+            h('div', { class: 'field' }, att), field('Note', f.note, { full: true })), foot);
+        form.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const body = {
+            nome: f.nome.value.trim(), targa: f.targa.value.trim() || null, portata_kg: Number(f.portata_kg.value) || 0, volume_m3: numero(f.volume_m3.value),
+            scadenza_collaudo: f.scadenza_collaudo.value || null, scadenza_assicurazione: f.scadenza_assicurazione.value || null, note: f.note.value.trim() || null, attivo: att.querySelector('input').checked,
+          };
+          if (!body.nome || !(body.portata_kg > 0)) { toast('Nome e portata utile sono obbligatori.', 'error'); return; }
+          busy(save, async () => {
+            try { await api(v ? `veicoli/${encodeURIComponent(v.id)}` : 'veicoli', { method: v ? 'PATCH' : 'POST', body }); toast('Veicolo salvato.'); viewVeicoli([], alive); } catch (err) { toast(errorMessage(err), 'error'); }
+          });
+        });
+        clear(editor);
+        editor.append(form);
+      };
+      const righe = lista.map((v) => h('tr', { class: 'is-link', onclick: () => apri(v) },
+        h('td', { 'data-label': 'Veicolo', class: 'table__primary' }, h('span', null, v.nome, h('span', { class: 'table__sub' }, [v.targa, v.attivo === false ? 'non in uso' : null].filter(Boolean).join(' · ')))),
+        h('td', { class: 'num', 'data-label': 'Portata kg' }, h('span', null, v.portata_kg)),
+        h('td', { class: 'num', 'data-label': 'Volume m³' }, h('span', null, v.volume_m3 ?? '—')),
+        td('Collaudo (MFK)', scade(v.scadenza_collaudo) || '—'),
+        td('Assicurazione', scade(v.scadenza_assicurazione) || '—')));
+      page({ title: 'Magazzino', sub: 'Flotta veicoli: portata utile per evitare il sovrappeso, scadenze di collaudo e assicurazione',
+        actions: [h('button', { class: 'btn btn--primary', type: 'button', onclick: () => apri(null) }, 'Nuovo veicolo')] },
+      schedeMagazzino('veicoli'), editor,
+      h('section', { class: 'panel' }, lista.length ? tabella(['Veicolo', 'Portata kg', 'Volume m³', 'Collaudo (MFK)', 'Assicurazione'], righe) : h('p', { class: 'muted' }, 'Nessun veicolo. Aggiungete i furgoni con la loro portata utile.')));
+    }
+
+    // ---------------------------------------------------------------- carico dei veicoli sull'evento
+    /** Riquadro "Carico veicoli": furgoni scelti, voce → furgone, peso per furgone, avviso di sovrappeso, distribuzione automatica. */
+    function caricoPanel(e, items) {
+      const panel = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Carico veicoli')), h('p', { class: 'muted' }, 'Caricamento…'));
+      (async () => {
+        let veicoli;
+        let articoli;
+        let carico;
+        try {
+          [veicoli, articoli, carico] = await Promise.all([api('veicoli'), api('articoli?tutti=1'), api(`eventi/${encodeURIComponent(e.id)}/veicoli`)]);
+        } catch (err) { panel.lastChild.textContent = errorMessage(err); return; }
+        const tutti = (veicoli.veicoli || []).filter((v) => v.attivo !== false);
+        const peso = new Map((articoli.articoli || []).map((a) => [a.id, a.peso_kg == null ? null : Number(a.peso_kg)]));
+        const scelti = new Set((carico.carico || []).filter((c) => c.veicolo_id).map((c) => c.veicolo_id));
+        const pesoVoce = (it) => (it.articolo_id && peso.get(it.articolo_id) != null ? peso.get(it.articolo_id) * (it.quantita || 0) : 0);
+        const senzaPeso = () => items.filter((it) => !it.articolo_id || peso.get(it.articolo_id) == null);
+
+        const disegna = () => {
+          clear(panel);
+          const head = h('div', { class: 'panel__head' }, h('h2', null, 'Carico veicoli'));
+          panel.append(head);
+          if (!tutti.length) { panel.append(h('p', { class: 'muted' }, 'Nessun veicolo: aggiungeteli in Magazzino → Veicoli.')); return; }
+          // scelta dei veicoli
+          const sceltaBox = h('div', { class: 'toolbar' }, h('span', null, 'Veicoli per questo evento:'),
+            tutti.map((v) => {
+              const c = h('input', { type: 'checkbox', checked: scelti.has(v.id) });
+              c.addEventListener('change', async () => {
+                if (c.checked) scelti.add(v.id); else scelti.delete(v.id);
+                try { await api(`eventi/${encodeURIComponent(e.id)}/veicoli`, { method: 'PUT', body: { veicoli: [...scelti] } }); } catch (err) { toast(errorMessage(err), 'error'); }
+                disegna();
+              });
+              return h('label', { class: 'check' }, c, h('span', null, `${v.nome}${v.targa ? ` (${v.targa})` : ''} · ${v.portata_kg} kg`));
+            }));
+          panel.append(sceltaBox);
+          const usati = tutti.filter((v) => scelti.has(v.id));
+          // barre di carico
+          const barre = h('div', { class: 'carico' });
+          usati.forEach((v) => {
+            const kg = items.filter((it) => it.veicolo_id === v.id).reduce((t, it) => t + pesoVoce(it), 0);
+            const pc = Math.min(100, Math.round((kg / v.portata_kg) * 100));
+            const troppo = kg > v.portata_kg;
+            barre.append(h('div', { class: `carico__veicolo${troppo ? ' carico__veicolo--troppo' : ''}` },
+              h('div', { class: 'carico__testo' }, h('strong', null, v.nome), h('span', null, `${fmtMoney(kg).replace(/\.00$/, '')} / ${v.portata_kg} kg`)),
+              h('progress', { max: '100', value: String(pc), 'aria-label': `Carico ${v.nome}` }),
+              troppo ? h('p', { class: 'text-danger' }, `Sovrappeso di ${fmtMoney(kg - v.portata_kg).replace(/\.00$/, '')} kg: spostate del materiale su un altro veicolo.`) : null));
+          });
+          const nonAss = items.filter((it) => !it.veicolo_id || !scelti.has(it.veicolo_id));
+          if (usati.length) panel.append(barre);
+          if (nonAss.length && usati.length) panel.append(h('p', { class: 'muted' }, `Non ancora caricati: ${nonAss.length} voci, ${fmtMoney(nonAss.reduce((t, it) => t + pesoVoce(it), 0)).replace(/\.00$/, '')} kg.`));
+          const sp = senzaPeso();
+          if (sp.length) panel.append(h('p', { class: 'alert alert--info' }, `${sp.length} voci senza peso (voci libere o articoli senza peso): non contano nel totale. Aggiungete il peso agli articoli nel Magazzino.`));
+
+          if (usati.length && items.length) {
+            // voce → veicolo
+            const tb = h('tbody');
+            items.forEach((it) => {
+              const sel = select('veicolo', [['', '— non caricato —'], ...usati.map((v) => [v.id, v.nome])], scelti.has(it.veicolo_id) ? it.veicolo_id : '');
+              sel.addEventListener('change', async () => {
+                const prima = it.veicolo_id;
+                it.veicolo_id = sel.value || null;
+                try { await api(`checklist/${encodeURIComponent(it.id)}`, { method: 'PATCH', body: { veicolo_id: it.veicolo_id } }); } catch (err) { it.veicolo_id = prima; toast(errorMessage(err), 'error'); }
+                disegna();
+              });
+              const p = it.articolo_id ? peso.get(it.articolo_id) : null;
+              tb.append(h('tr', null, td('Voce', it.voce), h('td', { class: 'num', 'data-label': 'Q.tà' }, h('span', null, it.quantita)),
+                h('td', { class: 'num', 'data-label': 'Peso kg' }, h('span', null, p == null ? '—' : fmtMoney(pesoVoce(it)).replace(/\.00$/, ''))),
+                h('td', { 'data-label': 'Veicolo' }, sel)));
+            });
+            const auto = h('button', { class: 'btn btn--sm', type: 'button' }, 'Distribuisci automaticamente');
+            auto.addEventListener('click', () => busy(auto, async () => {
+              // prima le voci più pesanti; ognuna va sul veicolo con più spazio rimasto e,
+              // se non ci sta intera, si divide su più veicoli (es. 120 truss → 60 + 60)
+              const spazio = new Map(usati.map((v) => [v.id, v.portata_kg]));
+              const ordine = [...items].sort((a, b) => pesoVoce(b) - pesoVoce(a));
+              const piano = []; // { it, parti: [{ veicolo, quantita }] }
+              let pezziFuori = 0;
+              ordine.forEach((it) => {
+                const kgPezzo = it.articolo_id && peso.get(it.articolo_id) != null ? peso.get(it.articolo_id) : 0;
+                let resto = it.quantita || 0;
+                const parti = [];
+                while (resto > 0) {
+                  const [best] = [...spazio.entries()].sort((a, b) => b[1] - a[1]);
+                  const ci = !best ? 0 : kgPezzo ? Math.floor(best[1] / kgPezzo) : resto;
+                  if (ci <= 0) break;
+                  const q = Math.min(ci, resto);
+                  spazio.set(best[0], best[1] - q * kgPezzo);
+                  parti.push({ veicolo: best[0], quantita: q });
+                  resto -= q;
+                }
+                if (resto > 0) { parti.push({ veicolo: null, quantita: resto }); pezziFuori += resto; }
+                piano.push({ it, parti });
+              });
+              try {
+                for (const { it, parti } of piano) {
+                  const [prima, ...altre] = parti;
+                  if (prima.veicolo !== it.veicolo_id || prima.quantita !== it.quantita) {
+                    await api(`checklist/${encodeURIComponent(it.id)}`, { method: 'PATCH', body: { veicolo_id: prima.veicolo, quantita: prima.quantita } });
+                    it.veicolo_id = prima.veicolo; it.quantita = prima.quantita;
+                  }
+                  for (const p of altre) {
+                    const r = await api(`eventi/${encodeURIComponent(e.id)}/checklist`, { method: 'POST', body: { voce: it.voce, quantita: p.quantita, articolo_id: it.articolo_id || null } });
+                    if (r.voce) {
+                      if (p.veicolo) await api(`checklist/${encodeURIComponent(r.voce.id)}`, { method: 'PATCH', body: { veicolo_id: p.veicolo } });
+                      items.push({ ...r.voce, veicolo_id: p.veicolo });
+                    }
+                  }
+                }
+                toast(pezziFuori ? `${pezziFuori} pezzi non ci stanno: serve un altro veicolo.` : 'Materiale distribuito senza superare la portata.', pezziFuori ? 'error' : 'ok');
+              } catch (err) { toast(errorMessage(err), 'error'); }
+              disegna();
+            }));
+            head.append(auto);
+            panel.append(tabella(['Voce', 'Q.tà', 'Peso kg', 'Veicolo'], tb));
+          }
+        };
+        disegna();
+      })();
       return panel;
     }
 
@@ -1371,7 +1634,7 @@
           h('p', { class: 'muted' }, 'Per aggiungere una persona: create il suo account in Supabase (Authentication → Users → Add user, con la sua e-mail), poi aggiungete la riga nella tabella "staff" con lo stesso id, il nome e il ruolo. Da qui potete poi cambiare ruolo e stato.')));
     }
 
-    return { viewAgenda, viewAssenze, viewMagazzino, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, viewPaga, offertePanel, compensiPanel, calendarLink, sceltaModello };
+    return { viewAgenda, viewAssenze, viewMagazzino, viewModelli, viewDifettoso, viewVeicoli, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, viewPaga, offertePanel, compensiPanel, caricoPanel, calendarLink, sceltaModello };
   }
 
   window.MeekonGestionale = { create };

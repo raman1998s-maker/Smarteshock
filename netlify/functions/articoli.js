@@ -12,7 +12,7 @@ export const config = {
 };
 
 export const SELECT_ARTICOLO =
-  'id,codice,categoria,sottocategoria,marca,descrizione,accessori,note,quantita,danneggiati,prezzo_noleggio_giorno,prezzo_vendita,in_vendita,attivo,updated_at';
+  'id,codice,categoria,sottocategoria,marca,descrizione,accessori,note,quantita,danneggiati,peso_kg,prezzo_noleggio_giorno,prezzo_vendita,in_vendita,attivo,updated_at';
 
 function testoRicerca(raw) {
   if (raw == null) return null;

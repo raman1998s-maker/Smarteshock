@@ -178,6 +178,16 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - `modelli` + `modelli_voci` (articolo, quantità): pacchetti di materiale (es. "Schermo dietro con luci sopra lo schermo", "Struttura con schermo davanti e dietro, luci e audio ai lati", "Welcome board"). Li gestisce l'ufficio nella pagina Magazzino (`salva_modello`, una transazione); i partner vedono solo quelli "per i partner" attivi.
 - Si aggiungono con un clic nell'offerta Meekon (prezzo di noleggio × giorni dell'evento), nell'offerta del partner (prezzo partner come proposta) e nella lista materiale dell'evento; poi si modificano. API: `GET/POST /api/modelli`, `PUT/DELETE /api/modelli/:id`.
 
+### Lingua dell'interfaccia (`0015_lingua_utente.sql`)
+- `staff.lingua` (it/de/en; il titolare usa il tedesco), cambiata con `PATCH /api/me {lingua}` → `imposta_mia_lingua()`. `area-riservata/i18n.js` traduce a schermo i testi italiani con `i18n-de.js` / `i18n-en.js` (chiave = testo italiano esatto, `{0}` per le parti variabili); i testi già tradotti non si ritraducono; il documento `.stampa` e i campi compilati sono esclusi. **Ogni testo nuovo dell'interfaccia va aggiunto ai due dizionari.**
+
+### Materiale difettoso, peso e veicoli (`0016_difettoso_veicoli.sql`)
+- `guasti` (articolo, pezzi, stato da_riparare / in_riparazione / riparato / da_buttare, guasto, costo): i pezzi non riparati non sono disponibili. I danneggiati segnati al rientro su una voce collegata al magazzino creano da soli un guasto (trigger `checklist_crea_guasto`).
+- `articoli.peso_kg`; `veicoli` (targa, portata utile kg, volume, scadenze MFK e assicurazione, avviso a 30 giorni); `eventi_veicoli`; `checklist.veicolo_id` (solo la gestione la cambia); `carico_veicoli(evento)`.
+- Interfaccia: Magazzino con schede Articoli / Modelli / Difettoso / Veicoli; sull'evento il riquadro "Carico veicoli" (barre di carico, sovrappeso in rosso, "Distribuisci automaticamente": voci più pesanti prima, sul veicolo con più spazio, dividendo la voce se non ci sta intera).
+- API: `GET/POST /api/guasti`, `PATCH/DELETE /api/guasti/:id`, `GET/POST /api/veicoli`, `PATCH/DELETE /api/veicoli/:id`, `GET/PUT /api/eventi/:id/veicoli`; `PATCH /api/checklist/:id` accetta anche `veicolo_id` e `quantita` (gestione).
+- Etichette del magazzino: oggi sono **codici a barre** (non QR) con i codici tipo E000006623.
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|
