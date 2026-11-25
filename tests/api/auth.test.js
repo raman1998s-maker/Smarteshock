@@ -111,7 +111,7 @@ describe('sessione e /api/me', () => {
     const calls = mockFetch([staffRoute(PROFILES)]);
     const res = await me(req('/api/me', { cookie: cookieFor(TEC_ID) }));
     assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { id: TEC_ID, nome: 'Tecnico', ruolo: 'tecnico' });
+    assert.deepEqual(await res.json(), { id: TEC_ID, nome: 'Tecnico', ruolo: 'tecnico', lingua: null });
     assert.match(calls[0].headers.get('authorization'), /^Bearer /);
     assert.equal(setCookies(res).length, 0);
   });

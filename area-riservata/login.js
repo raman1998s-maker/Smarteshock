@@ -20,6 +20,26 @@
     generic: 'Accesso non riuscito per un problema temporaneo. Riprovate tra qualche istante.',
   };
 
+  // scelta della lingua (italiano, tedesco, inglese) già nella pagina di accesso
+  if (window.MeekonI18n) {
+    const box = document.createElement('div');
+    box.className = 'login__lingue';
+    box.setAttribute('data-no-tr', '');
+    [['it', 'Italiano'], ['de', 'Deutsch'], ['en', 'English']].forEach(([v, l]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn btn--ghost btn--sm';
+      b.textContent = l;
+      b.setAttribute('aria-pressed', String(window.MeekonI18n.lingua === v));
+      b.addEventListener('click', () => {
+        window.MeekonI18n.imposta(v);
+        window.location.reload(); // la pagina riparte nella nuova lingua
+      });
+      box.append(b);
+    });
+    form.after(box);
+  }
+
   // Già connessi? Si va direttamente al gestionale.
   fetch('/api/me', { credentials: 'same-origin', headers: HEADERS })
     .then((res) => { if (res.ok) window.location.replace(APP); })

@@ -1237,7 +1237,18 @@
     });
     nav.append(logout);
     clear(userBox);
+    // lingua dell'interfaccia, salvata sull'account (il titolare usa il tedesco)
+    const I = window.MeekonI18n;
+    const lingua = h('select', { class: 'app__lingua', 'aria-label': 'Lingua', 'data-no-tr': '' },
+      [['it', 'Italiano'], ['de', 'Deutsch'], ['en', 'English']].map(([v, l]) => h('option', { value: v, selected: I && I.lingua === v }, l)));
+    lingua.addEventListener('change', async () => {
+      if (I) I.imposta(lingua.value);
+      try { await api('me', { method: 'PATCH', body: { lingua: lingua.value } }); state.me.lingua = lingua.value; } catch (err) { /* resta salvata sul dispositivo */ }
+      window.location.reload(); // la pagina riparte nella nuova lingua
+    });
     add(userBox, [h('strong', null, state.me.nome || 'Utente'), RUOLI[state.me.ruolo] || '']);
+    // nella barra di navigazione, così si vede anche sul telefono
+    if (I) nav.append(lingua);
   }
 
   async function init() {
@@ -1245,6 +1256,7 @@
       const me = await api('me');
       if (!me || !me.ruolo) throw new ApiError(500, 'server_error');
       state.me = me;
+      if (window.MeekonI18n && me.lingua && me.lingua !== window.MeekonI18n.lingua) window.MeekonI18n.imposta(me.lingua);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) return;
       if (err instanceof ApiError && err.status === 403) { window.location.replace(LOGIN); return; }

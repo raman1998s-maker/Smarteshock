@@ -45,7 +45,7 @@ export function checkCsrf(req, env, { requireXrw = true } = {}) {
 }
 
 async function loadProfile(sb, token, userId) {
-  const rows = await sb.rest(`staff?id=eq.${userId}&select=id,nome,ruolo,attivo`, { token });
+  const rows = await sb.rest(`staff?id=eq.${userId}&select=id,nome,ruolo,attivo,lingua`, { token });
   return Array.isArray(rows) && rows.length === 1 ? rows[0] : null;
 }
 
@@ -98,5 +98,5 @@ export async function authenticate(req, sb) {
   if (!profile || profile.attivo !== true || !RUOLI.includes(profile.ruolo)) {
     throw new HttpError(403, 'forbidden', undefined, clearSessionCookies());
   }
-  return { user: { id: profile.id, nome: profile.nome, ruolo: profile.ruolo }, token, setCookies };
+  return { user: { id: profile.id, nome: profile.nome, ruolo: profile.ruolo, lingua: profile.lingua ?? null }, token, setCookies };
 }
