@@ -16,7 +16,7 @@
 
   const L = {
     de: {
-      offerta: 'Offerte', conferma: 'Auftragsbestätigung', nr: 'Nr.', valida: 'gültig bis', per: 'Für', da: 'Von',
+      offerta: 'Offerte', conferma: 'Auftragsbestätigung', fattura: 'Rechnung', fatturaNr: 'Rechnungs-Nr.', pagabile: 'Zahlbar an', nr: 'Nr.', valida: 'gültig bis', per: 'Für', da: 'Von',
       anlass: 'Anlass', datum: 'Datum', location: 'Location', daDefinire: 'wird noch bestimmt', aufbau: 'Aufbau ab', betrieb: 'Betrieb', abbau: 'Abbau', kontakt: 'Ansprechperson vor Ort',
       pos: 'Pos', leistung: 'Leistung', menge: 'Menge', prezzo: 'Einzelpreis', totale: 'Total CHF', giorni: (n) => `${n} Tage`,
       sub: 'Zwischentotal', sconto: 'Rabatt', totIva: (p) => `Total inkl. ${p} % MWST`, tot: 'Total', davon: (p) => `davon MWST ${p} %`, nonIva: 'Nicht mehrwertsteuerpflichtig',
@@ -34,7 +34,7 @@
       anrede: (n) => `Guten Tag ${n}`,
     },
     it: {
-      offerta: 'Offerta', conferma: 'Conferma d\'ordine', nr: 'N.', valida: 'valida fino al', per: 'Per', da: 'Da',
+      offerta: 'Offerta', conferma: 'Conferma d\'ordine', fattura: 'Fattura', fatturaNr: 'Fattura N.', pagabile: 'Pagabile a', nr: 'N.', valida: 'valida fino al', per: 'Per', da: 'Da',
       anlass: 'Evento', datum: 'Data', location: 'Location', daDefinire: 'da definire', aufbau: 'Montaggio da', betrieb: 'Servizio', abbau: 'Smontaggio', kontakt: 'Referente sul posto',
       pos: 'Pos', leistung: 'Prestazione', menge: 'Quantità', prezzo: 'Prezzo unitario', totale: 'Totale CHF', giorni: (n) => `${n} giorni`,
       sub: 'Subtotale', sconto: 'Sconto', totIva: (p) => `Totale IVA ${p} % inclusa`, tot: 'Totale', davon: (p) => `di cui IVA ${p} %`, nonIva: 'Non assoggettato all\'IVA',
@@ -52,7 +52,7 @@
       anrede: (n) => `Buongiorno ${n}`,
     },
     fr: {
-      offerta: 'Offre', conferma: 'Confirmation de commande', nr: 'N°', valida: 'valable jusqu\'au', per: 'Pour', da: 'De',
+      offerta: 'Offre', conferma: 'Confirmation de commande', fattura: 'Facture', fatturaNr: 'Facture N°', pagabile: 'Payable à', nr: 'N°', valida: 'valable jusqu\'au', per: 'Pour', da: 'De',
       anlass: 'Événement', datum: 'Date', location: 'Lieu', daDefinire: 'à définir', aufbau: 'Montage dès', betrieb: 'Service', abbau: 'Démontage', kontakt: 'Personne de contact sur place',
       pos: 'Pos', leistung: 'Prestation', menge: 'Quantité', prezzo: 'Prix unitaire', totale: 'Total CHF', giorni: (n) => `${n} jours`,
       sub: 'Sous-total', sconto: 'Rabais', totIva: (p) => `Total TVA ${p} % incluse`, tot: 'Total', davon: (p) => `dont TVA ${p} %`, nonIva: 'Non assujetti à la TVA',
@@ -70,7 +70,7 @@
       anrede: (n) => `Bonjour ${n}`,
     },
     en: {
-      offerta: 'Quotation', conferma: 'Order confirmation', nr: 'No.', valida: 'valid until', per: 'For', da: 'From',
+      offerta: 'Quotation', conferma: 'Order confirmation', fattura: 'Invoice', fatturaNr: 'Invoice no.', pagabile: 'Payable to', nr: 'No.', valida: 'valid until', per: 'For', da: 'From',
       anlass: 'Event', datum: 'Date', location: 'Location', daDefinire: 'to be confirmed', aufbau: 'Set-up from', betrieb: 'Service', abbau: 'Dismantling', kontakt: 'Contact on site',
       pos: 'Pos', leistung: 'Service', menge: 'Qty', prezzo: 'Unit price', totale: 'Total CHF', giorni: (n) => `${n} days`,
       sub: 'Subtotal', sconto: 'Discount', totIva: (p) => `Total incl. ${p} % VAT`, tot: 'Total', davon: (p) => `of which VAT ${p} %`, nonIva: 'Not subject to VAT',
@@ -130,7 +130,10 @@
     const t = d.totali;
     // 8,1 % (virgola in DE/IT/FR, punto in EN)
     const pc = (n) => (d.lingua === 'en' ? String(Number(n)) : String(Number(n)).replace('.', ','));
-    const conferma = d.tipo === 'conferma';
+    const fattura = d.tipo === 'fattura';
+    const conferma = d.tipo === 'conferma' || fattura; // conferma d'ordine e fattura: niente accettazione né AGB
+    const titoloDoc = fattura ? tx.fattura : d.tipo === 'conferma' ? tx.conferma : tx.offerta;
+    const numeroDoc = fattura ? `${tx.fatturaNr} ${d.numero}` : `${tx.auftrag} ${d.numeroOrdine}`;
     const mwst = ditta.mwst_pflichtig === false ? 'no' : (ditta.mwst_nr ? 'si' : 'da_configurare');
     const fill = (s) => String(s || '').replace(/\{km\}/g, reg.km_inclusi)
       .replace(/\{von\}/g, ora(ev.data_inizio) || '—').replace(/\{bis\}/g, ora(ev.data_fine) || '—')
@@ -176,11 +179,14 @@
 
     const pagina1 = h('div', { class: 'doc__pagina' },
       h('header', { class: 'doc__head' },
-        h('img', { src: '/assets/img/logo.png', alt: 'Meekon Displays', class: 'doc__logo', width: '595', height: '246' }),
+        // logo: quello del partner (data URL dal profilo) o quello di Meekon
+        d.logo
+          ? h('img', { src: d.logo, alt: ditta.nome || '', class: 'doc__logo doc__logo--partner' })
+          : h('img', { src: '/assets/img/logo.png', alt: 'Meekon Displays', class: 'doc__logo', width: '595', height: '246' }),
         h('div', { class: 'doc__titolo' },
-          h('h1', null, conferma ? tx.conferma : tx.offerta),
+          h('h1', null, titoloDoc),
           h('p', null, conferma
-            ? `${tx.auftrag} ${d.numeroOrdine} · ${dataCh(oggi)}`
+            ? `${numeroDoc} · ${dataCh(oggi)}`
             : [`${tx.nr} ${d.numero}`, dataCh(oggi), d.valida ? `${tx.valida} ${dataCh(d.valida)}` : null].filter(Boolean).join(' · ')),
           conferma && d.offerta.accettata_il ? h('p', null, tx.accettataIl(`${dataCh(d.offerta.accettata_il)}, ${new Date(d.offerta.accettata_il).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}`, d.offerta.accettata_nome)) : null)),
       h('div', { class: 'doc__parti' },
@@ -218,8 +224,9 @@
       h('div', { class: 'doc__riquadri' },
         h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.pagamento),
           h('dl', null, pagamento.map(([k, v]) => [h('dt', null, k), h('dd', null, v)])),
-          h('p', null, tx.modo)),
-        h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.annullamento),
+          h('p', null, tx.modo),
+          ditta.iban ? h('p', null, `${tx.pagabile}: ${ditta.nome || ''}, IBAN ${iban4(ditta.iban)}`) : null),
+        d.senzaAnnullamento ? null : h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.annullamento),
           h('dl', null, righeAnnullamento(tx, scaglioni).map(([k, v]) => [h('dt', null, k), h('dd', null, v)])),
           h('p', null, [tx.indennita(reg.indennita_percento), giorniAlEvento == null || giorniAlEvento > reg.sofort_sotto_giorni ? tx.bedenk(reg.bedenkfrist_giorni) : null].filter(Boolean).join(' ')))),
       d.condizioni ? h('p', { class: 'doc__testo' }, fill(d.condizioni)) : null,
@@ -245,7 +252,7 @@
     ];
     const doc = h('div', { class: 'doc' });
     put(doc, pagina1, agb);
-    return { doc, piede, pagina: tx.pagina('X', 'Y'), titolo: `${conferma ? tx.conferma : tx.offerta} ${conferma ? d.numeroOrdine : d.numero}`, mwst };
+    return { doc, piede, pagina: tx.pagina('X', 'Y'), titolo: `${titoloDoc} ${d.tipo === 'conferma' ? d.numeroOrdine : d.numero}`, mwst };
   }
 
   window.MeekonOffertaDoc = { build, REGOLE, SCAGLIONI, L };

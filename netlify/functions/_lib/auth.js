@@ -4,7 +4,7 @@ import { ACCESS_COOKIE, REFRESH_COOKIE, clearSessionCookies, parseCookies, sessi
 import { HttpError } from './http.js';
 
 const REFRESH_MARGIN_S = 30;
-export const RUOLI = ['admin', 'ufficio', 'tecnico', 'base'];
+export const RUOLI = ['admin', 'ufficio', 'tecnico', 'base', 'partner'];
 /** Admin e ufficio: richieste, clienti, eventi, offerte, magazzino. */
 export const isGestione = (user) => user?.ruolo === 'admin' || user?.ruolo === 'ufficio';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -52,7 +52,7 @@ async function loadProfile(sb, token, userId) {
 /**
  * Autentica la richiesta dai cookie; rinnova la sessione se l'access token è
  * scaduto (o sta per scadere) o se Supabase lo rifiuta.
- * @returns {{ user: {id:string,nome:string,ruolo:'admin'|'ufficio'|'tecnico'|'base'}, token: string, setCookies: string[] }}
+ * @returns {{ user: {id:string,nome:string,ruolo:'admin'|'ufficio'|'tecnico'|'base'|'partner'}, token: string, setCookies: string[] }}
  */
 export async function authenticate(req, sb) {
   const cookies = parseCookies(req.headers.get('cookie'));

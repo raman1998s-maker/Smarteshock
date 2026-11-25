@@ -147,7 +147,7 @@
         const da = isoDate(addDays(new Date(), -30));
         [data, staff] = await Promise.all([
           api(`assenze?da=${da}`),
-          gestione ? api('staff').then((r) => (r.staff || []).filter((s) => s.attivo !== false)) : Promise.resolve([]),
+          gestione ? api('staff').then((r) => (r.staff || []).filter((s) => s.attivo !== false && s.ruolo !== 'partner')) : Promise.resolve([]),
         ]);
       } catch (err) { if (alive()) failure('Giorni di assenza', err); return; }
       if (!alive()) return;
@@ -1269,6 +1269,7 @@
             ['Ufficio', 'Richieste, clienti, eventi, offerte con i prezzi, magazzino, agenda di tutti e assegnazione della squadra.'],
             ['Tecnico', 'Solo gli eventi a cui è assegnato, senza prezzi; spunta materiale caricato e rientrato.'],
             ['Base', "Solo l'agenda di oggi con indirizzo, mappa e contatti, per gli eventi a cui è assegnato."],
+            ['Partner (DJ)', 'Solo la propria area: le sue offerte a suo nome, il suo profilo e il catalogo Meekon con il prezzo partner. Non vede eventi, clienti né altri partner.'],
             ['Disattivato', 'Non entra più, ma il suo nome resta negli eventi passati.'],
           ]),
           h('p', { class: 'muted' }, 'Per aggiungere una persona: create il suo account in Supabase (Authentication → Users → Add user, con la sua e-mail), poi aggiungete la riga nella tabella "staff" con lo stesso id, il nome e il ruolo. Da qui potete poi cambiare ruolo e stato.')));

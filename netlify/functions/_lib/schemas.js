@@ -216,6 +216,60 @@ export const spesaSchema = {
   descrizione: t.string({ max: 300 }),
 };
 
+// ---------------------------------------------------------------------
+// Area partner (DJ)
+// ---------------------------------------------------------------------
+export const partnerProfiloSchema = {
+  ragione_sociale: t.string({ max: 160 }),
+  persona: t.string({ max: 120 }),
+  slogan: t.string({ max: 160 }),
+  indirizzo: t.string({ max: 300, multiline: true }),
+  telefono: t.phone(),
+  email: t.email(),
+  iban: t.string({ max: 34, pattern: /^[A-Z]{2}[0-9]{2}[A-Z0-9]{10,30}$/ }),
+  twint: t.phone(),
+  mwst_pflichtig: t.bool(),
+  mwst_nr: t.string({ max: 40 }),
+  logo: t.string({ max: 400000, pattern: /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/ }),
+  usa_agb_meekon: t.bool({ default: true, empty: true }),
+  agb: t.string({ max: 30000, multiline: true }),
+};
+
+export const partnerOffertaSchema = {
+  stato: t.enumOf(['bozza', 'inviata', 'accettata', 'rifiutata', 'scaduta']),
+  lingua: t.enumOf(LINGUE),
+  cliente_nome: t.string({ max: 120 }),
+  cliente_azienda: t.string({ max: 160 }),
+  cliente_indirizzo: t.string({ max: 300, multiline: true }),
+  cliente_email: t.email(),
+  cliente_telefono: t.phone(),
+  anrede: t.string({ max: 200 }),
+  evento_titolo: t.string({ max: 200 }),
+  data_inizio: t.datetime(),
+  data_fine: t.datetime(),
+  montaggio_da: t.datetime(),
+  luogo: t.string({ max: 300 }),
+  valida_fino: t.date(),
+  iva_percento: t.decimal({ min: 0, max: 30, decimals: 2, empty: 8.1 }),
+  prezzi_iva_inclusa: t.bool({ empty: true }),
+  sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, empty: 0 }),
+  sconto_chf: t.money({ empty: 0 }),
+  introduzione: t.string({ max: 4000, multiline: true }),
+  condizioni: t.string({ max: 4000, multiline: true }),
+};
+
+export const partnerRigaSchema = {
+  tipo: t.enumOf(['servizio', 'materiale'], { default: 'servizio', empty: 'servizio' }),
+  articolo_id: t.uuid(),
+  titolo: t.string({ max: 120 }),
+  descrizione: t.string({ max: 500, required: true, multiline: true }),
+  quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),
+  giorni: t.decimal({ min: 0.01, max: 365, decimals: 2, default: 1, empty: 1 }),
+  prezzo_unitario: t.money({ default: 0, empty: 0 }),
+  sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, default: 0, empty: 0 }),
+  opzionale: t.bool({ default: false, empty: false }),
+};
+
 export const assenzaSchema = {
   staff_id: t.uuid(),
   dal: t.date({ required: true }),

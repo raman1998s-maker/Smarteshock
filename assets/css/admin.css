@@ -982,6 +982,10 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .offerta__totali .dl { min-width: 260px; }
 .stampa { display: none; }
 
+/* area partner: anteprima del logo */
+.partner-logo { display: flex; align-items: center; min-height: 80px; padding: var(--sp-3); background: var(--color-surface-2); border-radius: var(--radius-1); }
+.partner-logo img { max-height: 90px; max-width: 280px; width: auto; height: auto; }
+
 /* pagina pubblica di accettazione dell'offerta (/offerta/) */
 .login.offerta-pubblica { width: min(760px, 100%); }
 .offerta-pubblica h1 { font-size: var(--fs-xl, 26px); }
@@ -1027,6 +1031,7 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc__head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 4mm; border-bottom: .5mm solid #4DC0DE; }
   /* il logo ha la scritta chiara (per fondo scuro): in stampa si scurisce mantenendo le tinte */
   .doc__logo { width: 44mm; height: auto; filter: invert(1) hue-rotate(180deg); }
+  .doc__logo--partner { width: auto; max-width: 50mm; max-height: 22mm; filter: none; }
   .doc__titolo { text-align: right; }
   .doc__titolo h1 { font: 500 17pt/1.1 var(--font-text); text-transform: uppercase; letter-spacing: .16em; margin: 0 0 1.5mm; }
   .doc__titolo p { color: #6A6969; }

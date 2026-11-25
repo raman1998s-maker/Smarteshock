@@ -28,7 +28,7 @@
   const STATI_RICHIESTA = { nuova: 'Nuova', gestita: 'Gestita', scartata: 'Scartata' };
   const PAESI = { CH: 'Svizzera', IT: 'Italia', DE: 'Germania', FR: 'Francia' };
   const LINGUE = { it: 'Italiano', de: 'Tedesco', fr: 'Francese', en: 'Inglese' };
-  const RUOLI = { admin: 'Amministratore', ufficio: 'Ufficio', tecnico: 'Tecnico', base: 'Base (solo agenda del giorno)' };
+  const RUOLI = { admin: 'Amministratore', ufficio: 'Ufficio', tecnico: 'Tecnico', base: 'Base (solo agenda del giorno)', partner: 'Partner (DJ)' };
 
   // Dettagli tecnici sul luogo (richieste_web.dettagli_tecnici): etichette e valori in italiano.
   // Le chiavi e i valori sono quelli di dettagliTecniciSchema (netlify/functions/_lib/schemas.js).
@@ -504,7 +504,7 @@
         (as.assenze || []).forEach((x) => assenti.set(x.staff_id, x));
       } catch (err) { toast(errorMessage(err), 'error'); show(); return; }
       const current = new Map(staff.map((s) => [s.staff_id, s.ruolo_evento || '']));
-      const rows = all.filter((s) => s.attivo !== false || current.has(s.id)).map((s) => {
+      const rows = all.filter((s) => s.ruolo !== 'partner' && (s.attivo !== false || current.has(s.id))).map((s) => {
         const cb = h('input', { type: 'checkbox', value: s.id, checked: current.has(s.id) });
         const role = h('input', { type: 'text', maxlength: '80', value: current.get(s.id) || '', placeholder: 'es. audio, luci, video', 'aria-label': `Ruolo nell'evento di ${s.nome || ''}` });
         return { s, cb, role, tr: h('tr', null,
@@ -1106,7 +1106,7 @@
   function viewVietato() {
     page({ title: 'Accesso non consentito' },
       h('p', { class: 'alert alert--error', role: 'alert' }, 'Il vostro profilo non ha accesso a questa sezione.'),
-      h('p', null, h('a', { class: 'btn', href: '#/agenda' }, "Torna all'agenda")));
+      h('p', null, h('a', { class: 'btn', href: homeHash() }, 'Torna alla pagina iniziale')));
   }
 
   // ------------------------------------------------------------ contenuti del sito (CMS, contenuti.js)
@@ -1133,6 +1133,21 @@
     return gest;
   }
 
+  // ------------------------------------------------------------ area partner (partner.js)
+  let part = null;
+  function PT() {
+    if (!part) {
+      if (!window.MeekonPartner) throw new Error('partner.js non caricato');
+      part = window.MeekonPartner.create({
+        h, add, clear, api, ApiError, errorMessage, page, toast, field, busy, select, check, loading, failure, empty,
+        td, dl, fmtDate, fmtRange, fmtMoney, isoDate, telLink, mailLink, panels, wide, state,
+      });
+    }
+    return part;
+  }
+  const isPartner = () => state.me && state.me.ruolo === 'partner';
+  const homeHash = () => (isPartner() ? '#/partner' : state.me.ruolo === 'base' ? '#/agenda' : '#/prossimi');
+
   // ------------------------------------------------------------ router
   const ID = '([0-9A-Za-z-]{1,64})';
   const ROUTES = [
@@ -1157,12 +1172,16 @@
     [/^#\/utenti$/, (p, a) => G().viewUtenti(p, a), 'admin', 'utenti'],
     [/^#\/impostazioni$/, (p, a) => G().viewImpostazioni(p, a), 'admin', 'impostazioni'],
     [/^#\/paga$/, (p, a) => G().viewPaga(p, a), 'tutti', 'paga'],
+    [/^#\/partner$/, (p, a) => PT().viewOfferte(p, a), 'partner', 'partner'],
+    [/^#\/partner\/profilo$/, (p, a) => PT().viewProfilo(p, a), 'partner', 'partner-profilo'],
+    [new RegExp(`^#/partner/offerta/${ID}$`), (p, a) => PT().viewOfferta(p, a), 'partner_o_gestione', 'partner'],
+    [/^#\/richieste-partner$/, (p, a) => PT().viewRichieste(p, a), 'gestione', 'richieste-partner'],
   ];
 
   function route() {
     const my = ++seq;
     const alive = () => my === seq;
-    const hash = window.location.hash || (state.me.ruolo === 'base' ? '#/agenda' : '#/prossimi');
+    const hash = window.location.hash || homeHash();
     for (const [re, view, accesso, section] of ROUTES) {
       const m = re.exec(hash);
       if (!m) continue;
@@ -1170,20 +1189,25 @@
         if (a.dataset.section === section) a.setAttribute('aria-current', 'page');
         else a.removeAttribute('aria-current');
       });
-      if ((accesso === 'admin' && !isAdmin()) || (accesso === 'gestione' && !isGestione())) { viewVietato(); return; }
+      // il partner vede solo la propria area
+      if (isPartner() && accesso !== 'partner' && accesso !== 'partner_o_gestione') { window.location.replace('#/partner'); return; }
+      if ((accesso === 'admin' && !isAdmin()) || (accesso === 'gestione' && !isGestione())
+        || (accesso === 'partner' && !isPartner()) || (accesso === 'partner_o_gestione' && !isPartner() && !isGestione())) { viewVietato(); return; }
       Promise.resolve(view(m.slice(1).map(decodeURIComponent), alive)).catch((err) => { if (alive()) failure('Errore', err); });
       return;
     }
-    window.location.replace(state.me.ruolo === 'base' ? '#/agenda' : '#/prossimi');
+    window.location.replace(homeHash());
   }
 
   function buildShell() {
     clear(nav);
-    const links = state.me.ruolo === 'base'
+    const links = isPartner()
+      ? [['#/partner', 'Le mie offerte', 'partner'], ['#/partner/profilo', 'Profilo', 'partner-profilo']]
+      : state.me.ruolo === 'base'
       ? [['#/agenda', 'Agenda di oggi', 'agenda']]
       : [['#/agenda', 'Agenda', 'agenda'], ['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
-    if (isGestione()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti'], ['#/magazzino', 'Magazzino', 'magazzino']);
-    links.push(['#/assenze', 'Giorni di assenza', 'assenze'], ['#/paga', 'Paga e spese', 'paga']);
+    if (isGestione()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/richieste-partner', 'Richieste partner', 'richieste-partner'], ['#/clienti', 'Clienti', 'clienti'], ['#/magazzino', 'Magazzino', 'magazzino']);
+    if (!isPartner()) links.push(['#/assenze', 'Giorni di assenza', 'assenze'], ['#/paga', 'Paga e spese', 'paga']);
     if (isAdmin()) links.push(['#/utenti', 'Utenti e ruoli', 'utenti'], ['#/impostazioni', 'Impostazioni', 'impostazioni'], ['#/contenuti', 'Contenuti del sito', 'contenuti']);
     links.forEach(([href, label, section]) => nav.append(h('a', { href, 'data-section': section }, label)));
     const logout = h('button', { class: 'app__link', type: 'button' }, 'Esci');
