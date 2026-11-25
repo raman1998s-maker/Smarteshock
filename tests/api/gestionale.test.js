@@ -152,6 +152,20 @@ describe('magazzino', () => {
     assert.equal(w[0].body[0].prezzo_vendita, 203);
   });
 
+  test('importazione: righe con campi diversi diventano uniformi (richiesto da PostgREST)', async () => {
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/articoli$/, () => ({ status: 201 })]]);
+    const res = await importa(req('/api/articoli/importa', {
+      method: 'POST', cookie: UFF,
+      body: { articoli: [{ codice: 'E000006623', categoria: 'Altro', sottocategoria: 'Cables', descrizione: 'DVI Cable Mixed', quantita: 17 }, { categoria: 'Audio', descrizione: 'Shure Beta58', marca: 'Shure', prezzo_vendita: 90 }] },
+    }));
+    assert.equal(res.status, 201);
+    const [x, y] = writes(calls)[0].body;
+    assert.deepEqual(Object.keys(x).sort(), Object.keys(y).sort());
+    assert.equal(x.marca, null);
+    assert.equal(y.codice, null);
+    assert.equal(y.danneggiati, 0);
+  });
+
   test('cancellare un articolo è solo per l\'admin', async () => {
     mockFetch([staffRoute(P)]);
     const res = await articoli(req(`/api/articoli/${EV_ID}`, { method: 'DELETE', cookie: UFF }));

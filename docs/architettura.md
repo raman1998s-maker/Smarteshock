@@ -162,6 +162,10 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - Accettazione online: all'invio l'API crea `offerte.token` (48 caratteri esadecimali casuali). Il cliente apre `/offerta/?t=…` (pagina pubblica, noindex, no-store, no-referrer) → `GET/POST /api/offerta-pubblica` (`offerta-pubblica.js`, ruolo anon solo lato server) → funzioni `offerta_pubblica(token)` e `accetta_offerta_online(token, nome, foto, ip)` (SECURITY DEFINER, eseguibili solo da anon). Due caselle obbligatorie (AGB, indennità/annullamento) e una facoltativa (foto); si registrano nome, data/ora, IP, versione AGB, consenso foto. Solo offerte "inviate" e non scadute.
 - PDF: `area-riservata/offerta-doc.js` (offerta e conferma d'ordine, etichette DE/IT/FR/EN, regole e scaglioni dalle Impostazioni con i valori della specifica come predefiniti); footer con indirizzo, IBAN a gruppi di 4, "Seite x/y" e versione AGB nelle margin box di `@page` (testo passato con variabili CSS). AGB nell'ultima pagina su due colonne; nelle lingue diverse dal tedesco con la nota che fa fede la versione tedesca. Non ancora: QR per l'accettazione e QR-fattura dell'acconto (servirebbe una libreria per i QR).
 
+### Magazzino come il vecchio sistema (`0012_magazzino_codici.sql`)
+- `articoli`: `codice` dell'etichetta (unico, es. E000006623), `sottocategoria`, `danneggiati` (≤ quantità, esclusi dai disponibili). `checklist`: `mancanti` e `danneggiati` al rientro (li segna anche il tecnico). `disponibilita_articoli` restituisce anche `danneggiati`.
+- Importazione: riconosce anche le colonne del vecchio `magazzino.ods` (Code, Item, Sub Category, Category, Total Quantity, Damaged Quantity, Notes); salta gli articoli con codice già presente (o, senza codice, con la stessa descrizione); una lista senza colonna prezzo si importa senza prezzi e senza "in vendita". I dati del vecchio file non sono nel repository: si importano incollandoli nella pagina "Importa una lista".
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|
