@@ -12,6 +12,18 @@
     "approvato": true
   },
   {
+    "nome": "Akshayan",
+    "ruolo": {
+      "it": "Video team",
+      "de": "Videoteam",
+      "fr": "Équipe vidéo",
+      "en": "Video team"
+    },
+    "logo": "assets/img/partner/akshayan.webp",
+    "link": null,
+    "approvato": true
+  },
+  {
     "nome": "Nome del partner — da inserire (esempio 1)",
     "logo": null,
     "link": null,
