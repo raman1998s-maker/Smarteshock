@@ -13,17 +13,24 @@ import { t, validate } from './_lib/validate.js';
 export const config = { path: ['/api/offerte', '/api/offerte/:id'] };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const SELECT = 'id,evento_id,versione,stato,valida_fino,iva_percento,sconto_chf,introduzione,condizioni,inviata_il,created_at,updated_at';
+const SELECT = 'id,evento_id,versione,stato,lingua,valida_fino,iva_percento,prezzi_iva_inclusa,sconto_percento,sconto_chf,introduzione,condizioni,inviata_il,created_at,updated_at';
 const SELECT_EVENTO =
   'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,indirizzo,paese,ospiti,cliente:clienti(nome,azienda,email,telefono,lingua)';
 
-/** Totali dai valori calcolati dal DB (vista offerte_totali): IVA e totale arrotondato a 5 centesimi. */
+/** Totali calcolati dal DB (vista offerte_totali), convertiti in numeri. */
 export function totali(v) {
-  const imponibile = Number(v?.imponibile ?? 0);
-  const ivaPct = Number(v?.iva_percento ?? 0);
-  const iva = Math.round(imponibile * ivaPct) / 100;
-  const totale = Math.round((imponibile + iva) * 20) / 20;
-  return { subtotale: Number(v?.subtotale ?? 0), sconto_chf: Number(v?.sconto_chf ?? 0), imponibile, iva_percento: ivaPct, iva, totale };
+  const n = (k) => Number(v?.[k] ?? 0);
+  return {
+    subtotale: n('subtotale'),
+    sconto_percento: n('sconto_percento'),
+    sconto_percento_chf: n('sconto_percento_chf'),
+    sconto_chf: n('sconto_chf'),
+    imponibile: n('imponibile'),
+    iva_percento: n('iva_percento'),
+    prezzi_iva_inclusa: v?.prezzi_iva_inclusa !== false,
+    iva: n('iva'),
+    totale: n('totale'),
+  };
 }
 
 async function totaliPer(sb, token, ids) {
@@ -47,12 +54,19 @@ export default createHandler(
         const rows = await sb.rest(`offerte?id=eq.${params.id}&select=${SELECT}`, { token });
         if (!Array.isArray(rows) || rows.length !== 1) throw new HttpError(404, 'not_found');
         const offerta = rows[0];
-        const [righe, eventi, tot] = await Promise.all([
-          sb.rest(`offerte_righe?offerta_id=eq.${offerta.id}&select=id,articolo_id,posizione,descrizione,quantita,giorni,prezzo_unitario,sconto_percento&order=posizione.asc`, { token }),
+        const [righe, eventi, tot, imp] = await Promise.all([
+          sb.rest(`offerte_righe?offerta_id=eq.${offerta.id}&select=id,articolo_id,posizione,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento&order=posizione.asc`, { token }),
           sb.rest(`eventi?id=eq.${offerta.evento_id}&select=${encodeURIComponent(SELECT_EVENTO)}`, { token }),
           totaliPer(sb, token, [offerta.id]),
+          sb.rest('impostazioni?id=eq.1&select=dati', { token }),
         ]);
-        return json(200, { offerta, righe: righe || [], totali: tot.get(offerta.id) ?? totali(null), evento: eventi?.[0] ?? null });
+        return json(200, {
+          offerta,
+          righe: righe || [],
+          totali: tot.get(offerta.id) ?? totali(null),
+          evento: eventi?.[0] ?? null,
+          impostazioni: imp?.[0]?.dati ?? {}, // intestazione, testi e AGB per il PDF
+        });
       },
     },
     POST: {

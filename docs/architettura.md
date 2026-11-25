@@ -139,10 +139,12 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - `disponibilita_articoli(da, a, escludi)`: per articolo `impegnati` (eventi **confermati** nel periodo), `in_offerta` (eventi richiesta/offerta), `fuori` (caricati e non rientrati, adesso), `disponibili` = quantità − impegnati.
 
 ### Offerte (`0008_offerte.sql`)
-- `offerte` (versioni 1, 2, … per evento; stato `bozza` → `inviata` → `accettata`/`rifiutata`/`scaduta`; `valida_fino`, `iva_percento` default 8.1, `sconto_chf`, `introduzione`, `condizioni`, `inviata_il`) e `offerte_righe` (`articolo_id` facoltativo, `descrizione`, `quantita` × `giorni` × `prezzo_unitario` − `sconto_percento`).
-- Totali sempre dal DB: vista `offerte_totali` (subtotale, imponibile); l'API aggiunge IVA e totale arrotondato ai 5 centesimi (`totali()` in `offerte.js`, stessa formula in `gestionale.js` per l'anteprima).
-- RPC: `nuova_offerta(evento, copia_da)` (versione successiva, evento richiesta → offerta), `imposta_righe_offerta(offerta, righe)` (solo in bozza, altrimenti `55000` → `409`), `accetta_offerta(offerta)` (accettata + altre versioni aperte scadute + evento confermato con `importo_chf` = totale IVA inclusa, una transazione).
-- Il PDF lo fa il browser: "PDF / Stampa" prepara un documento nascosto (`.stampa`) e chiama `window.print()`; il CSS `@media print` stampa solo quello (A4). L'invio al cliente per ora è manuale.
+- Impostate come le offerte Meekon già in uso (esempi del 25.11.2026): prezzi **IVA inclusa** ("Total inkl. MwSt.", IVA 8,1 % per tutti), sconto sul totale in % ("Rabatt 15%") e/o in CHF, colonne Pos · Artikel · Bezeichnung · Anzahl · Einzelpreis · Preis CHF, validità 14 giorni, AGB a pagina 2.
+- `offerte` (versioni 1, 2, … per evento; stato `bozza` → `inviata` → `accettata`/`rifiutata`/`scaduta`; `lingua` del PDF (quella del cliente), `valida_fino`, `iva_percento`, `prezzi_iva_inclusa` (default sì), `sconto_percento`, `sconto_chf`, `introduzione`, `condizioni`, `inviata_il`) e `offerte_righe` (`articolo_id` facoltativo, `titolo` = "Artikel", `descrizione` = "Bezeichnung", `quantita` × `giorni` × `prezzo_unitario` − `sconto_percento`).
+- Totali sempre dal DB: vista `offerte_totali` (subtotale, sconti, imponibile, IVA, totale ai 5 centesimi; con IVA inclusa l'IVA è solo informativa). `gestionale.js` ha la stessa formula per l'anteprima mentre si scrive.
+- RPC: `nuova_offerta(evento, copia_da)` (versione successiva, evento richiesta → offerta), `imposta_righe_offerta(offerta, righe)` (solo in bozza, altrimenti `55000` → `409`), `accetta_offerta(offerta)` (accettata + altre versioni aperte scadute + evento confermato con `importo_chf` = totale, una transazione).
+- `impostazioni` (riga unica, `dati` jsonb < 64 kB): intestazione della ditta (`nome`, `persona`, `slogan`, `indirizzo`, `telefono`, `email`, `piede` con i dati bancari) e testi per lingua (`introduzione`, `condizioni`, `saluti`, `agb`; `{cliente}` diventa il nome del cliente). Lettura gestione, scrittura solo admin. **Indirizzo, coordinate bancarie e AGB stanno solo qui, mai nel repository** (regola 1 e 2 di CLAUDE.md).
+- Il PDF lo fa il browser: "PDF / Stampa" prepara un documento nascosto (`.stampa`, etichette in DE/IT/FR/EN) e chiama `window.print()`; il CSS `@media print` stampa solo quello (A4, AGB su una seconda pagina). L'invio al cliente per ora è manuale.
 
 ### Assenze (`0009_assenze.sql`)
 - `assenze` (`staff_id`, `dal`, `al`, `motivo`): ognuno gestisce le proprie, la gestione vede e segna quelle di tutti. Quando si assegna la squadra l'interfaccia mostra chi è assente e chiede conferma.
@@ -157,9 +159,10 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 | `GET /api/offerte?evento=` · `GET /api/offerte/:id` · `POST /api/offerte` `{evento_id, copia_da?}` · `PATCH /api/offerte/:id` · `DELETE` (solo bozza) | gestione | `offerte.js` |
 | `PUT /api/offerte/:id/righe` `{righe:[…]}` (max 200) | gestione | `offerte-righe.js` |
 | `GET /api/assenze?da=&a=` · `POST /api/assenze` · `DELETE /api/assenze/:id` | tutti (RLS) | `assenze.js` |
+| `GET /api/impostazioni` · `PUT /api/impostazioni` `{ditta, testi:{de,it,fr,en}}` | gestione · admin | `impostazioni.js` |
 | `DELETE /api/checklist/:id`; `PATCH` accetta anche `rientrato`; `POST /api/eventi/:id/checklist` accetta `articolo_id` | gestione / assegnati | `checklist.js`, `eventi-checklist.js` |
 
-Interfaccia: `area-riservata/gestionale.js` (agenda settimanale o di oggi per il ruolo base, assenze, magazzino con importazione da Excel, offerte, utenti e ruoli), caricato da `app.html` e creato da `app.js` (`MeekonGestionale.create`). Le rotte in `app.js` hanno un livello di accesso `tutti` / `gestione` / `admin`.
+Interfaccia: `area-riservata/gestionale.js` (agenda settimanale o di oggi per il ruolo base, assenze, magazzino con importazione da Excel, offerte, utenti e ruoli, impostazioni delle offerte), caricato da `app.html` e creato da `app.js` (`MeekonGestionale.create`). Le rotte in `app.js` hanno un livello di accesso `tutti` / `gestione` / `admin`.
 
 ## Contenuti pubblici modificabili (CMS nell'area riservata)
 

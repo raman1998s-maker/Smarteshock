@@ -169,6 +169,9 @@ export const STATI_OFFERTA = ['bozza', 'inviata', 'accettata', 'rifiutata', 'sca
 
 export const offertaSchema = {
   stato: t.enumOf(STATI_OFFERTA),
+  lingua: t.enumOf(LINGUE),
+  prezzi_iva_inclusa: t.bool({ empty: true }),
+  sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, empty: 0 }),
   valida_fino: t.date(),
   iva_percento: t.decimal({ min: 0, max: 30, decimals: 2, empty: 8.1 }),
   sconto_chf: t.money({ empty: 0 }),
@@ -178,6 +181,7 @@ export const offertaSchema = {
 
 export const rigaOffertaSchema = {
   articolo_id: t.uuid(),
+  titolo: t.string({ max: 120 }),
   descrizione: t.string({ max: 500, required: true, multiline: true }),
   quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),
   giorni: t.decimal({ min: 0.01, max: 365, decimals: 2, default: 1, empty: 1 }),

@@ -1127,6 +1127,7 @@
     [/^#\/magazzino\/importa$/, (p, a) => G().viewImporta(p, a), 'gestione', 'magazzino'],
     [new RegExp(`^#/offerta/${ID}$`), (p, a) => G().viewOfferta(p, a), 'gestione', 'eventi'],
     [/^#\/utenti$/, (p, a) => G().viewUtenti(p, a), 'admin', 'utenti'],
+    [/^#\/impostazioni$/, (p, a) => G().viewImpostazioni(p, a), 'admin', 'impostazioni'],
   ];
 
   function route() {
@@ -1154,7 +1155,7 @@
       : [['#/agenda', 'Agenda', 'agenda'], ['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
     if (isGestione()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti'], ['#/magazzino', 'Magazzino', 'magazzino']);
     links.push(['#/assenze', 'Giorni di assenza', 'assenze']);
-    if (isAdmin()) links.push(['#/utenti', 'Utenti e ruoli', 'utenti'], ['#/contenuti', 'Contenuti del sito', 'contenuti']);
+    if (isAdmin()) links.push(['#/utenti', 'Utenti e ruoli', 'utenti'], ['#/impostazioni', 'Impostazioni offerte', 'impostazioni'], ['#/contenuti', 'Contenuti del sito', 'contenuti']);
     links.forEach(([href, label, section]) => nav.append(h('a', { href, 'data-section': section }, label)));
     const logout = h('button', { class: 'app__link', type: 'button' }, 'Esci');
     logout.addEventListener('click', async () => {

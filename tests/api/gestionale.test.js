@@ -13,6 +13,7 @@ const offerteMod = await import('../../netlify/functions/offerte.js');
 const offerte = offerteMod.default;
 const righe = (await import('../../netlify/functions/offerte-righe.js')).default;
 const assenze = (await import('../../netlify/functions/assenze.js')).default;
+const impostazioni = (await import('../../netlify/functions/impostazioni.js')).default;
 
 const UFF_ID = '00000000-0000-4000-8000-00000000000c';
 const BASE_ID = '00000000-0000-4000-8000-00000000000d';
@@ -166,10 +167,11 @@ describe('magazzino', () => {
 describe('offerte', () => {
   beforeEach(setEnv);
 
-  test('totali: IVA 8.1% e arrotondamento ai 5 centesimi', () => {
-    const t = offerteMod.totali({ subtotale: 693.33, sconto_chf: 0, imponibile: 693.33, iva_percento: 8.1 });
-    assert.equal(t.iva, 56.16);
-    assert.equal(t.totale, 749.5);
+  test('totali: i numeri del DB (stringhe numeric) diventano numeri', () => {
+    const t = offerteMod.totali({ subtotale: '2700.00', sconto_percento: '15.00', sconto_percento_chf: '405.00', sconto_chf: '0.00', imponibile: '2295.00', iva_percento: '8.10', prezzi_iva_inclusa: true, iva: '171.97', totale: '2295.00' });
+    assert.equal(t.totale, 2295);
+    assert.equal(t.sconto_percento_chf, 405);
+    assert.equal(t.prezzi_iva_inclusa, true);
   });
 
   test('"accettata" passa dalla funzione del DB che conferma l\'evento', async () => {
@@ -226,5 +228,28 @@ describe('assenze', () => {
     mockFetch([staffRoute(P)]);
     const res = await assenze(req('/api/assenze', { method: 'POST', cookie: BASE, body: { dal: '2026-12-05', al: '2026-12-01' } }));
     assert.equal(res.status, 400);
+  });
+});
+
+describe('impostazioni delle offerte', () => {
+  beforeEach(setEnv);
+
+  test('le legge la gestione, non tecnico e base', async () => {
+    mockFetch([staffRoute(P), ['GET', /^\/rest\/v1\/impostazioni\?/, () => ({ body: [{ dati: { ditta: { nome: 'X' } } }] })]]);
+    assert.equal((await impostazioni(req('/api/impostazioni', { cookie: UFF }))).status, 200);
+    assert.equal((await impostazioni(req('/api/impostazioni', { cookie: TEC }))).status, 403);
+    assert.equal((await impostazioni(req('/api/impostazioni', { cookie: BASE }))).status, 403);
+  });
+
+  test('le scrive solo l\'admin, con struttura controllata', async () => {
+    const calls = mockFetch([staffRoute(P), ['PATCH', /^\/rest\/v1\/impostazioni\?/, (c) => ({ body: [{ dati: c.body.dati }] })]]);
+    const body = { ditta: { nome: 'Meekon Display', email: 'info@meekondisplay.ch' }, testi: { de: { introduzione: 'Sehr geehrte/r {cliente}', agb: '1. Punto\n2. Punto' } } };
+    assert.equal((await impostazioni(req('/api/impostazioni', { method: 'PUT', cookie: UFF, body }))).status, 403);
+    assert.equal((await impostazioni(req('/api/impostazioni', { method: 'PUT', cookie: ADMIN, body: { ...body, altro: 1 } }))).status, 400);
+    assert.equal((await impostazioni(req('/api/impostazioni', { method: 'PUT', cookie: ADMIN, body: { testi: { es: {} } } }))).status, 400);
+    const res = await impostazioni(req('/api/impostazioni', { method: 'PUT', cookie: ADMIN, body }));
+    assert.equal(res.status, 200);
+    assert.equal(writes(calls).length, 1);
+    assert.equal(writes(calls)[0].body.dati.testi.de.agb, '1. Punto\n2. Punto');
   });
 });

@@ -971,6 +971,7 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 /* offerta */
 .offerta__righe td { vertical-align: top; }
+.offerta__testo input { width: 100%; min-width: 220px; margin-bottom: var(--sp-1); font-weight: 500; }
 .offerta__totali { display: flex; justify-content: flex-end; margin-top: var(--sp-4); }
 .offerta__totali .dl { min-width: 260px; }
 .stampa { display: none; }
@@ -994,27 +995,45 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .table-wrap, .panel { border: 0; }
 }
 
-/* Offerta in PDF: si stampa solo il documento preparato da gestionale.js */
+/* Offerta in PDF: si stampa solo il documento preparato da gestionale.js,
+   impaginato come le offerte Meekon (intestazione, riquadro evento, tabella, totali, firma; AGB a pagina 2). */
 @media print {
+  body:has(.stampa:not(:empty)) { background: #fff; }
   body:has(.stampa:not(:empty)) .app__main > :not(.stampa) { display: none !important; }
   body:has(.stampa:not(:empty)) .app__main { padding: 0; }
-  .stampa:not(:empty) { display: block; color: #000; font: 400 10.5pt/1.45 var(--font-text); }
-  .stampa__head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14mm; }
-  body:has(.stampa:not(:empty)) { background: #fff; }
+  .stampa:not(:empty) { display: block; color: #1a1a1a; font: 400 9.5pt/1.45 var(--font-text); }
+  .stampa p { margin: 0; }
+  .stampa__pagina + .stampa__pagina { break-before: page; }
+  .stampa__head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 5mm; border-bottom: .8mm solid var(--c-cyan); }
   /* il logo ha la scritta chiara (per fondo scuro): in stampa si scurisce mantenendo le tinte */
-  .stampa__logo { width: 52mm; height: auto; filter: invert(1) hue-rotate(180deg); }
-  .stampa__cliente { text-align: right; }
-  .stampa h1 { font: 500 20pt/1.2 var(--font-display); margin: 0 0 4mm; }
-  .stampa h2 { font-size: 11pt; margin: 6mm 0 2mm; }
-  .stampa .dl { margin-bottom: 6mm; }
-  .stampa__testo { white-space: pre-line; margin: 0 0 5mm; }
-  .stampa__righe, .stampa__totali { width: 100%; border-collapse: collapse; }
-  .stampa__righe th, .stampa__righe td { padding: 2mm 1.5mm; border-bottom: .3mm solid #bbb; text-align: left; vertical-align: top; }
+  .stampa__logo { width: 48mm; height: auto; filter: invert(1) hue-rotate(180deg); }
+  .stampa__titolo { text-align: right; }
+  .stampa__titolo h1 { font: 700 20pt/1.1 var(--font-text); letter-spacing: .02em; margin: 0 0 2mm; }
+  .stampa__titolo p { color: #555; }
+  .stampa__parti { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 5mm 0 7mm; }
+  .stampa__etichetta { font-size: 8pt; color: #666; margin-bottom: 1.5mm !important; }
+  .stampa__nome { font-weight: 700; font-size: 10.5pt; }
+  .stampa__multi { white-space: pre-line; }
+  .stampa__box { display: grid; grid-template-columns: 38mm 1fr; gap: 1.5mm 4mm; margin: 0 0 6mm; padding: 3mm 4mm;
+    border: .5mm solid #d6d6e6; border-radius: 3mm; background: #f6f6fb; }
+  .stampa__box dt { color: #666; }
+  .stampa__box dd { margin: 0; font-weight: 700; }
+  .stampa__righe { width: 100%; border-collapse: collapse; }
+  .stampa__righe th { background: var(--c-cyan); color: #fff; font-weight: 700; text-align: left; padding: 2mm 2mm; }
+  .stampa__righe td { padding: 2mm; border: .3mm solid #dcdce8; vertical-align: top; }
   .stampa__righe .num, .stampa__totali .num { text-align: right; white-space: nowrap; }
   .stampa__righe tr { break-inside: avoid; }
-  .stampa__totali { width: 75mm; margin: 5mm 0 0 auto; }
-  .stampa__totali th { text-align: left; font-weight: 400; padding: 1mm 0; }
-  .stampa__totale th, .stampa__totale td { font-weight: 600; border-top: .4mm solid #000; padding-top: 2mm; }
-  .stampa__piede { margin-top: 12mm; padding-top: 3mm; border-top: .3mm solid #bbb; font-size: 8.5pt; color: #444; text-align: center; }
-  @page { size: A4; margin: 16mm 15mm; }
+  .stampa__totali { width: 85mm; margin: 4mm 0 6mm auto; border-collapse: collapse; }
+  .stampa__totali th { text-align: right; font-weight: 400; padding: 1mm 6mm 1mm 0; }
+  .stampa__totali td { padding: 1mm 0; }
+  .stampa__sconto th, .stampa__sconto td { color: #1d7a3e; }
+  .stampa__totale th, .stampa__totale td { font-weight: 700; font-size: 12pt; padding-top: 2.5mm; }
+  .stampa__testo { white-space: pre-line; margin: 0 0 2mm !important; }
+  .stampa__firma { margin-top: 12mm; }
+  .stampa__firma .stampa__nome { margin-top: 2mm !important; }
+  .stampa__piccolo { color: #666; font-size: 8.5pt; }
+  .stampa__agb h1 { font: 700 15pt/1.2 var(--font-text); margin: 0 0 5mm; }
+  .stampa__agb > .stampa__multi { font-size: 8.5pt; line-height: 1.4; }
+  .stampa__piede { margin-top: 10mm; padding-top: 3mm; border-top: .3mm solid #bbb; font-size: 7.5pt; color: #555; text-align: center; }
+  @page { size: A4; margin: 14mm 15mm; }
 }
