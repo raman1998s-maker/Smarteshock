@@ -585,7 +585,11 @@ def privacy_page(lang, t, all_t, year):
     for i, sec in enumerate(sections, 1):
         anchor = f"s{i}"
         toc.append(f'<li><a href="#{anchor}">{E(sec["h"])}</a></li>')
-        paras = "".join(f"\n          <p>{E(p)}</p>" for p in sec["p"])
+        paras = "".join(
+            "\n          <ul>" + "".join(f"<li>{E(li)}</li>" for li in p["ul"]) + "</ul>"
+            if isinstance(p, dict) else f"\n          <p>{E(p)}</p>"
+            for p in sec["p"]
+        )
         body.append(
             f'        <section class="prose__section" id="{anchor}" aria-labelledby="{anchor}-h">\n'
             f'          <h2 id="{anchor}-h">{E(sec["h"])}</h2>{paras}\n        </section>'

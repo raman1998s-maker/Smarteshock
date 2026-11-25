@@ -865,6 +865,10 @@ p { margin: 0; text-wrap: pretty; }
 .prose__section h2 { font-size: var(--fs-lg); font-weight: 500; line-height: var(--lh-snug); margin-bottom: var(--sp-4); }
 .prose__section p { color: var(--color-text-2); line-height: var(--lh-body); }
 .prose__section p + p { margin-top: var(--sp-4); }
+.prose__section ul { max-width: 36em; color: var(--color-text-2); line-height: var(--lh-body); padding-left: 1.25em; list-style: disc; }
+.prose__section li + li { margin-top: var(--sp-2); }
+.prose__section li::marker { color: var(--color-accent); }
+.prose__section p + ul, .prose__section ul + p { margin-top: var(--sp-4); }
 
 /* ---------- Pagina di ringraziamento ---------- */
 .thanks { min-height: 100svh; display: grid; place-items: center; text-align: center; padding: 40px var(--gutter); }
