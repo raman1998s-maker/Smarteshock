@@ -115,6 +115,8 @@
         try { catalogo = (await api(`partner/catalogo${da ? `?da=${da}&a=${a}` : ''}`)).catalogo || []; } catch (err) { catalogo = []; }
       };
       await caricaCatalogo();
+      let modelli = [];
+      if (bozza) { try { modelli = (await api('modelli')).modelli || []; } catch (err) { modelli = []; } }
       if (!alive()) return;
       const prezzoPartner = (id2) => (catalogo.find((c) => c.id === id2) || {}).prezzo_partner;
 
@@ -180,7 +182,33 @@
           disegna(); ridisegnaTotali();
         });
         const addServ = h('button', { class: 'btn', type: 'button', onclick: () => { righe.push({ tipo: 'servizio', articolo_id: null, titolo: '', descrizione: '', quantita: 1, giorni: 1, prezzo_unitario: 0, sconto_percento: 0, opzionale: false }); disegna(); ridisegnaTotali(); } }, 'Aggiungi prestazione (es. DJ 6 ore)');
-        aggiungi = h('div', { class: 'toolbar' }, scelta, addMat, addServ);
+        const giorniEv = () => {
+          if (!f.data_inizio.value) return 1;
+          const a0 = new Date(f.data_inizio.value.slice(0, 10));
+          const b0 = new Date((f.data_fine.value || f.data_inizio.value).slice(0, 10));
+          return Math.max(1, Math.round((b0 - a0) / 86400000) + 1);
+        };
+        // modello di allestimento (es. schermo dietro con luci sopra): aggiunge tutto il materiale
+        let daModello = null;
+        if (modelli.length) {
+          const selM = h('select', { 'aria-label': 'Modello di allestimento' }, h('option', { value: '' }, '— Modello di allestimento —'),
+            modelli.map((m) => h('option', { value: m.id }, m.nome)));
+          const addM = h('button', { class: 'btn', type: 'button' }, 'Aggiungi modello');
+          addM.addEventListener('click', () => {
+            const m = modelli.find((x) => x.id === selM.value);
+            if (!m) { selM.focus(); return; }
+            m.voci.forEach((v) => {
+              const c = catalogo.find((x) => x.id === v.articolo_id);
+              if (!c) return;
+              righe.push({ tipo: 'materiale', articolo_id: c.id, titolo: c.descrizione.slice(0, 120), descrizione: (c.accessori || [c.marca, c.descrizione].filter(Boolean).join(' ')).slice(0, 500), quantita: v.quantita, giorni: giorniEv(), prezzo_unitario: Number(c.prezzo_partner) || 0, sconto_percento: 0, opzionale: false });
+            });
+            selM.value = '';
+            disegna(); ridisegnaTotali();
+            toast(`Modello "${m.nome}" aggiunto: decidete i prezzi per il cliente.`);
+          });
+          daModello = [selM, addM];
+        }
+        aggiungi = h('div', { class: 'toolbar' }, daModello, scelta, addMat, addServ);
         [f.data_inizio, f.data_fine].forEach((el) => el.addEventListener('change', async () => { await caricaCatalogo(); disegna(); ridisegnaTotali(); }));
       }
 

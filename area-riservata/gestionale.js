@@ -280,7 +280,8 @@
         h('div', { class: 'toolbar' }, q, vendita, h('span', null, 'Disponibilità dal '), da, h('span', null, ' al '), a, conta),
         articoli.length
           ? tabella(['Categoria', 'Articolo', 'Q.tà', 'Liberi', 'Fuori', 'Noleggio CHF/giorno', 'Vendita CHF'], tbody)
-          : empty('Il catalogo è vuoto', 'Aggiungete gli articoli uno alla volta o importate una lista da Excel.')));
+          : empty('Il catalogo è vuoto', 'Aggiungete gli articoli uno alla volta o importate una lista da Excel.')),
+      pannelloModelli(articoli));
     }
 
     function formArticolo(x, onDone, onCancel) {
@@ -375,6 +376,87 @@
         });
       });
       return form;
+    }
+
+    // ---------------------------------------------------------------- modelli di allestimento
+    // proposte di nome (le voci si scelgono dal catalogo): disposizioni tipiche di Meekon
+    const NOMI_MODELLO = [
+      'Struttura con schermo davanti e dietro, luci e audio ai lati',
+      'Schermo dietro con luci sopra lo schermo',
+      'Schermo dietro con luci sopra lo schermo e audio',
+      'Solo schermo davanti con luci',
+      'Solo schermo dietro con luci',
+      'Schermo con luci, senza audio',
+      'Welcome board',
+    ];
+    /** Select + pulsante "Aggiungi modello": chiama onApply(modello) con le sue voci. */
+    function sceltaModello(modelli, onApply) {
+      if (!modelli || !modelli.length) return null;
+      const sel = h('select', { 'aria-label': 'Modello di allestimento' }, h('option', { value: '' }, '— Modello di allestimento —'),
+        modelli.filter((m) => m.attivo !== false).map((m) => h('option', { value: m.id }, `${m.nome} (${m.voci.length} voci)`)));
+      const btn = h('button', { class: 'btn', type: 'button' }, 'Aggiungi modello');
+      btn.addEventListener('click', () => { const m = modelli.find((x) => x.id === sel.value); if (!m) { sel.focus(); return; } onApply(m); sel.value = ''; });
+      return [sel, btn];
+    }
+    function pannelloModelli(articoli) {
+      const panel = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Modelli di allestimento')), h('p', { class: 'muted' }, 'Caricamento…'));
+      const descr = new Map(articoli.map((a) => [a.id, a]));
+      const carica = async () => {
+        let modelli = [];
+        try { modelli = (await api('modelli')).modelli || []; } catch (err) { panel.lastChild.textContent = errorMessage(err); return; }
+        clear(panel);
+        const nuovo = h('button', { class: 'btn btn--sm btn--primary', type: 'button', onclick: () => editor(null) }, 'Nuovo modello');
+        put(panel, h('div', { class: 'panel__head' }, h('h2', null, 'Modelli di allestimento'), nuovo),
+          h('p', { class: 'muted' }, 'Pacchetti di materiale pronti: nelle offerte (anche dei partner) e nella lista materiale degli eventi si aggiungono con un clic, poi si modificano.'),
+          modelli.length ? tabella(['Modello', 'Voci', 'Per i partner', ''], modelli.map((m) => h('tr', null,
+            h('td', { 'data-label': 'Modello', class: 'table__primary' }, h('span', null, m.nome, m.descrizione ? h('span', { class: 'table__sub' }, m.descrizione) : null)),
+            td('Voci', m.voci.map((v) => `${v.quantita}× ${(descr.get(v.articolo_id) || {}).descrizione || '?'}`).join(', ')),
+            td('Per i partner', m.per_partner ? 'Sì' : 'No'),
+            h('td', { 'data-label': '' }, h('button', { class: 'btn btn--sm', type: 'button', onclick: () => editor(m) }, 'Modifica')))))
+            : h('p', { class: 'muted' }, 'Nessun modello ancora.'));
+      };
+      const editor = (m) => {
+        const voci = m ? m.voci.map((v) => ({ ...v })) : [];
+        const nome = h('input', { type: 'text', maxlength: '120', value: m ? m.nome : '', list: 'mk-nomi-modello', required: true });
+        const desc = h('textarea', { rows: '2', maxlength: '500', placeholder: 'es. Schermo dietro il DJ, luci sopra lo schermo, audio ai lati' });
+        desc.value = (m && m.descrizione) || '';
+        const pp = check('per_partner', 'Visibile ai partner DJ', m ? m.per_partner : true);
+        const att = check('attivo', 'Attivo', m ? m.attivo !== false : true);
+        const tb = h('tbody');
+        const disegna = () => {
+          clear(tb);
+          voci.forEach((v, i) => {
+            const sel = select('articolo', articoli.map((a) => [a.id, `${a.categoria} · ${a.descrizione}`]), v.articolo_id);
+            sel.addEventListener('change', () => { v.articolo_id = sel.value; });
+            const q = h('input', { type: 'number', min: '1', max: '100000', class: 'input--num', value: String(v.quantita), 'aria-label': `Quantità voce ${i + 1}` });
+            q.addEventListener('input', () => { v.quantita = Math.max(1, Math.floor(Number(q.value) || 1)); });
+            tb.append(h('tr', null, h('td', { 'data-label': 'Articolo' }, sel), h('td', { class: 'num', 'data-label': 'Q.tà' }, q),
+              h('td', { 'data-label': '' }, h('button', { class: 'btn btn--ghost btn--sm', type: 'button', onclick: () => { voci.splice(i, 1); disegna(); } }, '×'))));
+          });
+        };
+        disegna();
+        const save = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Salva modello');
+        const form = h('form', { novalidate: true },
+          h('datalist', { id: 'mk-nomi-modello' }, NOMI_MODELLO.map((n) => h('option', { value: n }))),
+          h('div', { class: 'fields' }, field('Nome', nome, { full: true }), field('Disposizione / note di montaggio', desc, { full: true }), h('div', { class: 'field' }, pp, att)),
+          tabella(['Articolo', 'Q.tà', ''], tb),
+          h('div', { class: 'panel__foot' },
+            h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { if (!articoli.length) return; voci.push({ articolo_id: articoli[0].id, quantita: 1 }); disegna(); } }, 'Aggiungi voce'),
+            m ? h('button', { class: 'btn btn--danger btn--sm', type: 'button', onclick: () => { if (!window.confirm(`Eliminare il modello "${m.nome}"?`)) return; api(`modelli/${encodeURIComponent(m.id)}`, { method: 'DELETE' }).then(() => { toast('Modello eliminato.'); carica(); }).catch((err) => toast(errorMessage(err), 'error')); } }, 'Elimina') : null,
+            h('button', { class: 'btn btn--sm', type: 'button', onclick: carica }, 'Annulla'), save));
+        form.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          if (!nome.value.trim()) { nome.setAttribute('aria-invalid', 'true'); nome.focus(); return; }
+          const body = { nome: nome.value.trim(), descrizione: desc.value.trim() || null, per_partner: pp.querySelector('input').checked, attivo: att.querySelector('input').checked, voci };
+          busy(save, async () => {
+            try { await api(m ? `modelli/${encodeURIComponent(m.id)}` : 'modelli', { method: m ? 'PUT' : 'POST', body }); toast('Modello salvato.'); carica(); } catch (err) { toast(errorMessage(err), 'error'); }
+          });
+        });
+        clear(panel);
+        put(panel, h('div', { class: 'panel__head' }, h('h2', null, m ? 'Modifica modello' : 'Nuovo modello')), form);
+      };
+      carica();
+      return panel;
     }
 
     // ---------------------------------------------------------------- importazione da Excel
@@ -560,9 +642,13 @@
       loading();
       let data;
       let catalogo = [];
+      let modelli = [];
       try {
         data = await api(`offerte/${encodeURIComponent(id)}`);
-        if (data.offerta.stato === 'bozza') catalogo = (await api('articoli')).articoli || [];
+        if (data.offerta.stato === 'bozza') {
+          catalogo = (await api('articoli')).articoli || [];
+          modelli = (await api('modelli')).modelli || [];
+        }
       } catch (err) { if (alive()) failure('Offerta', err); return; }
       if (!alive()) return;
       const o = data.offerta;
@@ -692,7 +778,17 @@
           disegnaRighe(); disegnaTotali();
         });
         const addFree = h('button', { class: 'btn', type: 'button', onclick: () => { righe.push({ articolo_id: null, titolo: '', descrizione: '', quantita: 1, giorni: 1, prezzo_unitario: 0, sconto_percento: 0 }); disegnaRighe(); disegnaTotali(); tbody.querySelector('tr:last-child input')?.focus(); } }, 'Riga libera (es. montaggio, trasporto)');
-        aggiungi = h('div', { class: 'toolbar' }, scelta, comeVendita, addArt, addFree);
+        const daModello = sceltaModello(modelli, (m) => {
+          m.voci.forEach((v) => {
+            const a = catalogo.find((x) => x.id === v.articolo_id);
+            if (!a) return;
+            righe.push({ articolo_id: a.id, titolo: a.descrizione.slice(0, 120), descrizione: (a.accessori || [a.marca, a.descrizione].filter(Boolean).join(' ')).replace(/\s+/g, ' ').slice(0, 500),
+              quantita: v.quantita, giorni: giorniEvento, prezzo_unitario: Number(a.prezzo_noleggio_giorno) || 0, sconto_percento: 0, opzionale: false });
+          });
+          disegnaRighe(); disegnaTotali();
+          toast(`Modello "${m.nome}" aggiunto: controllate quantità e prezzi.`);
+        });
+        aggiungi = h('div', { class: 'toolbar' }, daModello, scelta, comeVendita, addArt, addFree);
       }
 
       // azioni
@@ -1275,7 +1371,7 @@
           h('p', { class: 'muted' }, 'Per aggiungere una persona: create il suo account in Supabase (Authentication → Users → Add user, con la sua e-mail), poi aggiungete la riga nella tabella "staff" con lo stesso id, il nome e il ruolo. Da qui potete poi cambiare ruolo e stato.')));
     }
 
-    return { viewAgenda, viewAssenze, viewMagazzino, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, viewPaga, offertePanel, compensiPanel, calendarLink };
+    return { viewAgenda, viewAssenze, viewMagazzino, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, viewPaga, offertePanel, compensiPanel, calendarLink, sceltaModello };
   }
 
   window.MeekonGestionale = { create };

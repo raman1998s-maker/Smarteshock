@@ -635,6 +635,24 @@
 
     if (isGestione()) {
       const voce = h('input', { type: 'text', name: 'voce', maxlength: '200', required: true });
+      // modello di allestimento: aggiunge tutte le sue voci alla lista
+      const modelloBox = h('div', { class: 'toolbar' });
+      api('modelli').then((r) => {
+        const els = G().sceltaModello(r.modelli || [], (m) => {
+          (async () => {
+            for (const v of m.voci) {
+              const a = catalogo.get(v.articolo_id);
+              try {
+                const res = await api(`eventi/${encodeURIComponent(e.id)}/checklist`, { method: 'POST', body: { voce: (a ? a.descrizione : 'Articolo').slice(0, 200), quantita: v.quantita, articolo_id: v.articolo_id } });
+                if (res.voce) { items.push(res.voce); if (items.length === 1) { clear(body); body.append(table); } tbody.append(rowFor(res.voce)); }
+              } catch (err) { toast(errorMessage(err), 'error'); return; }
+            }
+            updateCount();
+            toast(`Modello "${m.nome}" aggiunto alla lista.`);
+          })();
+        });
+        if (els) add(modelloBox, els); else modelloBox.remove();
+      }).catch(() => modelloBox.remove());
       // scelta dal magazzino, con la disponibilità nelle date dell'evento
       const articolo = h('select', { name: 'articolo_id' }, h('option', { value: '' }, '— Voce libera —'));
       const dispHint = h('p', { class: 'field__hint', role: 'status' });
@@ -672,6 +690,7 @@
       const form = h('form', { class: 'panel', 'aria-labelledby': 'add-voce-title' },
         h('div', { class: 'panel__head' }, h('h2', { id: 'add-voce-title' }, 'Aggiungi una voce alla checklist')),
         h('div', { class: 'fields' }, h('div', { class: 'field field--full' }, field('Dal magazzino', articolo), dispHint), field('Voce', voce), field('Quantità', qta), field('Note', nota)),
+        modelloBox,
         h('div', { class: 'panel__foot' }, btn));
       form.addEventListener('submit', (ev) => {
         ev.preventDefault();

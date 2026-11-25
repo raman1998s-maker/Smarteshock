@@ -109,3 +109,18 @@ describe('ufficio: richieste dei partner', () => {
     assert.deepEqual(writes(calls)[0].body, { staff_id: DJ_ID, sconto_partner_percento: 20 });
   });
 });
+
+describe('modelli di allestimento', () => {
+  beforeEach(setEnv);
+  test('li crea solo la gestione; le voci sono controllate', async () => {
+    const modelli = (await import('../../netlify/functions/modelli.js')).default;
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/rpc\/salva_modello$/, () => ({ body: '70000000-0000-4000-8000-000000000001' })], ['GET', /^\/rest\/v1\/modelli\?/, () => ({ body: [] })]]);
+    const body = { nome: 'Schermo davanti e dietro', voci: [{ articolo_id: ART, quantita: 12 }] };
+    assert.equal((await modelli(req('/api/modelli', { method: 'POST', cookie: DJ, body }))).status, 403);
+    assert.equal((await modelli(req('/api/modelli', { method: 'POST', cookie: ADMIN, body: { nome: 'X', voci: [{ articolo_id: 'no' }] } }))).status, 400);
+    assert.equal((await modelli(req('/api/modelli', { method: 'POST', cookie: ADMIN, body }))).status, 201);
+    assert.deepEqual(calls.at(-1).body.p_dati.voci, [{ articolo_id: ART, quantita: 12 }]);
+    assert.equal((await modelli(req('/api/modelli', { cookie: DJ }))).status, 200);
+    assert.equal((await modelli(req('/api/modelli', { cookie: TEC }))).status, 403);
+  });
+});

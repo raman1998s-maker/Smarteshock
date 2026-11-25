@@ -166,6 +166,18 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - `articoli`: `codice` dell'etichetta (unico, es. E000006623), `sottocategoria`, `danneggiati` (≤ quantità, esclusi dai disponibili). `checklist`: `mancanti` e `danneggiati` al rientro (li segna anche il tecnico). `disponibilita_articoli` restituisce anche `danneggiati`.
 - Importazione: riconosce anche le colonne del vecchio `magazzino.ods` (Code, Item, Sub Category, Category, Total Quantity, Damaged Quantity, Notes); salta gli articoli con codice già presente (o, senza codice, con la stessa descrizione); una lista senza colonna prezzo si importa senza prezzi e senza "in vendita". I dati del vecchio file non sono nel repository: si importano incollandoli nella pagina "Importa una lista".
 
+### Area partner DJ (`0013_partner.sql`)
+- Ruolo `partner` (account creato dall'admin): vede solo la propria area (`#/partner`), mai eventi, clienti, catalogo interno o altri partner; l'interfaccia lo rimanda sempre lì, la RLS lo garantisce.
+- `partner_profili` (ragione sociale, logo come data URL PNG/JPEG/WebP ≤ 400 kB, indirizzo, IBAN, IVA, AGB proprie o di Meekon; `sconto_partner_percento` modificabile solo dalla gestione, trigger `partner_profili_protegge`).
+- `partner_offerte` + `partner_righe` (righe `servizio` del DJ o `materiale` con `articolo_id`): numero progressivo per partner (es. 2026-P001), stato gestito dal partner (bozza → inviata → accettata/rifiutata/scaduta; da inviata può tornare in bozza), `materiale_stato` automatico (in_attesa all'invio, da_confermare all'accettazione) e deciso dall'ufficio (confermato/rifiutato con nota). Trigger: dopo la bozza righe e dati bloccati; il partner non tocca i campi dell'ufficio.
+- `catalogo_partner(da, a)`: articoli con prezzo di noleggio, prezzo partner (noleggio − sconto del partner) e pezzi liberi nelle date; `costo_materiale_partner(offerta)`; `agb_meekon()` (regole, scaglioni, testi AGB, senza dati della ditta); `imposta_righe_partner`; `conferma_materiale_partner(offerta, nota)` crea l'evento Meekon (confermato, importo = costo materiale, note interne con partner e cliente finale) con la lista materiale.
+- PDF del partner: stesso `offerta-doc.js` con i dati, il logo e la banca del partner; con AGB proprie non si stampa il riquadro di annullamento di Meekon. Fattura del partner: tipo `fattura` ("Rechnung"), dopo l'accettazione.
+- API: `GET/PATCH /api/partner` (gestione: elenco e sconto), `GET/PUT /api/partner/profilo` (partner), `GET /api/partner/catalogo`, `GET/POST/PATCH/DELETE /api/partner-offerte`, `PUT /api/partner-offerte/:id/righe`, `POST /api/partner-offerte/:id/materiale` `{azione: conferma|rifiuta, nota}` (gestione). Interfaccia: `area-riservata/partner.js`.
+
+### Modelli di allestimento (`0014_modelli.sql`)
+- `modelli` + `modelli_voci` (articolo, quantità): pacchetti di materiale (es. "Schermo dietro con luci sopra lo schermo", "Struttura con schermo davanti e dietro, luci e audio ai lati", "Welcome board"). Li gestisce l'ufficio nella pagina Magazzino (`salva_modello`, una transazione); i partner vedono solo quelli "per i partner" attivi.
+- Si aggiungono con un clic nell'offerta Meekon (prezzo di noleggio × giorni dell'evento), nell'offerta del partner (prezzo partner come proposta) e nella lista materiale dell'evento; poi si modificano. API: `GET/POST /api/modelli`, `PUT/DELETE /api/modelli/:id`.
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|
