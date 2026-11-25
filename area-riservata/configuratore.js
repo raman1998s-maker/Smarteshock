@@ -26,15 +26,16 @@
     luci_stativo: { nomi: { it: 'Luci su stativo', de: 'Licht auf Stativ', fr: 'Lumières sur pied', en: 'Lights on stands' }, tipo: 'numero', n: 2, max: 6, watt: 250, dj: true },
     nebbia: { nomi: { it: 'Macchina della nebbia / fumo', de: 'Nebel- / Rauchmaschine', fr: 'Machine à brouillard / fumée', en: 'Fog / smoke machine' }, watt: 1500 },
     effetti: { nomi: { it: 'Effetti speciali (spark, CO2, coriandoli)', de: 'Spezialeffekte (Spark, CO2, Konfetti)', fr: 'Effets spéciaux (spark, CO2, confettis)', en: 'Special effects (spark, CO2, confetti)' }, tipo: 'numero', n: 2, max: 8, watt: 600 },
+    welcome_board: { nomi: { it: 'Welcome board (schermo di benvenuto)', de: 'Welcome Board (Begrüssungs-Screen)', fr: 'Welcome board (écran d\'accueil)', en: 'Welcome board' }, tipo: 'numero', n: 1, max: 4, watt: 300 },
     dance_floor: { nomi: { it: 'LED dance floor', de: 'LED-Tanzfläche', fr: 'Piste de danse LED', en: 'LED dance floor' }, tipo: 'pannelli', w: 4, h: 4, maxW: 10, maxH: 10, watt: 120 },
   };
   const NOMI = Object.fromEntries(Object.entries(PARTI_DEF).map(([k, v]) => [k, v.nomi]));
   const PARTI = Object.keys(PARTI_DEF).map((k) => [k, PARTI_DEF[k].nomi.it]);
   const ETICHETTE = {
-    it: { djm: 'Fornito dal DJ', setup: 'Il vostro allestimento', moduli: 'moduli', pannelli: 'pannelli', pz: 'pz.', giorno: 'giorno', unita: 'per unità' },
-    de: { djm: 'Material des DJ', setup: 'Ihr Setup', moduli: 'Module', pannelli: 'Panels', pz: 'Stk.', giorno: 'Tag', unita: 'pro Einheit' },
-    fr: { djm: 'Fourni par le DJ', setup: 'Votre installation', moduli: 'modules', pannelli: 'panneaux', pz: 'pces', giorno: 'jour', unita: 'par unité' },
-    en: { djm: 'Provided by the DJ', setup: 'Your setup', moduli: 'modules', pannelli: 'panels', pz: 'pcs', giorno: 'day', unita: 'per unit' },
+    it: { djm: 'Fornito dal DJ', setup: 'Il vostro allestimento', moduli: 'moduli', pannelli: 'pannelli', pz: 'pz.', giorno: 'giorno', unita: 'per unità', incluso: 'compreso' },
+    de: { djm: 'Material des DJ', setup: 'Ihr Setup', moduli: 'Module', pannelli: 'Panels', pz: 'Stk.', giorno: 'Tag', unita: 'pro Einheit', incluso: 'inbegriffen' },
+    fr: { djm: 'Fourni par le DJ', setup: 'Votre installation', moduli: 'modules', pannelli: 'panneaux', pz: 'pces', giorno: 'jour', unita: 'par unité', incluso: 'compris' },
+    en: { djm: 'Provided by the DJ', setup: 'Your setup', moduli: 'modules', pannelli: 'panels', pz: 'pcs', giorno: 'day', unita: 'per unit', incluso: 'included' },
   };
   const metri = (n, l) => (l === 'en' ? n.toFixed(1) : n.toFixed(1).replace('.', ','));
 
@@ -224,8 +225,17 @@
 
     const yMin = Math.min(tY - 40, SUOLO - 128 - Math.max(0, Math.ceil(nTop / 2) - 1) * 44 - 30);
     svg.setAttribute('viewBox', `0 ${yMin} ${W} ${yB + 34 - yMin}`);
+    // welcome board: schermo verticale su piedistallo, ai lati in fondo alla sala
+    const nWb = Math.max(0, c('welcome_board').n || 0);
+    gruppi.welcome_board = [Array.from({ length: nWb }, (_, i) => {
+      const x = i % 2 === 0 ? 120 + Math.floor(i / 2) * 60 : W - 120 - Math.floor(i / 2) * 60;
+      const y = SUOLO - 128;
+      return [el('rect', { x: x - 25, y, width: 50, height: 82, rx: 3, fill: `url(#${gid}s)`, class: 'cfg__schermo' }),
+        txt(x, y + 38, 'Welcome', 'cfg__testo cfg__chiaro cfg__piccolo'), txt(x, y + 50, '♥', 'cfg__testo cfg__chiaro cfg__piccolo'),
+        el('line', { x1: x, y1: y + 82, x2: x, y2: SUOLO - 6, class: 'cfg__asta' }), el('rect', { x: x - 18, y: SUOLO - 6, width: 36, height: 6, rx: 2, class: 'cfg__metallo' })];
+    }), nWb ? txt(120, SUOLO + 16, nome('welcome_board'), 'cfg__testo cfg__piccolo') : null];
     // ordine di disegno: dietro → davanti
-    const ordine = ['truss', 'luci_truss', 'schermo_dietro', 'luci_stativo', 'casse_top', 'sub', 'dance_floor', 'nebbia', 'effetti'];
+    const ordine = ['truss', 'luci_truss', 'schermo_dietro', 'luci_stativo', 'welcome_board', 'casse_top', 'sub', 'dance_floor', 'nebbia', 'effetti'];
     const gEls = {};
     const crea = (k) => {
       if (!mostra(k)) return null;
@@ -285,7 +295,7 @@
     // gruppi della lista accanto al disegno: l'allestimento di base e gli extra che il cliente può chiedere
     const GRUPPI = [
       ['Allestimento', ['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj']],
-      ['Extra su richiesta del cliente', ['dance_floor', 'effetti', 'nebbia', 'luci_stativo', 'microfono', 'live_stream']],
+      ['Extra su richiesta del cliente', ['dance_floor', 'welcome_board', 'effetti', 'nebbia', 'luci_stativo', 'microfono', 'live_stream']],
     ];
     const TIPICO = ['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj'];
 
@@ -337,8 +347,8 @@
             const ui = (window.MeekonI18n && window.MeekonI18n.lingua) || 'it';
             const e = ETICHETTE[ui] || ETICHETTE.it;
             const mis = c ? misura(c, ui) : '';
-            if (c) info.textContent = `${mis ? `${mis} · ` : ''}${c.dj ? e.djm : `${fmt(prezzoDi(c))} CHF / ${e.giorno}`}`;
-            else info.textContent = perParte.has(k) ? `${fmt(pz)} CHF${PARTI_DEF[k].tipo ? ` ${e.unita}` : ''}` : e.djm;
+            if (c) info.textContent = `${mis ? `${mis} · ` : ''}${c.dj ? e.djm : (pz ? `${fmt(prezzoDi(c))} CHF / ${e.giorno}` : e.incluso)}`;
+            else info.textContent = perParte.has(k) ? (pz ? `${fmt(pz)} CHF${PARTI_DEF[k].tipo ? ` ${e.unita}` : ''}` : e.incluso) : e.djm;
           };
           if (c) riga.append(...opzioniParte(c, aggiornaInfo));
           // chi porta il materiale: Meekon (a listino) o il DJ (nel disegno, senza prezzo né magazzino)

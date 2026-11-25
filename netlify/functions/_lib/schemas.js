@@ -208,7 +208,7 @@ const configurazioneSchema = (v, f) => {
   if (v == null || v === '') return null;
   if (typeof v !== 'object' || Array.isArray(v)) throw new HttpError(400, 'invalid_input', { field: f });
   const c = validate(v, {
-    parte: t.enumOf(['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor'], { required: true }),
+    parte: t.enumOf(['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor', 'welcome_board'], { required: true }),
     w: t.int({ min: 1, max: 30 }), h: t.int({ min: 1, max: 30 }), n: t.int({ min: 1, max: 30 }),
     dj: t.bool(), // materiale portato dal DJ: solo nel disegno, senza prezzo Meekon né magazzino
   });

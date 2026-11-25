@@ -474,7 +474,7 @@
           h('datalist', { id: 'mk-nomi-modello' }, NOMI_MODELLO.map((n) => h('option', { value: n }))),
           h('datalist', { id: 'mk-cat-modello' }, ['LED', 'Licht', 'Audio', 'Video', 'Rigging', 'Effekte'].map((c) => h('option', { value: c }))),
           h('div', { class: 'fields' }, field('Nome', nome, { full: true }),
-            field('Prezzo del pacchetto (CHF al giorno)', prezzo, { hint: 'Nell\'offerta il pacchetto è una riga con questo prezzo; i singoli articoli restano per magazzino e peso.' }),
+            field('Prezzo del pacchetto (CHF al giorno)', prezzo, { hint: 'Nell\'offerta il pacchetto è una riga con questo prezzo; i singoli articoli restano per magazzino e peso. Per le parti del configuratore vale per unità (modulo, pezzo, pannello); 0 = compreso (es. il truss).' }),
             field('Gruppo nel PDF', cat, { hint: 'es. LED, Licht, Audio' }),
             field('Parte nel disegno del configuratore', parte, { hint: 'Il DJ partner sceglie questo pacchetto cliccando su questa parte del disegno.' }),
             field('Disposizione / cosa comprende (testo per il cliente)', desc, { full: true }), h('div', { class: 'field' }, pp, att),

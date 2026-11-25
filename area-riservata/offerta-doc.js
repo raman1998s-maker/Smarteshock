@@ -18,7 +18,7 @@
     de: {
       offerta: 'Offerte', conferma: 'Auftragsbestätigung', fattura: 'Rechnung', fatturaNr: 'Rechnungs-Nr.', pagabile: 'Zahlbar an', nr: 'Nr.', valida: 'gültig bis', per: 'Für', da: 'Von',
       anlass: 'Anlass', datum: 'Datum', location: 'Location', daDefinire: 'wird noch bestimmt', aufbau: 'Aufbau ab', betrieb: 'Betrieb', abbau: 'Abbau', kontakt: 'Ansprechperson vor Ort',
-      pos: 'Pos', leistung: 'Leistung', menge: 'Menge', prezzo: 'Einzelpreis', totale: 'Total CHF', giorni: (n) => `${n} Tage`,
+      pos: 'Pos', leistung: 'Leistung', menge: 'Menge', prezzo: 'Einzelpreis', totale: 'Total CHF', giorni: (n) => `${n} Tage`, gratis: 'inbegriffen',
       sub: 'Zwischentotal', sconto: 'Rabatt', totIva: (p) => `Total inkl. ${p} % MWST`, tot: 'Total', davon: (p) => `davon MWST ${p} %`, nonIva: 'Nicht mehrwertsteuerpflichtig',
       opzionali: 'Optional (nicht im Total enthalten)',
       pagamento: 'Zahlung', acconto: (p) => `Anzahlung ${p} %`, accontoEntro: (g) => `innert ${g} Tagen nach Bestätigung`, entro: 'bis', saldo: 'Restbetrag', sofort: 'Gesamtbetrag sofort fällig', modo: 'per Überweisung (QR-Rechnung) oder TWINT',
@@ -36,7 +36,7 @@
     it: {
       offerta: 'Offerta', conferma: 'Conferma d\'ordine', fattura: 'Fattura', fatturaNr: 'Fattura N.', pagabile: 'Pagabile a', nr: 'N.', valida: 'valida fino al', per: 'Per', da: 'Da',
       anlass: 'Evento', datum: 'Data', location: 'Location', daDefinire: 'da definire', aufbau: 'Montaggio da', betrieb: 'Servizio', abbau: 'Smontaggio', kontakt: 'Referente sul posto',
-      pos: 'Pos', leistung: 'Prestazione', menge: 'Quantità', prezzo: 'Prezzo unitario', totale: 'Totale CHF', giorni: (n) => `${n} giorni`,
+      pos: 'Pos', leistung: 'Prestazione', menge: 'Quantità', prezzo: 'Prezzo unitario', totale: 'Totale CHF', giorni: (n) => `${n} giorni`, gratis: 'compreso',
       sub: 'Subtotale', sconto: 'Sconto', totIva: (p) => `Totale IVA ${p} % inclusa`, tot: 'Totale', davon: (p) => `di cui IVA ${p} %`, nonIva: 'Non assoggettato all\'IVA',
       opzionali: 'Opzioni (non comprese nel totale)',
       pagamento: 'Pagamento', acconto: (p) => `Acconto ${p} %`, accontoEntro: (g) => `entro ${g} giorni dalla conferma`, entro: 'entro il', saldo: 'Saldo', sofort: 'Importo totale dovuto subito', modo: 'tramite bonifico (QR-fattura) o TWINT',
@@ -54,7 +54,7 @@
     fr: {
       offerta: 'Offre', conferma: 'Confirmation de commande', fattura: 'Facture', fatturaNr: 'Facture N°', pagabile: 'Payable à', nr: 'N°', valida: 'valable jusqu\'au', per: 'Pour', da: 'De',
       anlass: 'Événement', datum: 'Date', location: 'Lieu', daDefinire: 'à définir', aufbau: 'Montage dès', betrieb: 'Service', abbau: 'Démontage', kontakt: 'Personne de contact sur place',
-      pos: 'Pos', leistung: 'Prestation', menge: 'Quantité', prezzo: 'Prix unitaire', totale: 'Total CHF', giorni: (n) => `${n} jours`,
+      pos: 'Pos', leistung: 'Prestation', menge: 'Quantité', prezzo: 'Prix unitaire', totale: 'Total CHF', giorni: (n) => `${n} jours`, gratis: 'compris',
       sub: 'Sous-total', sconto: 'Rabais', totIva: (p) => `Total TVA ${p} % incluse`, tot: 'Total', davon: (p) => `dont TVA ${p} %`, nonIva: 'Non assujetti à la TVA',
       opzionali: 'Options (non comprises dans le total)',
       pagamento: 'Paiement', acconto: (p) => `Acompte ${p} %`, accontoEntro: (g) => `dans les ${g} jours suivant la confirmation`, entro: 'jusqu\'au', saldo: 'Solde', sofort: 'Montant total payable immédiatement', modo: 'par virement (QR-facture) ou TWINT',
@@ -72,7 +72,7 @@
     en: {
       offerta: 'Quotation', conferma: 'Order confirmation', fattura: 'Invoice', fatturaNr: 'Invoice no.', pagabile: 'Payable to', nr: 'No.', valida: 'valid until', per: 'For', da: 'From',
       anlass: 'Event', datum: 'Date', location: 'Location', daDefinire: 'to be confirmed', aufbau: 'Set-up from', betrieb: 'Service', abbau: 'Dismantling', kontakt: 'Contact on site',
-      pos: 'Pos', leistung: 'Service', menge: 'Qty', prezzo: 'Unit price', totale: 'Total CHF', giorni: (n) => `${n} days`,
+      pos: 'Pos', leistung: 'Service', menge: 'Qty', prezzo: 'Unit price', totale: 'Total CHF', giorni: (n) => `${n} days`, gratis: 'included',
       sub: 'Subtotal', sconto: 'Discount', totIva: (p) => `Total incl. ${p} % VAT`, tot: 'Total', davon: (p) => `of which VAT ${p} %`, nonIva: 'Not subject to VAT',
       opzionali: 'Options (not included in the total)',
       pagamento: 'Payment', acconto: (p) => `Deposit ${p} %`, accontoEntro: (g) => `within ${g} days of confirmation`, entro: 'by', saldo: 'Balance', sofort: 'Full amount due immediately', modo: 'by bank transfer (QR bill) or TWINT',
@@ -190,8 +190,9 @@
         r.giorni !== 1 ? h('span', { class: 'doc__det' }, tx.giorni(r.giorni)) : null,
         r.sconto_percento ? h('span', { class: 'doc__det' }, `${tx.sconto} ${pc(r.sconto_percento)} %`) : null),
       h('td', { class: 'num' }, r.quantita),
-      h('td', { class: 'num' }, chfT(r.prezzo_unitario)),
-      h('td', { class: 'num' }, chfT(importo(r))));
+      // prezzo 0 (es. truss o materiale del DJ): "inbegriffen" invece di 0.–
+      h('td', { class: 'num' }, Number(r.prezzo_unitario) ? chfT(r.prezzo_unitario) : tx.gratis),
+      h('td', { class: 'num' }, Number(r.prezzo_unitario) ? chfT(importo(r)) : '—'));
     // righe raggruppate per categoria (titolo del gruppo + subtotale), numerazione continua
     const tabella = (list) => {
       const gruppi = new Map();
