@@ -30,10 +30,13 @@ supabase db push
 Le migrazioni vanno applicate **in ordine**: `0001_schema.sql`, `0002_richieste_paese.sql`,
 `0003_cms.sql` (contenuti del sito: tabelle del CMS, bucket Storage privato `media` e relative policy),
 `0004_note_pulizia.sql` (note per la squadra `eventi.note_squadra`, vista dei tecnici senza `note_interne`,
-pulizia automatica delle richieste vecchie con pg_cron).
-Anche 0002, 0003 e 0004 sono rieseguibili. Dopo la 0004, la 0001 non va rieseguita da sola
+pulizia automatica delle richieste vecchie con pg_cron),
+`0005_richieste_dettagli_tecnici.sql` (colonna `richieste_web.dettagli_tecnici` jsonb per il blocco
+facoltativo "Dettagli tecnici sul luogo" del modulo; anon può solo inserirla).
+Anche 0002, 0003, 0004 e 0005 sono rieseguibili. Dopo la 0004, la 0001 non va rieseguita da sola
 (fallirebbe senza modificare nulla, perché `eventi_assegnati()` ha cambiato colonne): se serve,
-rieseguire 0001, 0002, 0003 e 0004 in ordine.
+rieseguire 0001, 0002, 0003, 0004 e 0005 in ordine. La 0005 ridefinisce anche le funzioni di pulizia della 0004
+(in più toglie dopo 24 mesi i contatti dei fornitori dalle richieste convertite in evento): se si riesegue la 0004, rieseguire poi la 0005.
 
 Controllo: in **Database → Tables** ogni tabella deve mostrare "RLS enabled".
 In **Advisors → Security Advisor** non devono comparire avvisi su RLS mancante.

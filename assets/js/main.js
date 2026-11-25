@@ -77,6 +77,37 @@
     });
   }
 
+  // Technical details block: without JS everything is visible and optional; with JS only the
+  // groups of the chosen services (data-for) and the follow-up questions (data-if) are shown.
+  // Hidden parts are disabled, so their values are not sent.
+  const tech = document.getElementById('tech');
+  if (tech && tech.form) {
+    const techForm = tech.form;
+    const show = (el, on) => {
+      el.hidden = !on;
+      if (el.tagName === 'FIELDSET') el.disabled = !on;
+      else el.querySelectorAll('input, select, textarea').forEach((i) => { i.disabled = !on; });
+    };
+    const updateTech = () => {
+      const chosen = new Set();
+      techForm.querySelectorAll('input[name="servizi"][data-tech]:checked').forEach((c) => chosen.add(c.dataset.tech));
+      let any = false;
+      tech.querySelectorAll('[data-for]').forEach((g) => {
+        const on = g.dataset.for.split(' ').some((x) => chosen.has(x));
+        any = any || on;
+        show(g, on);
+      });
+      tech.querySelectorAll('[data-if]').forEach((el) => {
+        const [name, value] = el.dataset.if.split('=');
+        const picked = techForm.querySelector(`input[name="dt_${name}"]:checked`);
+        show(el, !!picked && picked.value === value);
+      });
+      show(tech, any);
+    };
+    techForm.addEventListener('change', updateTech);
+    updateTech();
+  }
+
   // Quote form: JSON to /api/richiesta; without JS the classic POST works too (303 -> grazie.html)
   const form = document.getElementById('preventivo');
   if (form && window.fetch && window.FormData) {
@@ -98,7 +129,7 @@
       const body = {};
       new FormData(form).forEach((value, key) => {
         if (typeof value !== 'string') return;
-        if (key === 'servizi') (body.servizi = body.servizi || []).push(value);
+        if (key === 'servizi' || key === 'dt_prese') (body[key] = body[key] || []).push(value);
         else body[key] = value;
       });
       setBusy(true);

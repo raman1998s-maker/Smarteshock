@@ -749,6 +749,450 @@
    "fr": "L'équipe derrière chaque <em>événement</em>",
    "it": "La squadra dietro ogni <em>evento</em>"
   },
+  "tech.dunno": {
+   "de": "Weiss nicht",
+   "en": "Not sure",
+   "fr": "Je ne sais pas",
+   "it": "Non so"
+  },
+  "tech.fornitori_intro": {
+   "de": "Freiwillig: Bitte nur Personen angeben, die mit einer Kontaktaufnahme einverstanden sind.",
+   "en": "Optional: only include people who are happy to be contacted.",
+   "fr": "Facultatif : indiquez seulement les personnes d'accord d'être contactées.",
+   "it": "Facoltativo: indicate solo chi è d'accordo di essere contattato."
+  },
+  "tech.groups.audio": {
+   "de": "Ton und Reden",
+   "en": "Sound and speeches",
+   "fr": "Son et discours",
+   "it": "Audio e discorsi"
+  },
+  "tech.groups.corrente": {
+   "de": "Strom",
+   "en": "Power",
+   "fr": "Électricité",
+   "it": "Corrente"
+  },
+  "tech.groups.fornitori": {
+   "de": "Weitere Dienstleister zur Abstimmung",
+   "en": "Other suppliers to coordinate with",
+   "fr": "Autres prestataires à coordonner",
+   "it": "Altri fornitori da coordinare"
+  },
+  "tech.groups.fumo": {
+   "de": "Rauch und Nebel",
+   "en": "Smoke and haze",
+   "fr": "Fumée et brouillard",
+   "it": "Fumo e nebbia"
+  },
+  "tech.groups.luogo": {
+   "de": "Der Ort",
+   "en": "The venue",
+   "fr": "Le lieu",
+   "it": "Il luogo"
+  },
+  "tech.groups.orari": {
+   "de": "Zeiten",
+   "en": "Times",
+   "fr": "Horaires",
+   "it": "Orari"
+  },
+  "tech.groups.schermi": {
+   "de": "Bildschirme und Inhalte",
+   "en": "Screens and content",
+   "fr": "Écrans et contenus",
+   "it": "Schermi e contenuti"
+  },
+  "tech.intro": {
+   "de": "Freiwillig: So können wir Ihnen eine genaue Offerte machen. Wenn Sie etwas nicht wissen, lassen Sie es einfach leer.",
+   "en": "Optional: this helps us prepare an accurate quote. If you don't know an answer, just leave it blank.",
+   "fr": "Facultatif : cela nous aide à préparer une offre précise. Si vous ne connaissez pas une réponse, laissez-la vide.",
+   "it": "Facoltativo: ci aiuta a preparare un'offerta precisa. Se non sapete una risposta, lasciatela vuota."
+  },
+  "tech.no": {
+   "de": "Nein",
+   "en": "No",
+   "fr": "Non",
+   "it": "No"
+  },
+  "tech.note_fumo": {
+   "de": "Manche Rauchmelder reagieren auch auf Nebel: Das klären wir gemeinsam mit der Location.",
+   "en": "Some detectors also react to haze: we'll check this together with the venue.",
+   "fr": "Certains détecteurs réagissent aussi au brouillard : nous le vérifions ensemble avec le lieu.",
+   "it": "Alcuni rilevatori reagiscono anche alla nebbia: lo verifichiamo insieme alla location."
+  },
+  "tech.note_mp4": {
+   "de": "Videos bitte im Format MP4 (nicht MOV) senden, spätestens 3 Tage vor dem Anlass.",
+   "en": "Please send videos as MP4 (not MOV), no later than 3 days before the event.",
+   "fr": "Les vidéos sont à envoyer en MP4 (pas en MOV), au plus tard 3 jours avant l'événement.",
+   "it": "I video vanno inviati in formato MP4 (non MOV), al più tardi 3 giorni prima dell'evento."
+  },
+  "tech.o.accesso.ascensore": {
+   "de": "Lift",
+   "en": "Lift",
+   "fr": "Ascenseur",
+   "it": "Ascensore"
+  },
+  "tech.o.accesso.piano_terra": {
+   "de": "Ebenerdig ohne Stufen",
+   "en": "Ground floor, no steps",
+   "fr": "Rez-de-chaussée sans marches",
+   "it": "Piano terra senza gradini"
+  },
+  "tech.o.accesso.scale": {
+   "de": "Treppen",
+   "en": "Stairs",
+   "fr": "Escaliers",
+   "it": "Scale"
+  },
+  "tech.o.contenuti_da.agenzia": {
+   "de": "Eine Agentur oder der Fotograf",
+   "en": "An agency or the photographer",
+   "fr": "Une agence ou le photographe",
+   "it": "Un'agenzia o il fotografo"
+  },
+  "tech.o.contenuti_da.cliente": {
+   "de": "Wir selbst",
+   "en": "We do",
+   "fr": "Nous-mêmes",
+   "it": "Noi"
+  },
+  "tech.o.contenuti_da.meekon": {
+   "de": "Meekon Displays",
+   "en": "Meekon Displays",
+   "fr": "Meekon Displays",
+   "it": "Meekon Displays"
+  },
+  "tech.o.grandezza.grande": {
+   "de": "Gross (über ca. 300 Personen)",
+   "en": "Large (over ~300 people)",
+   "fr": "Grande (plus de ~300 personnes)",
+   "it": "Grande (oltre ~300 persone)"
+  },
+  "tech.o.grandezza.media": {
+   "de": "Mittel",
+   "en": "Medium",
+   "fr": "Moyenne",
+   "it": "Media"
+  },
+  "tech.o.grandezza.piccola": {
+   "de": "Klein (bis ca. 80 Personen)",
+   "en": "Small (up to ~80 people)",
+   "fr": "Petite (jusqu'à ~80 personnes)",
+   "it": "Piccola (fino a ~80 persone)"
+  },
+  "tech.o.montaggio_giorno_prima.non_possibile": {
+   "de": "Nicht möglich",
+   "en": "Not possible",
+   "fr": "Pas possible",
+   "it": "Non possibile"
+  },
+  "tech.o.montaggio_giorno_prima.possibile": {
+   "de": "Möglich",
+   "en": "Possible",
+   "fr": "Possible",
+   "it": "Possibile"
+  },
+  "tech.o.montaggio_giorno_prima.richiesto": {
+   "de": "Von der Location verlangt",
+   "en": "Required by the venue",
+   "fr": "Demandé par le lieu",
+   "it": "Richiesto dalla location"
+  },
+  "tech.o.nebbia_permessa.da_chiedere": {
+   "de": "Bei der Location nachfragen",
+   "en": "To be checked with the venue",
+   "fr": "À demander au lieu",
+   "it": "Da chiedere alla location"
+  },
+  "tech.o.oratori.1_2": {
+   "de": "1–2",
+   "en": "1–2",
+   "fr": "1–2",
+   "it": "1–2"
+  },
+  "tech.o.oratori.3_5": {
+   "de": "3–5",
+   "en": "3–5",
+   "fr": "3–5",
+   "it": "3–5"
+  },
+  "tech.o.oratori.oltre_5": {
+   "de": "Mehr als 5",
+   "en": "More than 5",
+   "fr": "Plus de 5",
+   "it": "Più di 5"
+  },
+  "tech.o.prese.230v": {
+   "de": "Normale 230 V",
+   "en": "Standard 230 V",
+   "fr": "Normales 230 V",
+   "it": "Normali 230 V"
+  },
+  "tech.o.prese.cee400": {
+   "de": "Industrie CEE 400 V (Kraftstrom)",
+   "en": "Industrial CEE 400 V (three-phase)",
+   "fr": "Industrielles CEE 400 V (force)",
+   "it": "Industriali CEE 400 V (forza)"
+  },
+  "tech.o.prese_vicine.no": {
+   "de": "Nein, mehr als ca. 20 m",
+   "en": "No, more than ~20 m away",
+   "fr": "Non, à plus de ~20 m",
+   "it": "No, a più di ~20 m"
+  },
+  "tech.o.spazio.aperto": {
+   "de": "Im Freien",
+   "en": "Outdoors",
+   "fr": "En plein air",
+   "it": "All'aperto"
+  },
+  "tech.o.spazio.capannone": {
+   "de": "Halle oder sehr hoher Raum",
+   "en": "Hall or very high space",
+   "fr": "Halle ou espace très haut",
+   "it": "Capannone o spazio molto alto"
+  },
+  "tech.o.spazio.sala": {
+   "de": "Geschlossener Saal",
+   "en": "Indoor room",
+   "fr": "Salle fermée",
+   "it": "Sala chiusa"
+  },
+  "tech.o.spazio.tendone": {
+   "de": "Festzelt",
+   "en": "Marquee",
+   "fr": "Tente",
+   "it": "Tendone"
+  },
+  "tech.o.uscite_libere.verifichiamo": {
+   "de": "Klären wir mit der Location",
+   "en": "We'll check with the venue",
+   "fr": "Nous le vérifions avec le lieu",
+   "it": "Lo verifichiamo con la location"
+  },
+  "tech.ph.altezza_m": {
+   "de": "z. B. 4",
+   "en": "e.g. 4",
+   "fr": "p. ex. 4",
+   "it": "es. 4"
+  },
+  "tech.ph.decibel_max": {
+   "de": "z. B. 95",
+   "en": "e.g. 95",
+   "fr": "p. ex. 95",
+   "it": "es. 95"
+  },
+  "tech.ph.montaggio_dalle": {
+   "de": "z. B. am Vortag ab 14 Uhr",
+   "en": "e.g. the day before from 2 pm",
+   "fr": "p. ex. la veille dès 14 h",
+   "it": "es. il giorno prima dalle 14"
+  },
+  "tech.ph.smontaggio_entro": {
+   "de": "z. B. bis 3 Uhr morgens",
+   "en": "e.g. by 3 am",
+   "fr": "p. ex. jusqu'à 3 h du matin",
+   "it": "es. entro le 3 di notte"
+  },
+  "tech.ph.superficie_m2": {
+   "de": "z. B. 250",
+   "en": "e.g. 250",
+   "fr": "p. ex. 250",
+   "it": "es. 250"
+  },
+  "tech.ph.volume_quali": {
+   "de": "z. B. max. 95 dB, Musik bis 24 Uhr",
+   "en": "e.g. max 95 dB, music until midnight",
+   "fr": "p. ex. 95 dB max., musique jusqu'à minuit",
+   "it": "es. massimo 95 dB, musica fino alle 24"
+  },
+  "tech.q.accesso": {
+   "de": "Zugang für das Material (Boxen auf Rollen)",
+   "en": "Access for equipment (speakers on wheels)",
+   "fr": "Accès pour le matériel (enceintes sur roulettes)",
+   "it": "Accesso per il materiale (casse su ruote)"
+  },
+  "tech.q.altezza_m": {
+   "de": "Raumhöhe (m)",
+   "en": "Ceiling height (m)",
+   "fr": "Hauteur de la salle (m)",
+   "it": "Altezza della sala (m)"
+  },
+  "tech.q.contenuti_da": {
+   "de": "Wer liefert Videos und Inhalte?",
+   "en": "Who provides the videos and content?",
+   "fr": "Qui fournit les vidéos et les contenus ?",
+   "it": "Chi fornisce video e contenuti?"
+  },
+  "tech.q.copertura": {
+   "de": "Im Freien: Gibt es eine Überdachung?",
+   "en": "Outdoors: is there a cover?",
+   "fr": "En plein air : y a-t-il une couverture ?",
+   "it": "All'aperto: c'è una copertura?"
+  },
+  "tech.q.decibel_max": {
+   "de": "Maximale Lautstärke (dB)",
+   "en": "Maximum level (dB)",
+   "fr": "Limite maximale (dB)",
+   "it": "Limite massimo (dB)"
+  },
+  "tech.q.discorsi": {
+   "de": "Reden oder Präsentationen mit Mikrofon?",
+   "en": "Speeches or presentations with a microphone?",
+   "fr": "Discours ou présentations au micro ?",
+   "it": "Discorsi o presentazioni con microfono?"
+  },
+  "tech.q.forn_contatto": {
+   "de": "Telefon oder E-Mail",
+   "en": "Phone or e-mail",
+   "fr": "Téléphone ou e-mail",
+   "it": "Telefono o e-mail"
+  },
+  "tech.q.forn_nome": {
+   "de": "Name oder Firma",
+   "en": "Name or company",
+   "fr": "Nom ou entreprise",
+   "it": "Nome o ditta"
+  },
+  "tech.q.grandezza": {
+   "de": "Grösse des Saals",
+   "en": "Size of the room",
+   "fr": "Taille de la salle",
+   "it": "Grandezza della sala"
+  },
+  "tech.q.montaggio_dalle": {
+   "de": "Aufbau möglich ab",
+   "en": "Set-up possible from",
+   "fr": "Montage possible dès",
+   "it": "Montaggio possibile dalle"
+  },
+  "tech.q.montaggio_giorno_prima": {
+   "de": "Aufbau am Vortag?",
+   "en": "Set-up the day before?",
+   "fr": "Montage la veille ?",
+   "it": "Montaggio il giorno prima?"
+  },
+  "tech.q.musica_fino": {
+   "de": "Musik aus bis",
+   "en": "Music off by",
+   "fr": "Musique éteinte à",
+   "it": "Musica spenta entro le"
+  },
+  "tech.q.nebbia_permessa": {
+   "de": "Sind Rauch- und Nebelmaschinen erlaubt?",
+   "en": "Are smoke and haze machines allowed?",
+   "fr": "Les machines à fumée et à brouillard sont-elles autorisées ?",
+   "it": "Le macchine del fumo e della nebbia sono permesse?"
+  },
+  "tech.q.oratori": {
+   "de": "Wie viele Personen sprechen?",
+   "en": "How many people will speak?",
+   "fr": "Combien de personnes parlent ?",
+   "it": "Quante persone parlano?"
+  },
+  "tech.q.prese": {
+   "de": "Verfügbare Stromanschlüsse",
+   "en": "Power sockets available",
+   "fr": "Prises électriques disponibles",
+   "it": "Prese di corrente disponibili"
+  },
+  "tech.q.prese_vicine": {
+   "de": "Sind sie nahe beim Aufbauort?",
+   "en": "Are they close to where we set up?",
+   "fr": "Sont-elles proches du lieu d'installation ?",
+   "it": "Sono vicine al punto di installazione?"
+  },
+  "tech.q.rilevatori_fumo": {
+   "de": "Rauchmelder im Saal?",
+   "en": "Smoke detectors in the room?",
+   "fr": "Détecteurs de fumée dans la salle ?",
+   "it": "Rilevatori di fumo in sala?"
+  },
+  "tech.q.scarico": {
+   "de": "Parkplatz oder Ablad nahe beim Eingang?",
+   "en": "Parking or a loading area near the entrance?",
+   "fr": "Parking ou zone de déchargement près de l'entrée ?",
+   "it": "Parcheggio o zona di scarico vicino all'ingresso?"
+  },
+  "tech.q.smontaggio_entro": {
+   "de": "Abbau bis",
+   "en": "Dismantling by",
+   "fr": "Démontage jusqu'à",
+   "it": "Smontaggio entro"
+  },
+  "tech.q.spazio": {
+   "de": "Art des Raums",
+   "en": "Type of space",
+   "fr": "Type d'espace",
+   "it": "Tipo di spazio"
+  },
+  "tech.q.superficie_m2": {
+   "de": "Fläche (m²)",
+   "en": "Floor area (m²)",
+   "fr": "Surface (m²)",
+   "it": "Superficie (m²)"
+  },
+  "tech.q.uscite_libere": {
+   "de": "Bleiben die Notausgänge frei von Bildschirmen?",
+   "en": "Do the screens keep the emergency exits clear?",
+   "fr": "Les écrans laissent-ils libres les sorties de secours ?",
+   "it": "Gli schermi lasciano libere le uscite di emergenza?"
+  },
+  "tech.q.volume_limiti": {
+   "de": "Lautstärkebegrenzung oder Ruhezeiten?",
+   "en": "Volume limits or quiet hours?",
+   "fr": "Limites de volume ou heures de silence ?",
+   "it": "Limiti di volume o orari di silenzio?"
+  },
+  "tech.q.volume_quali": {
+   "de": "Welche?",
+   "en": "Which ones?",
+   "fr": "Lesquelles ?",
+   "it": "Quali?"
+  },
+  "tech.roles.decorazioni": {
+   "de": "Dekoration / Floristik",
+   "en": "Decoration / florist",
+   "fr": "Décoration / fleuriste",
+   "it": "Decorazioni / fiorista"
+  },
+  "tech.roles.foto": {
+   "de": "Fotograf / Videograf",
+   "en": "Photographer / videographer",
+   "fr": "Photographe / vidéaste",
+   "it": "Fotografo / videomaker"
+  },
+  "tech.roles.location": {
+   "de": "Ansprechperson der Location",
+   "en": "Venue contact",
+   "fr": "Référent du lieu",
+   "it": "Referente della location"
+  },
+  "tech.roles.musica": {
+   "de": "Externer DJ oder Band",
+   "en": "External DJ or band",
+   "fr": "DJ ou groupe externe",
+   "it": "DJ o band esterni"
+  },
+  "tech.roles.planner": {
+   "de": "Hochzeitsplanung / Organisation",
+   "en": "Wedding planner / organiser",
+   "fr": "Wedding planner / organisateur",
+   "it": "Wedding planner / organizzatore"
+  },
+  "tech.title": {
+   "de": "Technische Angaben zum Ort",
+   "en": "Technical details about the venue",
+   "fr": "Détails techniques du lieu",
+   "it": "Dettagli tecnici sul luogo"
+  },
+  "tech.yes": {
+   "de": "Ja",
+   "en": "Yes",
+   "fr": "Oui",
+   "it": "Sì"
+  },
   "thanks.back": {
    "de": "Zurück zur Website",
    "en": "Back to the website",
