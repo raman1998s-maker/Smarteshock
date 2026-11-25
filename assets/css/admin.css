@@ -940,6 +940,41 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .confirm .btn--danger:hover { background: var(--color-text); border-color: var(--color-text); color: var(--c-white); }
 @keyframes cms-confirm-in { from { opacity: 0; transform: translateY(-4px); } }
 
+/* ---------- Gestionale: campi nelle tabelle e nelle toolbar ---------- */
+.table input:not([type="checkbox"]), .table select, .table textarea,
+.toolbar input:not([type="checkbox"]), .toolbar select {
+  min-height: var(--control-h); padding: 6px 10px; max-width: 100%;
+  background: var(--color-surface); color: var(--color-text);
+  border: 1px solid var(--color-field); border-radius: var(--radius-1);
+  font: 400 var(--fs-sm)/1.4 var(--font-text);
+}
+.table input:focus, .table select:focus, .table textarea:focus, .toolbar input:focus, .toolbar select:focus {
+  outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgb(var(--c-cyan-rgb) / .28);
+}
+.table input:disabled, .table textarea:disabled { background: var(--color-surface-2); color: var(--color-text-2); }
+.table textarea { width: 100%; min-width: 220px; resize: vertical; }
+.toolbar input[type="search"] { flex: 3 1 220px; }
+.toolbar > span { align-self: center; font-size: var(--fs-sm); color: var(--color-text-2); }
+.input--num { width: 6.5em; text-align: right; }
+.text-danger { color: var(--color-danger); font-weight: 500; }
+.alert--info { background: var(--color-primary-wash); color: var(--st-offerta-fg); }
+.alert + .panels, .alert + .alert { margin-top: var(--sp-4); }
+
+/* agenda */
+.agenda { display: grid; gap: var(--sp-4); }
+.agenda__giorno--oggi { border-color: var(--color-primary); box-shadow: inset 3px 0 0 var(--color-primary); }
+.agenda__giorno h2 { display: flex; align-items: center; gap: var(--sp-2); }
+.agenda__evento { padding: var(--sp-3) 0; border-top: 1px solid var(--color-line); }
+.agenda__evento:first-of-type { border-top: 0; padding-top: 0; }
+.agenda__evento h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-base); display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.agenda__assenti { margin: var(--sp-3) 0 0; font-size: var(--fs-sm); color: var(--color-warn); }
+
+/* offerta */
+.offerta__righe td { vertical-align: top; }
+.offerta__totali { display: flex; justify-content: flex-end; margin-top: var(--sp-4); }
+.offerta__totali .dl { min-width: 260px; }
+.stampa { display: none; }
+
 /* ---------- Colori forzati (Windows contrasto elevato) ---------- */
 @media (forced-colors: active) {
   .switch__track, .switch__track::before, .publish-bar__icon, .lang-tabs [role="tab"].is-missing::after { forced-color-adjust: none; }
@@ -957,4 +992,29 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .app { display: block; }
   .app__side, .toolbar, .btn, .toast, .btn-icon, .drag-handle, .publish-bar, .dropzone, .confirm { display: none !important; }
   .table-wrap, .panel { border: 0; }
+}
+
+/* Offerta in PDF: si stampa solo il documento preparato da gestionale.js */
+@media print {
+  body:has(.stampa:not(:empty)) .app__main > :not(.stampa) { display: none !important; }
+  body:has(.stampa:not(:empty)) .app__main { padding: 0; }
+  .stampa:not(:empty) { display: block; color: #000; font: 400 10.5pt/1.45 var(--font-text); }
+  .stampa__head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14mm; }
+  body:has(.stampa:not(:empty)) { background: #fff; }
+  /* il logo ha la scritta chiara (per fondo scuro): in stampa si scurisce mantenendo le tinte */
+  .stampa__logo { width: 52mm; height: auto; filter: invert(1) hue-rotate(180deg); }
+  .stampa__cliente { text-align: right; }
+  .stampa h1 { font: 500 20pt/1.2 var(--font-display); margin: 0 0 4mm; }
+  .stampa h2 { font-size: 11pt; margin: 6mm 0 2mm; }
+  .stampa .dl { margin-bottom: 6mm; }
+  .stampa__testo { white-space: pre-line; margin: 0 0 5mm; }
+  .stampa__righe, .stampa__totali { width: 100%; border-collapse: collapse; }
+  .stampa__righe th, .stampa__righe td { padding: 2mm 1.5mm; border-bottom: .3mm solid #bbb; text-align: left; vertical-align: top; }
+  .stampa__righe .num, .stampa__totali .num { text-align: right; white-space: nowrap; }
+  .stampa__righe tr { break-inside: avoid; }
+  .stampa__totali { width: 75mm; margin: 5mm 0 0 auto; }
+  .stampa__totali th { text-align: left; font-weight: 400; padding: 1mm 0; }
+  .stampa__totale th, .stampa__totale td { font-weight: 600; border-top: .4mm solid #000; padding-top: 2mm; }
+  .stampa__piede { margin-top: 12mm; padding-top: 3mm; border-top: .3mm solid #bbb; font-size: 8.5pt; color: #444; text-align: center; }
+  @page { size: A4; margin: 16mm 15mm; }
 }

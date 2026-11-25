@@ -1,7 +1,7 @@
 // Area riservata Meekon Displays — gestionale.
 // Regole: il browser parla solo con /api/* (stessa origine, cookie HttpOnly);
 // i dati del server si inseriscono SOLO con textContent / creazione di nodi (mai innerHTML).
-// L'interfaccia nasconde ai tecnici le funzioni da amministratore, ma i permessi
+// L'interfaccia nasconde a tecnici e base le funzioni della gestione, ma i permessi
 // veri li controllano le API e la Row Level Security.
 (() => {
   'use strict';
@@ -20,13 +20,15 @@
     clienti: new Map(),
   };
   const isAdmin = () => state.me && state.me.ruolo === 'admin';
+  // admin + ufficio: richieste, clienti, eventi, offerte, magazzino
+  const isGestione = () => state.me && (state.me.ruolo === 'admin' || state.me.ruolo === 'ufficio');
 
   // ------------------------------------------------------------ etichette
   const STATI = { richiesta: 'Richiesta', offerta: 'Offerta', confermato: 'Confermato', completato: 'Completato', annullato: 'Annullato' };
   const STATI_RICHIESTA = { nuova: 'Nuova', gestita: 'Gestita', scartata: 'Scartata' };
   const PAESI = { CH: 'Svizzera', IT: 'Italia', DE: 'Germania', FR: 'Francia' };
   const LINGUE = { it: 'Italiano', de: 'Tedesco', fr: 'Francese', en: 'Inglese' };
-  const RUOLI = { admin: 'Amministratore', tecnico: 'Tecnico' };
+  const RUOLI = { admin: 'Amministratore', ufficio: 'Ufficio', tecnico: 'Tecnico', base: 'Base (solo agenda del giorno)' };
 
   // Dettagli tecnici sul luogo (richieste_web.dettagli_tecnici): etichette e valori in italiano.
   // Le chiavi e i valori sono quelli di dettagliTecniciSchema (netlify/functions/_lib/schemas.js).
@@ -183,6 +185,12 @@
     const num = String(phone).replace(/[^0-9+]/g, '');
     return num ? h('a', { href: `tel:${num}` }, String(phone)) : String(phone);
   }
+  /** Apre l'indirizzo su Google Maps (nuova scheda). */
+  function mapLink(...parti) {
+    const q = parti.filter(Boolean).join(', ').trim();
+    if (!q) return '—';
+    return h('a', { href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, target: '_blank', rel: 'noopener noreferrer' }, 'Apri su Maps');
+  }
   function mailLink(email) {
     if (!email) return '—';
     return /^[^\s@<>"]+@[^\s@<>"]+$/.test(email) ? h('a', { href: `mailto:${email}` }, email) : String(email);
@@ -285,7 +293,7 @@
 
   // ------------------------------------------------------------ eventi: tabella
   function eventsTable(list) {
-    const admin = isAdmin();
+    const admin = isGestione();
     const head = ['Data', 'Evento', 'Località', 'Stato'];
     if (admin) head.push('Importo CHF');
     const rows = list.map((e) => {
@@ -320,9 +328,9 @@
     const list = (data.eventi || []).filter((e) => e.stato !== 'annullato');
     page({
       title: 'Prossimi eventi',
-      sub: `Prossimi ${giorni} giorni · ${list.length} ${list.length === 1 ? 'evento' : 'eventi'}${isAdmin() ? '' : ' a cui siete assegnati'}`,
-      actions: isAdmin() ? [h('a', { class: 'btn btn--primary', href: '#/eventi/nuovo' }, 'Nuovo evento')] : null,
-    }, list.length ? eventsTable(list) : empty('Nessun evento in programma', isAdmin()
+      sub: `Prossimi ${giorni} giorni · ${list.length} ${list.length === 1 ? 'evento' : 'eventi'}${isGestione() ? '' : ' a cui siete assegnati'}`,
+      actions: isGestione() ? [h('a', { class: 'btn btn--primary', href: '#/eventi/nuovo' }, 'Nuovo evento')] : null,
+    }, list.length ? eventsTable(list) : empty('Nessun evento in programma', isGestione()
       ? 'Nei prossimi 90 giorni non ci sono eventi. Potete crearne uno nuovo o convertire una richiesta dal sito.'
       : 'Nei prossimi 90 giorni non siete assegnati a nessun evento.'));
   }
@@ -342,8 +350,8 @@
 
     page({
       title: 'Eventi',
-      sub: isAdmin() ? 'Tutti gli eventi e gli ordini' : 'Gli eventi a cui siete assegnati',
-      actions: isAdmin() ? [h('a', { class: 'btn btn--primary', href: '#/eventi/nuovo' }, 'Nuovo evento')] : null,
+      sub: isGestione() ? 'Tutti gli eventi e gli ordini' : 'Gli eventi a cui siete assegnati',
+      actions: isGestione() ? [h('a', { class: 'btn btn--primary', href: '#/eventi/nuovo' }, 'Nuovo evento')] : null,
     }, toolbar, results);
 
     let list = [];
@@ -394,10 +402,10 @@
     try { data = await api(`eventi/${encodeURIComponent(id)}`); } catch (err) { if (alive()) failure('Evento', err); return; }
     if (!alive()) return;
     const e = data.evento || {};
-    const admin = isAdmin();
+    const admin = isGestione();
     const actions = [];
-    if (admin) {
-      actions.push(h('a', { class: 'btn', href: `#/evento/${encodeURIComponent(e.id)}/modifica` }, 'Modifica'));
+    if (admin) actions.push(h('a', { class: 'btn', href: `#/evento/${encodeURIComponent(e.id)}/modifica` }, 'Modifica'));
+    if (isAdmin()) {
       const del = h('button', { class: 'btn btn--danger', type: 'button' }, 'Elimina');
       del.addEventListener('click', () => {
         if (!window.confirm(`Eliminare definitivamente l'evento "${e.titolo || ''}"? L'operazione non si può annullare.`)) return;
@@ -421,6 +429,8 @@
         ['Fine', fmtDate(e.data_fine)],
         ['Località', dash(e.localita)],
         ['Sala', dash(e.sala)],
+        ['Indirizzo', e.indirizzo ? h('span', null, e.indirizzo, ' ', mapLink(e.indirizzo, e.localita)) : (e.localita ? mapLink(e.localita) : '—')],
+        ['Contatto sul posto', e.contatto_luogo_nome || e.contatto_luogo_telefono ? h('span', null, e.contatto_luogo_nome || '', ' ', telLink(e.contatto_luogo_telefono)) : '—'],
         ['Paese', PAESI[e.paese] || dash(e.paese)],
         ['Ospiti', dash(e.ospiti)],
         ['Servizi', Array.isArray(e.servizi) && e.servizi.length ? e.servizi.join(', ') : '—'],
@@ -446,15 +456,18 @@
     const noteSquadra = e.note_squadra
       ? h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Note per la squadra')), multiline(e.note_squadra))
       : null;
-    // note interne: solo per l'admin e solo se l'API le ha inviate (mai per i tecnici)
+    // note interne: solo per la gestione e solo se l'API le ha inviate (mai per i tecnici)
     const note = admin && has('note_interne')
       ? h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Note interne')), multiline(e.note_interne))
       : null;
 
+    const offerte = admin ? wide(G().offertePanel(e)) : null;
+    // ruolo base: niente checklist (l'API non la restituisce)
+    const lista = state.me.ruolo === 'base' ? [] : [].concat(checklistPanel(e, data.checklist || [])).map(wide);
     page({ title: e.titolo || 'Evento', sub, actions, back: ['#/eventi', 'Eventi'] },
-      panels(dati, cliente, economia, programma, noteSquadra, note,
+      panels(dati, cliente, economia, programma, noteSquadra, note, offerte,
         wide(staffPanel(e, data.staff || [])),
-        [].concat(checklistPanel(e, data.checklist || [])).map(wide)));
+        lista));
   }
 
   function staffPanel(e, staff) {
@@ -462,7 +475,7 @@
     const show = () => {
       clear(panel);
       const head = h('div', { class: 'panel__head' }, h('h2', null, 'Staff assegnato'));
-      if (isAdmin()) head.append(h('button', { class: 'btn btn--sm', type: 'button', onclick: edit }, 'Modifica staff'));
+      if (isGestione()) head.append(h('button', { class: 'btn btn--sm', type: 'button', onclick: edit }, 'Modifica staff'));
       panel.append(head);
       if (!staff.length) { panel.append(h('p', { class: 'muted' }, 'Nessun collaboratore assegnato.')); return; }
       panel.append(h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
@@ -473,13 +486,24 @@
       clear(panel);
       panel.append(h('div', { class: 'panel__head' }, h('h2', null, 'Modifica staff')), h('p', { class: 'muted' }, 'Caricamento…'));
       let all;
-      try { all = (await api('staff')).staff || []; } catch (err) { toast(errorMessage(err), 'error'); show(); return; }
+      const assenti = new Map();
+      try {
+        const giorno = (v) => (v ? String(v).slice(0, 10) : null);
+        const da = giorno(e.data_inizio);
+        const [st, as] = await Promise.all([
+          api('staff'),
+          da ? api(`assenze?da=${da}&a=${giorno(e.data_fine) || da}`) : Promise.resolve({ assenze: [] }),
+        ]);
+        all = st.staff || [];
+        (as.assenze || []).forEach((x) => assenti.set(x.staff_id, x));
+      } catch (err) { toast(errorMessage(err), 'error'); show(); return; }
       const current = new Map(staff.map((s) => [s.staff_id, s.ruolo_evento || '']));
       const rows = all.filter((s) => s.attivo !== false || current.has(s.id)).map((s) => {
         const cb = h('input', { type: 'checkbox', value: s.id, checked: current.has(s.id) });
         const role = h('input', { type: 'text', maxlength: '80', value: current.get(s.id) || '', placeholder: 'es. audio, luci, video', 'aria-label': `Ruolo nell'evento di ${s.nome || ''}` });
         return { s, cb, role, tr: h('tr', null,
-          h('td', { 'data-label': 'Assegnato' }, h('label', { class: 'check' }, cb, h('span', null, s.nome || '—'))),
+          h('td', { 'data-label': 'Assegnato' }, h('label', { class: 'check' }, cb, h('span', null, s.nome || '—')),
+            assenti.has(s.id) ? h('span', { class: 'badge badge--annullato' }, `Assente${assenti.get(s.id).motivo ? `: ${assenti.get(s.id).motivo}` : ''}`) : null),
           td('Profilo', RUOLI[s.ruolo] || dash(s.ruolo)),
           h('td', { 'data-label': "Ruolo nell'evento" }, h('div', { class: 'field' }, role))) };
       });
@@ -493,6 +517,8 @@
         h('div', { class: 'panel__foot' }, h('button', { class: 'btn', type: 'button', onclick: show }, 'Annulla'), save));
       form.addEventListener('submit', (ev) => {
         ev.preventDefault();
+        const occupati = rows.filter((r) => r.cb.checked && assenti.has(r.s.id) && !current.has(r.s.id)).map((r) => r.s.nome);
+        if (occupati.length && !window.confirm(`${occupati.join(', ')} ha segnato un'assenza in queste date. Assegnare comunque?`)) return;
         const assegnazioni = rows.filter((r) => r.cb.checked).map((r) => ({ staff_id: r.s.id, ruolo_evento: r.role.value.trim() || null }));
         busy(save, async () => {
           try {
@@ -544,32 +570,92 @@
           toast(errorMessage(err), 'error');
         }
       });
-      return h('tr', null,
+      const back = h('input', { type: 'checkbox', checked: !!item.rientrato, 'aria-label': `Rientrato: ${item.voce || ''}` });
+      back.addEventListener('change', async () => {
+        const value = back.checked;
+        back.disabled = true;
+        try {
+          await api(`checklist/${encodeURIComponent(item.id)}`, { method: 'PATCH', body: { rientrato: value } });
+          item.rientrato = value;
+        } catch (err) {
+          back.checked = !value;
+          toast(errorMessage(err), 'error');
+        } finally { back.disabled = false; }
+      });
+      const tr = h('tr', null,
         h('td', { 'data-label': 'Caricato' }, h('label', { class: 'check' }, cb, h('span', { class: 'sr-only' }, 'Caricato'))),
-        h('td', { 'data-label': 'Voce', class: 'table__primary' }, h('span', null, dash(item.voce))),
+        h('td', { 'data-label': 'Voce', class: 'table__primary' }, h('span', null, dash(item.voce), item.articolo_id ? h('span', { class: 'table__sub' }, 'dal magazzino') : null)),
         h('td', { 'data-label': 'Quantità', class: 'num' }, h('span', null, dash(item.quantita))),
+        h('td', { 'data-label': 'Rientrato' }, h('label', { class: 'check' }, back, h('span', { class: 'sr-only' }, 'Rientrato'))),
         h('td', { 'data-label': 'Note' }, h('div', { class: 'field' }, note)));
+      if (isGestione()) {
+        const del = h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Togli ${item.voce || 'voce'}` }, 'Togli');
+        del.addEventListener('click', () => {
+          if (!window.confirm(`Togliere "${item.voce || ''}" dalla lista?`)) return;
+          busy(del, async () => {
+            try {
+              await api(`checklist/${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+              items.splice(items.indexOf(item), 1);
+              tr.remove();
+              updateCount();
+            } catch (err) { toast(errorMessage(err), 'error'); }
+          });
+        });
+        tr.append(h('td', { 'data-label': '' }, del));
+      }
+      return tr;
     };
     items.forEach((i) => tbody.append(rowFor(i)));
     updateCount();
 
     const table = h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
-      h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Caricato'), h('th', { scope: 'col' }, 'Voce'), h('th', { scope: 'col', class: 'num' }, 'Quantità'), h('th', { scope: 'col' }, 'Note'))),
+      h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Caricato'), h('th', { scope: 'col' }, 'Voce'), h('th', { scope: 'col', class: 'num' }, 'Quantità'), h('th', { scope: 'col' }, 'Rientrato'), h('th', { scope: 'col' }, 'Note'), isGestione() ? h('th', { scope: 'col' }, h('span', { class: 'sr-only' }, 'Azioni')) : null)),
       tbody));
-    const emptyMsg = h('p', { class: 'muted' }, 'La checklist del materiale è vuota.');
+    const emptyMsg = h('p', { class: 'muted' }, 'La lista del materiale è vuota.');
     const body = h('div', null, items.length ? table : emptyMsg);
 
     const panel = h('section', { class: 'panel' },
-      h('div', { class: 'panel__head' }, h('h2', null, 'Checklist materiale'), counter), body);
+      h('div', { class: 'panel__head' }, h('h2', null, 'Materiale e checklist'), counter), body);
 
-    if (isAdmin()) {
+    if (isGestione()) {
       const voce = h('input', { type: 'text', name: 'voce', maxlength: '200', required: true });
+      // scelta dal magazzino, con la disponibilità nelle date dell'evento
+      const articolo = h('select', { name: 'articolo_id' }, h('option', { value: '' }, '— Voce libera —'));
+      const dispHint = h('p', { class: 'field__hint', role: 'status' });
+      const catalogo = new Map();
+      (async () => {
+        try {
+          const giorno = (v) => (v ? String(v).slice(0, 10) : null);
+          const da = giorno(e.data_inizio);
+          const [cat, disp] = await Promise.all([
+            api('articoli'),
+            da ? api(`articoli/disponibilita?da=${da}&a=${giorno(e.data_fine) || da}&escludi=${encodeURIComponent(e.id)}`) : Promise.resolve({ disponibilita: [] }),
+          ]);
+          const d = new Map((disp.disponibilita || []).map((x) => [x.articolo_id, x]));
+          (cat.articoli || []).forEach((a) => {
+            const x = d.get(a.id);
+            catalogo.set(a.id, { ...a, disp: x });
+            articolo.append(h('option', { value: a.id }, `${a.categoria} · ${a.descrizione}${x ? ` — liberi ${x.disponibili} di ${a.quantita}` : ''}`));
+          });
+        } catch (err) { dispHint.textContent = 'Catalogo non disponibile: potete comunque scrivere una voce libera.'; }
+      })();
+      articolo.addEventListener('change', () => {
+        const a = catalogo.get(articolo.value);
+        dispHint.textContent = '';
+        if (!a) return;
+        voce.value = [a.marca && !a.descrizione.includes(a.marca) ? a.marca : null, a.descrizione].filter(Boolean).join(' ').slice(0, 200);
+        if (a.disp) {
+          dispHint.textContent = `In quelle date: ${a.disp.disponibili} liberi su ${a.quantita}`
+            + (a.disp.in_offerta ? `, ${a.disp.in_offerta} in offerte non ancora confermate` : '')
+            + (a.disp.fuori ? `, ${a.disp.fuori} fuori adesso` : '') + '.';
+        }
+      });
       const qta = h('input', { type: 'number', name: 'quantita', min: '1', max: '100000', value: '1', inputmode: 'numeric' });
       const nota = h('input', { type: 'text', name: 'note', maxlength: '1000' });
       const btn = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Aggiungi voce');
       const form = h('form', { class: 'panel', 'aria-labelledby': 'add-voce-title' },
         h('div', { class: 'panel__head' }, h('h2', { id: 'add-voce-title' }, 'Aggiungi una voce alla checklist')),
-        h('div', { class: 'fields' }, field('Voce', voce), field('Quantità', qta), field('Note', nota)),
+        h('div', { class: 'fields' }, h('div', { class: 'field field--full' }, field('Dal magazzino', articolo), dispHint), field('Voce', voce), field('Quantità', qta), field('Note', nota)),
         h('div', { class: 'panel__foot' }, btn));
       form.addEventListener('submit', (ev) => {
         ev.preventDefault();
@@ -578,7 +664,7 @@
         busy(btn, async () => {
           try {
             const res = await api(`eventi/${encodeURIComponent(e.id)}/checklist`, {
-              method: 'POST', body: { voce: voce.value.trim(), quantita: qta.value ? Number(qta.value) : null, note: nota.value.trim() || null },
+              method: 'POST', body: { voce: voce.value.trim(), quantita: qta.value ? Number(qta.value) : null, articolo_id: articolo.value || null, note: nota.value.trim() || null },
             });
             if (res.voce) {
               items.push(res.voce);
@@ -586,7 +672,7 @@
               tbody.append(rowFor(res.voce));
               updateCount();
             }
-            voce.value = ''; qta.value = '1'; nota.value = '';
+            voce.value = ''; qta.value = '1'; nota.value = ''; articolo.value = ''; dispHint.textContent = '';
             voce.focus();
             toast('Voce aggiunta.');
           } catch (err) { markInvalid(form, err); toast(errorMessage(err), 'error'); }
@@ -620,13 +706,15 @@
       data_fine: inp('data_fine', { type: 'datetime-local', value: dt(e.data_fine) }),
       localita: inp('localita', { maxlength: '200', value: e.localita || '' }),
       sala: inp('sala', { maxlength: '200', value: e.sala || '' }),
+      indirizzo: inp('indirizzo', { maxlength: '300', value: e.indirizzo || '', autocomplete: 'off' }),
+      contatto_luogo_nome: inp('contatto_luogo_nome', { maxlength: '120', value: e.contatto_luogo_nome || '' }),
+      contatto_luogo_telefono: inp('contatto_luogo_telefono', { type: 'tel', maxlength: '40', value: e.contatto_luogo_telefono || '' }),
       paese: select('paese', Object.entries(PAESI), e.paese || 'CH'),
       ospiti: inp('ospiti', { type: 'number', min: '0', max: '100000', inputmode: 'numeric', value: e.ospiti ?? '' }),
       servizi: inp('servizi', { value: Array.isArray(e.servizi) ? e.servizi.join(', ') : '' }),
       programma: h('textarea', { name: 'programma', rows: '5', maxlength: '10000' }),
       note_squadra: h('textarea', { name: 'note_squadra', rows: '4', maxlength: '10000' }),
-      // il form è già solo per l'admin (rotta adminOnly); per coerenza il campo esiste solo per l'admin
-      note_interne: isAdmin() ? h('textarea', { name: 'note_interne', rows: '4', maxlength: '10000' }) : null,
+      note_interne: isGestione() ? h('textarea', { name: 'note_interne', rows: '4', maxlength: '10000' }) : null,
       importo_chf: inp('importo_chf', { inputmode: 'decimal', value: e.importo_chf ?? '', placeholder: '0.00' }),
     };
     f.programma.value = e.programma || '';
@@ -649,12 +737,15 @@
         field('Fine', f.data_fine),
         field('Località', f.localita),
         field('Sala', f.sala),
+        field('Indirizzo', f.indirizzo, { full: true, hint: 'Via, numero e località: la squadra lo apre su Google Maps.' }),
+        field('Contatto sul posto', f.contatto_luogo_nome, { hint: 'Chi incontra la squadra sul luogo.' }),
+        field('Telefono del contatto', f.contatto_luogo_telefono),
         field('Paese', f.paese),
         field('Ospiti', f.ospiti),
         field('Servizi', f.servizi, { full: true, hint: 'Separate i servizi con una virgola (es. Ledwall, Luci, Audio).' }),
         field('Programma', f.programma, { full: true }),
         field('Note per la squadra', f.note_squadra, { full: true, hint: 'Visibili ai tecnici assegnati a questo evento.' }),
-        f.note_interne ? field('Note interne (solo amministratore)', f.note_interne, { full: true, hint: 'Non visibili ai tecnici.' }) : null),
+        f.note_interne ? field('Note interne (solo ufficio)', f.note_interne, { full: true, hint: 'Non visibili ai tecnici.' }) : null),
       h('h2', null, 'Dati economici'),
       h('div', { class: 'fields' },
         field('Importo (CHF)', f.importo_chf, { hint: 'Es. 2450.00' }),
@@ -679,6 +770,9 @@
         data_fine: f.data_fine.value || null,
         localita: f.localita.value.trim() || null,
         sala: f.sala.value.trim() || null,
+        indirizzo: f.indirizzo.value.trim() || null,
+        contatto_luogo_nome: f.contatto_luogo_nome.value.trim() || null,
+        contatto_luogo_telefono: f.contatto_luogo_telefono.value.trim() || null,
         paese: f.paese.value,
         ospiti: f.ospiti.value === '' ? null : Number(f.ospiti.value),
         servizi: f.servizi.value.split(',').map((s) => s.trim()).filter(Boolean),
@@ -983,8 +1077,8 @@
 
   function viewVietato() {
     page({ title: 'Accesso non consentito' },
-      h('p', { class: 'alert alert--error', role: 'alert' }, 'Questa sezione è riservata agli amministratori.'),
-      h('p', null, h('a', { class: 'btn', href: '#/prossimi' }, 'Torna ai prossimi eventi')));
+      h('p', { class: 'alert alert--error', role: 'alert' }, 'Il vostro profilo non ha accesso a questa sezione.'),
+      h('p', null, h('a', { class: 'btn', href: '#/agenda' }, "Torna all'agenda")));
   }
 
   // ------------------------------------------------------------ contenuti del sito (CMS, contenuti.js)
@@ -997,45 +1091,70 @@
     return cms.view(params, alive);
   }
 
+  // ------------------------------------------------------------ gestionale (gestionale.js)
+  let gest = null;
+  function G() {
+    if (!gest) {
+      if (!window.MeekonGestionale) throw new Error('gestionale.js non caricato');
+      gest = window.MeekonGestionale.create({
+        h, add, clear, api, ApiError, errorMessage, page, toast, field, busy, select, check, loading, failure, empty,
+        td, dl, badge, wide, nextId, dash, fmtDate, fmtRange, fmtMoney, isoDate, addDays, telLink, mailLink, mapLink, markInvalid, panels,
+        state, isAdmin, isGestione, RUOLI, STATI,
+      });
+    }
+    return gest;
+  }
+
   // ------------------------------------------------------------ router
   const ID = '([0-9A-Za-z-]{1,64})';
   const ROUTES = [
-    [/^#\/prossimi$/, viewProssimi, false, 'prossimi'],
-    [/^#\/eventi$/, viewEventi, false, 'eventi'],
-    [/^#\/eventi\/nuovo$/, viewEventoForm, true, 'eventi'],
-    [new RegExp(`^#/evento/${ID}$`), viewEvento, false, 'eventi'],
-    [new RegExp(`^#/evento/${ID}/modifica$`), viewEventoForm, true, 'eventi'],
-    [/^#\/richieste$/, viewRichieste, true, 'richieste'],
-    [new RegExp(`^#/richiesta/${ID}$`), viewRichiesta, true, 'richieste'],
-    [/^#\/clienti$/, viewClienti, true, 'clienti'],
-    [/^#\/clienti\/nuovo$/, viewClienteForm, true, 'clienti'],
-    [new RegExp(`^#/cliente/${ID}$`), viewClienteForm, true, 'clienti'],
-    [/^#\/contenuti$/, viewContenuti, true, 'contenuti'],
-    [/^#\/contenuti\/(galleria|location|dj|partner|testi)$/, viewContenuti, true, 'contenuti'],
+    [/^#\/prossimi$/, viewProssimi, 'tutti', 'prossimi'],
+    [/^#\/eventi$/, viewEventi, 'tutti', 'eventi'],
+    [/^#\/eventi\/nuovo$/, viewEventoForm, 'gestione', 'eventi'],
+    [new RegExp(`^#/evento/${ID}$`), viewEvento, 'tutti', 'eventi'],
+    [new RegExp(`^#/evento/${ID}/modifica$`), viewEventoForm, 'gestione', 'eventi'],
+    [/^#\/richieste$/, viewRichieste, 'gestione', 'richieste'],
+    [new RegExp(`^#/richiesta/${ID}$`), viewRichiesta, 'gestione', 'richieste'],
+    [/^#\/clienti$/, viewClienti, 'gestione', 'clienti'],
+    [/^#\/clienti\/nuovo$/, viewClienteForm, 'gestione', 'clienti'],
+    [new RegExp(`^#/cliente/${ID}$`), viewClienteForm, 'gestione', 'clienti'],
+    [/^#\/contenuti$/, viewContenuti, 'admin', 'contenuti'],
+    [/^#\/contenuti\/(galleria|location|dj|partner|testi)$/, viewContenuti, 'admin', 'contenuti'],
+    [/^#\/agenda$/, (p, a) => G().viewAgenda(p, a), 'tutti', 'agenda'],
+    [/^#\/agenda\/(\d{4}-\d{2}-\d{2})$/, (p, a) => G().viewAgenda(p, a), 'tutti', 'agenda'],
+    [/^#\/assenze$/, (p, a) => G().viewAssenze(p, a), 'tutti', 'assenze'],
+    [/^#\/magazzino$/, (p, a) => G().viewMagazzino(p, a), 'gestione', 'magazzino'],
+    [/^#\/magazzino\/importa$/, (p, a) => G().viewImporta(p, a), 'gestione', 'magazzino'],
+    [new RegExp(`^#/offerta/${ID}$`), (p, a) => G().viewOfferta(p, a), 'gestione', 'eventi'],
+    [/^#\/utenti$/, (p, a) => G().viewUtenti(p, a), 'admin', 'utenti'],
   ];
 
   function route() {
     const my = ++seq;
     const alive = () => my === seq;
-    const hash = window.location.hash || '#/prossimi';
-    for (const [re, view, adminOnly, section] of ROUTES) {
+    const hash = window.location.hash || (state.me.ruolo === 'base' ? '#/agenda' : '#/prossimi');
+    for (const [re, view, accesso, section] of ROUTES) {
       const m = re.exec(hash);
       if (!m) continue;
       nav.querySelectorAll('a').forEach((a) => {
         if (a.dataset.section === section) a.setAttribute('aria-current', 'page');
         else a.removeAttribute('aria-current');
       });
-      if (adminOnly && !isAdmin()) { viewVietato(); return; }
+      if ((accesso === 'admin' && !isAdmin()) || (accesso === 'gestione' && !isGestione())) { viewVietato(); return; }
       Promise.resolve(view(m.slice(1).map(decodeURIComponent), alive)).catch((err) => { if (alive()) failure('Errore', err); });
       return;
     }
-    window.location.replace('#/prossimi');
+    window.location.replace(state.me.ruolo === 'base' ? '#/agenda' : '#/prossimi');
   }
 
   function buildShell() {
     clear(nav);
-    const links = [['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
-    if (isAdmin()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti'], ['#/contenuti', 'Contenuti', 'contenuti']);
+    const links = state.me.ruolo === 'base'
+      ? [['#/agenda', 'Agenda di oggi', 'agenda']]
+      : [['#/agenda', 'Agenda', 'agenda'], ['#/prossimi', 'Prossimi eventi', 'prossimi'], ['#/eventi', 'Eventi', 'eventi']];
+    if (isGestione()) links.push(['#/richieste', 'Richieste dal sito', 'richieste'], ['#/clienti', 'Clienti', 'clienti'], ['#/magazzino', 'Magazzino', 'magazzino']);
+    links.push(['#/assenze', 'Giorni di assenza', 'assenze']);
+    if (isAdmin()) links.push(['#/utenti', 'Utenti e ruoli', 'utenti'], ['#/contenuti', 'Contenuti del sito', 'contenuti']);
     links.forEach(([href, label, section]) => nav.append(h('a', { href, 'data-section': section }, label)));
     const logout = h('button', { class: 'app__link', type: 'button' }, 'Esci');
     logout.addEventListener('click', async () => {

@@ -38,7 +38,7 @@ La `service_role` key **non si usa** in nessuna function.
 ## Modello dati (Postgres, schema `public`)
 | Tabella | Campi principali |
 |---|---|
-| `staff` | `id` (= `auth.users.id`), `nome`, `ruolo` (`admin` \| `tecnico`), `telefono`, `attivo` |
+| `staff` | `id` (= `auth.users.id`), `nome`, `ruolo` (`admin` \| `ufficio` \| `tecnico` \| `base`, migrazione `0006`), `telefono`, `attivo` |
 | `clienti` | `id`, `nome`, `azienda`, `email`, `telefono`, `lingua`, `note`, `created_at` |
 | `eventi` | `id`, `numero_ordine` (unico), `cliente_id`, `titolo`, `tipo`, `stato` (`richiesta` → `offerta` → `confermato` → `completato` / `annullato`), `data_inizio`, `data_fine`, `localita`, `sala`, `paese` (`CH`,`IT`,`DE`,`FR`), `ospiti`, `servizi` (text[]), `programma`, `note_squadra` (visibili ai tecnici assegnati; migrazione `0004`), `note_interne` (solo admin), `importo_chf`, `acconto_pagato`, `saldo_pagato`, `created_at`, `updated_at` |
 | `eventi_staff` | `evento_id`, `staff_id`, `ruolo_evento` (es. tecnico audio, luci, video) |
@@ -110,6 +110,56 @@ Codici d'errore: `invalid_input` (400, con `field`), `invalid_json` (400), `unau
 **Modulo pubblico `POST /api/richiesta`**: campi `nome`, `email` (obbligatori), `telefono`, `tipo`, `data`, `localita`, `ospiti`, `servizi` (ripetibile), `messaggio`, `lingua`, `paese` (facoltativo, `CH`/`IT`/`DE`/`FR`), honeypot `bot-field`; altri campi (es. `form-name`) ignorati. Campi facoltativi `dt_*` del blocco "Dettagli tecnici sul luogo" (vedi sotto). Accetta JSON oppure un normale `<form method="POST" action="/api/richiesta">` (urlencoded o multipart): senza `X-Requested-With: meekon` risponde `303` verso `/grazie.html` (it) o `/{lingua}/grazie.html`, in caso di errore una piccola pagina HTML 400 con link al modulo. Con JSON/`X-Requested-With` risponde `{ok:true}`. `Origin` obbligatorio e uguale ad `ALLOWED_ORIGIN`; `X-Requested-With` non è richiesto qui (un form HTML non può inviarlo) — l'endpoint non usa cookie e scrive solo con il ruolo `anon`. Limite 24 KB.
 
 **Dettagli tecnici sul luogo** (migrazione `0005`): blocco facoltativo del modulo, mostrato da `main.js` solo quando si scelgono schermi/digital banner, luci/strutture, audio, DJ o effetti (senza JavaScript è sempre visibile). I campi si chiamano `dt_<chiave>` e sono validati da `dettagliTecniciSchema` in `netlify/functions/_lib/schemas.js`: ogni valore è un enum fisso, un numero con limiti (`superficie_m2` 1–10000, `altezza_m` 1–40 con un decimale, `decibel_max` 60–120, `musica_fino` `HH:MM`) o un testo breve su una riga (max 80/120 caratteri); `dt_prese` è ripetibile. Le chiavi sconosciute vengono ignorate, i valori vuoti scartati; un valore non valido dà `400 {error:"invalid_input", field:"dt_<chiave>"}`. Il risultato (senza prefisso, solo i campi compilati) va in `richieste_web.dettagli_tecnici`; se è vuoto la colonna non viene inviata. Il database controlla solo che sia un oggetto JSON sotto 8 kB. Contiene anche nome e contatto facoltativi di altri fornitori dell'evento (`forn_<ruolo>_nome`/`_contatto`, ruoli `decorazioni`, `foto`, `musica`, `planner`, `location`): dati di terzi, citati nell'informativa privacy. Dopo 24 mesi la pulizia (`pulisci_richieste_vecchie()` e `_admin()`, ridefinite in `0005`) cancella le richieste senza seguito come prima e, nelle richieste convertite in evento, toglie le chiavi `forn_*` da `dettagli_tecnici`. L'admin li vede in italiano nel dettaglio della richiesta; `converti_richiesta` non li copia nell'evento.
+
+## Gestionale (migrazioni `0006`–`0009`)
+
+Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è scritto "admin" per richieste, clienti, eventi (creare/modificare), squadra, checklist e staff (lettura), ora vale "gestione" = admin + ufficio.** Restano solo admin: cancellare eventi e articoli, utenti e ruoli, contenuti del sito, pulizia delle richieste.
+
+### Ruoli (`0006_ruoli.sql`)
+| Cosa | admin | ufficio | tecnico | base |
+|---|---|---|---|---|
+| Richieste, clienti, offerte, prezzi, note interne | sì | sì | no | no |
+| Eventi: creare, modificare, assegnare la squadra | sì | sì | no | no |
+| Cancellare eventi e articoli | sì | no | no | no |
+| Eventi visibili | tutti | tutti | i propri | i propri **di oggi** |
+| Indirizzo, Maps, contatto sul posto, squadra | sì | sì | sui propri | sui propri di oggi |
+| Magazzino (catalogo con prezzi, disponibilità) | sì | sì | no | no |
+| Lista materiale/checklist dell'evento | sì | sì | spunta caricato/rientrato/note | no |
+| Proprie assenze | sì | sì (anche per gli altri) | sì | sì |
+| Utenti e ruoli, contenuti del sito | sì | no | no | no |
+
+- Helper SQL: `ruolo_corrente()`, `gestione()` (admin o ufficio, attivo), `oggi_ch()` (data a Zurigo). Le funzioni esistenti `imposta_staff_evento`, `converti_richiesta`, `checklist_limita_tecnico` sono state riscritte con `gestione()` al posto di `is_admin()` (sostituzione sul corpo attuale, vedi la migrazione).
+- Trigger `staff_protegge_admin`: impossibile disattivare/declassare/cancellare l'ultimo admin attivo (errore `55000` → API `409`).
+- `eventi`: nuove colonne `indirizzo`, `contatto_luogo_nome`, `contatto_luogo_telefono`; la vista `eventi_tecnico` le restituisce e per il ruolo `base` mostra solo gli eventi in corso oggi.
+- In `_lib/auth.js`: `RUOLI` (i quattro valori ammessi, altri → 403) e `isGestione()`; in `handler.js` il livello `auth: 'gestione'`.
+
+### Magazzino (`0007_magazzino.sql`)
+- `articoli`: `categoria`, `marca`, `descrizione`, `accessori`, `note`, `quantita`, `prezzo_noleggio_giorno`, `prezzo_vendita`, `in_vendita` (materiale usato da vendere, es. la "Abverkaufsliste"), `attivo`. RLS: gestione legge/scrive, solo admin cancella.
+- La lista del materiale di un evento è la `checklist`, con in più `articolo_id` (collegamento facoltativo al catalogo) e `rientrato`; `caricato` = uscito dal magazzino.
+- `disponibilita_articoli(da, a, escludi)`: per articolo `impegnati` (eventi **confermati** nel periodo), `in_offerta` (eventi richiesta/offerta), `fuori` (caricati e non rientrati, adesso), `disponibili` = quantità − impegnati.
+
+### Offerte (`0008_offerte.sql`)
+- `offerte` (versioni 1, 2, … per evento; stato `bozza` → `inviata` → `accettata`/`rifiutata`/`scaduta`; `valida_fino`, `iva_percento` default 8.1, `sconto_chf`, `introduzione`, `condizioni`, `inviata_il`) e `offerte_righe` (`articolo_id` facoltativo, `descrizione`, `quantita` × `giorni` × `prezzo_unitario` − `sconto_percento`).
+- Totali sempre dal DB: vista `offerte_totali` (subtotale, imponibile); l'API aggiunge IVA e totale arrotondato ai 5 centesimi (`totali()` in `offerte.js`, stessa formula in `gestionale.js` per l'anteprima).
+- RPC: `nuova_offerta(evento, copia_da)` (versione successiva, evento richiesta → offerta), `imposta_righe_offerta(offerta, righe)` (solo in bozza, altrimenti `55000` → `409`), `accetta_offerta(offerta)` (accettata + altre versioni aperte scadute + evento confermato con `importo_chf` = totale IVA inclusa, una transazione).
+- Il PDF lo fa il browser: "PDF / Stampa" prepara un documento nascosto (`.stampa`) e chiama `window.print()`; il CSS `@media print` stampa solo quello (A4). L'invio al cliente per ora è manuale.
+
+### Assenze (`0009_assenze.sql`)
+- `assenze` (`staff_id`, `dal`, `al`, `motivo`): ognuno gestisce le proprie, la gestione vede e segna quelle di tutti. Quando si assegna la squadra l'interfaccia mostra chi è assente e chiede conferma.
+
+### API del gestionale
+| Metodo e percorso | Chi | File |
+|---|---|---|
+| `GET /api/staff` · `PATCH /api/staff/:id` `{nome?, telefono?, ruolo?, attivo?}` | gestione · admin (non su sé stesso per ruolo/attivo → 409) | `staff.js` |
+| `GET/POST /api/articoli` (`?q=`, `?in_vendita=1`, `?tutti=1`) · `PATCH /api/articoli/:id` · `DELETE` (admin) | gestione | `articoli.js` |
+| `POST /api/articoli/importa` `{articoli:[…]}` (max 500, 512 KB; errore con `riga`) | gestione | `articoli-importa.js` |
+| `GET /api/articoli/disponibilita?da=&a=&escludi=` | gestione | `articoli-disponibilita.js` |
+| `GET /api/offerte?evento=` · `GET /api/offerte/:id` · `POST /api/offerte` `{evento_id, copia_da?}` · `PATCH /api/offerte/:id` · `DELETE` (solo bozza) | gestione | `offerte.js` |
+| `PUT /api/offerte/:id/righe` `{righe:[…]}` (max 200) | gestione | `offerte-righe.js` |
+| `GET /api/assenze?da=&a=` · `POST /api/assenze` · `DELETE /api/assenze/:id` | tutti (RLS) | `assenze.js` |
+| `DELETE /api/checklist/:id`; `PATCH` accetta anche `rientrato`; `POST /api/eventi/:id/checklist` accetta `articolo_id` | gestione / assegnati | `checklist.js`, `eventi-checklist.js` |
+
+Interfaccia: `area-riservata/gestionale.js` (agenda settimanale o di oggi per il ruolo base, assenze, magazzino con importazione da Excel, offerte, utenti e ruoli), caricato da `app.html` e creato da `app.js` (`MeekonGestionale.create`). Le rotte in `app.js` hanno un livello di accesso `tutti` / `gestione` / `admin`.
 
 ## Contenuti pubblici modificabili (CMS nell'area riservata)
 
