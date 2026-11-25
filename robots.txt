@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /area-riservata/
 Disallow: /api/
+Disallow: /offerta/
 
 Sitemap: https://meekondisplay.ch/sitemap.xml

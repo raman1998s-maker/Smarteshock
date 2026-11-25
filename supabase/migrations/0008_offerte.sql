@@ -160,7 +160,7 @@ begin
                               sconto_percento, sconto_chf, introduzione, condizioni)
     values (p_evento, v_versione,
             coalesce(src.lingua, v_lingua, 'de'),
-            public.oggi_ch() + 14,  -- validità 14 giorni (AGB Meekon)
+            public.oggi_ch() + coalesce((select (dati -> 'regole' ->> 'validita_giorni')::int from public.impostazioni where id = 1), 14),  -- validità (impostazioni, di norma 14 giorni)
             coalesce(src.iva_percento, 8.1), coalesce(src.prezzi_iva_inclusa, true),
             coalesce(src.sconto_percento, 0), coalesce(src.sconto_chf, 0),
             src.introduzione, src.condizioni)

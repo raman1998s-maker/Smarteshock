@@ -14,7 +14,7 @@ const LIST_TECNICO =
   'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,indirizzo,paese,ospiti,servizi,' +
   'cliente_id,cliente_nome,cliente_telefono';
 // Colonne esplicite (non *): il tecnico chiede solo ciò che può vedere.
-const DETAIL_TECNICO = `${LIST_TECNICO},contatto_luogo_nome,contatto_luogo_telefono,programma,note_squadra,created_at,updated_at`;
+const DETAIL_TECNICO = `${LIST_TECNICO},montaggio_da,smontaggio_da,contatto_luogo_nome,contatto_luogo_telefono,programma,note_squadra,created_at,updated_at`;
 const DETAIL_ADMIN = '*,cliente:clienti(id,nome,azienda,email,telefono,lingua)';
 
 function filtri(url) {

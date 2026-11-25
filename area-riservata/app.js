@@ -207,7 +207,7 @@
   }
   function dl(rows) {
     const list = h('dl', { class: 'dl' });
-    rows.forEach(([k, v]) => { if (v !== undefined) add(list, [h('dt', null, k), h('dd', null, v === null ? '—' : v)]); });
+    rows.forEach((row) => { if (!row) return; const [k, v] = row; if (v !== undefined) add(list, [h('dt', null, k), h('dd', null, v === null ? '—' : v)]); });
     return list;
   }
   // ogni pannello della griglia sta in un <div>: così ".panel + .panel" non aggiunge margini nella griglia
@@ -427,8 +427,10 @@
     const dati = h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, "Dati dell'evento")),
       dl([
         ['Tipo', dash(e.tipo)],
+        e.montaggio_da ? ['Montaggio da', fmtDate(e.montaggio_da)] : undefined,
         ['Inizio', fmtDate(e.data_inizio)],
         ['Fine', fmtDate(e.data_fine)],
+        e.smontaggio_da ? ['Smontaggio', fmtDate(e.smontaggio_da)] : undefined,
         ['Località', dash(e.localita)],
         ['Sala', dash(e.sala)],
         ['Indirizzo', e.indirizzo ? h('span', null, e.indirizzo, ' ', mapLink(e.indirizzo, e.localita)) : (e.localita ? mapLink(e.localita) : '—')],
@@ -708,6 +710,8 @@
       stato: select('stato', Object.entries(STATI), e.stato || 'richiesta'),
       data_inizio: inp('data_inizio', { type: 'datetime-local', value: dt(e.data_inizio) }),
       data_fine: inp('data_fine', { type: 'datetime-local', value: dt(e.data_fine) }),
+      montaggio_da: inp('montaggio_da', { type: 'datetime-local', value: dt(e.montaggio_da) }),
+      smontaggio_da: inp('smontaggio_da', { type: 'datetime-local', value: dt(e.smontaggio_da) }),
       localita: inp('localita', { maxlength: '200', value: e.localita || '' }),
       sala: inp('sala', { maxlength: '200', value: e.sala || '' }),
       indirizzo: inp('indirizzo', { maxlength: '300', value: e.indirizzo || '', autocomplete: 'off' }),
@@ -737,8 +741,10 @@
         field('Cliente', f.cliente_id, { hint: 'Il cliente non è in elenco? Createlo prima in "Clienti".' }),
         field('Tipo di evento', f.tipo),
         field('Stato', f.stato),
-        field('Inizio', f.data_inizio),
-        field('Fine', f.data_fine),
+        field('Inizio (servizio)', f.data_inizio),
+        field('Fine (servizio)', f.data_fine),
+        field('Montaggio da', f.montaggio_da),
+        field('Smontaggio', f.smontaggio_da),
         field('Località', f.localita),
         field('Sala', f.sala),
         field('Indirizzo', f.indirizzo, { full: true, hint: 'Via, numero e località: la squadra lo apre su Google Maps.' }),
@@ -772,6 +778,8 @@
         stato: f.stato.value,
         data_inizio: f.data_inizio.value || null,
         data_fine: f.data_fine.value || null,
+        montaggio_da: f.montaggio_da.value || null,
+        smontaggio_da: f.smontaggio_da.value || null,
         localita: f.localita.value.trim() || null,
         sala: f.sala.value.trim() || null,
         indirizzo: f.indirizzo.value.trim() || null,
@@ -1042,14 +1050,19 @@
       email: h('input', { name: 'email', type: 'email', maxlength: '254', value: c.email || '', autocomplete: 'off' }),
       telefono: h('input', { name: 'telefono', type: 'tel', maxlength: '40', value: c.telefono || '', autocomplete: 'off' }),
       lingua: select('lingua', Object.entries(LINGUE), c.lingua || 'it'),
+      indirizzo: h('textarea', { name: 'indirizzo', rows: '3', maxlength: '300', placeholder: 'Via e numero\nCAP Località' }),
+      anrede: h('input', { name: 'anrede', type: 'text', maxlength: '200', value: c.anrede || '', placeholder: 'es. Liebe Anna, lieber Marco · Sehr geehrte Frau Muster' }),
       note: h('textarea', { name: 'note', rows: '4', maxlength: '4000' }),
     };
     f.note.value = c.note || '';
+    f.indirizzo.value = c.indirizzo || '';
     const alert = h('div');
     const save = h('button', { class: 'btn btn--primary', type: 'submit' }, id ? 'Salva le modifiche' : 'Crea cliente');
     const form = h('form', { class: 'panel', novalidate: true }, alert,
       h('div', { class: 'fields' },
         field('Nome e cognome *', f.nome), field('Azienda', f.azienda), field('E-mail', f.email), field('Telefono', f.telefono), field('Lingua', f.lingua),
+        field('Indirizzo completo', f.indirizzo, { hint: "Obbligatorio prima di inviare un'offerta." }),
+        field('Saluto nelle offerte (Anrede)', f.anrede, { hint: 'Privati: "Liebe Anna, lieber Marco" o "Guten Tag Anna und Marco". Aziende: "Sehr geehrte Frau Muster".' }),
         field('Note', f.note, { full: true })),
       h('div', { class: 'panel__foot' }, h('a', { class: 'btn', href: '#/clienti' }, 'Annulla'), save));
     form.addEventListener('submit', (ev) => {
@@ -1063,6 +1076,7 @@
       const body = {
         nome: f.nome.value.trim(), azienda: f.azienda.value.trim() || null, email: f.email.value.trim() || null,
         telefono: f.telefono.value.trim() || null, lingua: f.lingua.value, note: f.note.value.trim() || null,
+        indirizzo: f.indirizzo.value.trim() || null, anrede: f.anrede.value.trim() || null,
       };
       busy(save, async () => {
         try {

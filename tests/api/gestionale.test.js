@@ -17,6 +17,7 @@ const impostazioni = (await import('../../netlify/functions/impostazioni.js')).d
 const eventiCompensi = (await import('../../netlify/functions/eventi-compensi.js')).default;
 const compensi = (await import('../../netlify/functions/compensi.js')).default;
 const spese = (await import('../../netlify/functions/spese.js')).default;
+const pubblica = (await import('../../netlify/functions/offerta-pubblica.js')).default;
 
 const UFF_ID = '00000000-0000-4000-8000-00000000000c';
 const BASE_ID = '00000000-0000-4000-8000-00000000000d';
@@ -188,11 +189,23 @@ describe('offerte', () => {
     assert.deepEqual(writes(calls).map((c) => c.url.pathname), ['/rest/v1/rpc/accetta_offerta']);
   });
 
-  test('"inviata" registra la data di invio', async () => {
-    const calls = mockFetch([staffRoute(P), ['PATCH', /^\/rest\/v1\/offerte\?id=eq\./, (c) => ({ body: [{ id: OFF_ID, ...c.body }] })]]);
-    const res = await offerte(req(`/api/offerte/${OFF_ID}`, { method: 'PATCH', cookie: UFF, body: { stato: 'inviata' } }));
+  test('"inviata": serve l\'indirizzo del cliente, poi data di invio e link segreto', async () => {
+    let indirizzo = null;
+    const calls = mockFetch([
+      staffRoute(P),
+      ['GET', /^\/rest\/v1\/offerte\?id=eq\..*select=token/, () => ({ body: [{ token: null, evento: { cliente: { indirizzo } } }] })],
+      ['PATCH', /^\/rest\/v1\/offerte\?id=eq\./, (c) => ({ body: [{ id: OFF_ID, ...c.body }] })],
+    ]);
+    let res = await offerte(req(`/api/offerte/${OFF_ID}`, { method: 'PATCH', cookie: UFF, body: { stato: 'inviata' } }));
+    assert.equal(res.status, 409);
+    assert.deepEqual(await res.json(), { error: 'conflict', field: 'indirizzo_cliente' });
+    assert.equal(writes(calls).length, 0);
+    indirizzo = 'Via Prova 1\n6900 Lugano';
+    res = await offerte(req(`/api/offerte/${OFF_ID}`, { method: 'PATCH', cookie: UFF, body: { stato: 'inviata' } }));
     assert.equal(res.status, 200);
-    assert.ok(writes(calls)[0].body.inviata_il);
+    const w = writes(calls)[0].body;
+    assert.ok(w.inviata_il);
+    assert.match(w.token, /^[0-9a-f]{48}$/);
   });
 
   test('righe validate e salvate in una sola chiamata', async () => {
@@ -201,7 +214,7 @@ describe('offerte', () => {
     assert.equal(res.status, 400);
     res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', quantita: '2,5', prezzo_unitario: 100 }] } }));
     assert.equal(res.status, 200);
-    assert.deepEqual(calls.at(-1).body.p_righe[0], { descrizione: 'LED', quantita: 2.5, giorni: 1, prezzo_unitario: 100, sconto_percento: 0 });
+    assert.deepEqual(calls.at(-1).body.p_righe[0], { descrizione: 'LED', quantita: 2.5, giorni: 1, prezzo_unitario: 100, sconto_percento: 0, opzionale: false });
   });
 
   test('offerta non più in bozza → 409', async () => {
@@ -302,5 +315,40 @@ describe('paga e spese', () => {
     assert.ok(calls.at(-1).path.includes(`staff_id=eq.${TEC_ID}`));
     await spese(req('/api/spese?tutte=1', { cookie: UFF }));
     assert.ok(!calls.at(-1).path.includes('staff_id=eq.'));
+  });
+});
+
+describe('accettazione online (pubblica)', () => {
+  beforeEach(setEnv);
+  const TOK = 'ab'.repeat(24);
+
+  test('senza token valido → 404, nessuna chiamata a Supabase', async () => {
+    const calls = mockFetch([]);
+    const res = await pubblica(req('/api/offerta-pubblica?t=123'));
+    assert.equal(res.status, 404);
+    assert.equal(calls.length, 0);
+  });
+
+  test('legge il riepilogo con il ruolo anon (nessun JWT utente)', async () => {
+    const calls = mockFetch([['POST', /^\/rest\/v1\/rpc\/offerta_pubblica$/, () => ({ body: { numero: '2026-0007', righe: [] } })]]);
+    const res = await pubblica(req(`/api/offerta-pubblica?t=${TOK}`));
+    assert.equal(res.status, 200);
+    assert.equal(calls[0].headers.get('authorization'), null);
+  });
+
+  test('le due caselle obbligatorie devono essere spuntate; si registra l\'IP', async () => {
+    const calls = mockFetch([['POST', /^\/rest\/v1\/rpc\/accetta_offerta_online$/, () => ({ body: { ok: true, accettata_il: '2026-12-01T10:00:00Z' } })]]);
+    let res = await pubblica(req('/api/offerta-pubblica', { method: 'POST', body: { t: TOK, nome: 'Anna Muster', agb: true, annullamento: false } }));
+    assert.equal(res.status, 400);
+    assert.equal(calls.length, 0);
+    res = await pubblica(req('/api/offerta-pubblica', { method: 'POST', headers: { 'x-nf-client-connection-ip': '203.0.113.7' }, body: { t: TOK, nome: 'Anna Muster', agb: true, annullamento: true, foto: true } }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls[0].body, { p_token: TOK, p_nome: 'Anna Muster', p_foto: true, p_ip: '203.0.113.7' });
+  });
+
+  test('da un altro sito (Origin diverso) → 403', async () => {
+    mockFetch([]);
+    const res = await pubblica(req('/api/offerta-pubblica', { method: 'POST', origin: 'https://evil.example', body: { t: TOK, nome: 'X Y', agb: true, annullamento: true } }));
+    assert.equal(res.status, 403);
   });
 });

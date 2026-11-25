@@ -247,6 +247,14 @@
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
 
+# Pagina pubblica di accettazione delle offerte (link segreto): mai indicizzata, mai in cache
+[[headers]]
+  for = "/offerta/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+
 # API (le functions impostano gli stessi header anche nelle loro risposte)
 [[headers]]
   for = "/api/*"

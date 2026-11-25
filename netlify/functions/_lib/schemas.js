@@ -18,6 +18,8 @@ export const eventoSchema = {
   stato: t.enumOf(STATI_EVENTO, { default: 'richiesta', required: false }),
   data_inizio: t.datetime(),
   data_fine: t.datetime(),
+  montaggio_da: t.datetime(),
+  smontaggio_da: t.datetime(),
   localita: t.string({ max: 200 }),
   sala: t.string({ max: 200 }),
   indirizzo: t.string({ max: 300 }),
@@ -40,6 +42,8 @@ export const clienteSchema = {
   email: t.email(),
   telefono: t.phone(),
   lingua: t.enumOf(LINGUE, { default: 'it' }),
+  indirizzo: t.string({ max: 300, multiline: true }), // obbligatorio prima di inviare un'offerta
+  anrede: t.string({ max: 200 }), // es. "Liebe Anna, lieber Marco" / "Sehr geehrter Herr Muster"
   note: t.string({ max: 4000, multiline: true }),
 };
 
@@ -170,6 +174,7 @@ export const STATI_OFFERTA = ['bozza', 'inviata', 'accettata', 'rifiutata', 'sca
 export const offertaSchema = {
   stato: t.enumOf(STATI_OFFERTA),
   lingua: t.enumOf(LINGUE),
+  anrede: t.string({ max: 200 }),
   prezzi_iva_inclusa: t.bool({ empty: true }),
   sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, empty: 0 }),
   valida_fino: t.date(),
@@ -187,6 +192,7 @@ export const rigaOffertaSchema = {
   giorni: t.decimal({ min: 0.01, max: 365, decimals: 2, default: 1, empty: 1 }),
   prezzo_unitario: t.money({ default: 0, empty: 0 }),
   sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, default: 0, empty: 0 }),
+  opzionale: t.bool({ default: false, empty: false }), // mostrata nel PDF, non sommata
 };
 
 export const compensoSchema = {

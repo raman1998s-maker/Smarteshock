@@ -5,6 +5,7 @@
 // PATCH  /api/offerte/:id             stato, validità, IVA, sconto, testi
 // DELETE /api/offerte/:id             solo se in bozza
 // Le righe si salvano con PUT /api/offerte/:id/righe (offerte-righe.js).
+import { randomBytes } from 'node:crypto';
 import { createHandler } from './_lib/handler.js';
 import { HttpError, json, readJson } from './_lib/http.js';
 import { offertaSchema } from './_lib/schemas.js';
@@ -13,9 +14,12 @@ import { t, validate } from './_lib/validate.js';
 export const config = { path: ['/api/offerte', '/api/offerte/:id'] };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const SELECT = 'id,evento_id,versione,stato,lingua,valida_fino,iva_percento,prezzi_iva_inclusa,sconto_percento,sconto_chf,introduzione,condizioni,inviata_il,created_at,updated_at';
+const SELECT =
+  'id,evento_id,versione,stato,lingua,anrede,valida_fino,iva_percento,prezzi_iva_inclusa,sconto_percento,sconto_chf,introduzione,condizioni,' +
+  'inviata_il,token,accettata_il,accettata_nome,accettata_ip,accettata_agb,accettata_online,foto_consenso,created_at,updated_at';
 const SELECT_EVENTO =
-  'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,indirizzo,paese,ospiti,cliente:clienti(nome,azienda,email,telefono,lingua)';
+  'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,montaggio_da,smontaggio_da,localita,sala,indirizzo,' +
+  'contatto_luogo_nome,contatto_luogo_telefono,paese,ospiti,cliente:clienti(nome,azienda,email,telefono,lingua,indirizzo,anrede)';
 
 /** Totali calcolati dal DB (vista offerte_totali), convertiti in numeri. */
 export function totali(v) {
@@ -55,7 +59,7 @@ export default createHandler(
         if (!Array.isArray(rows) || rows.length !== 1) throw new HttpError(404, 'not_found');
         const offerta = rows[0];
         const [righe, eventi, tot, imp] = await Promise.all([
-          sb.rest(`offerte_righe?offerta_id=eq.${offerta.id}&select=id,articolo_id,posizione,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento&order=posizione.asc`, { token }),
+          sb.rest(`offerte_righe?offerta_id=eq.${offerta.id}&select=id,articolo_id,posizione,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento,opzionale&order=posizione.asc`, { token }),
           sb.rest(`eventi?id=eq.${offerta.evento_id}&select=${encodeURIComponent(SELECT_EVENTO)}`, { token }),
           totaliPer(sb, token, [offerta.id]),
           sb.rest('impostazioni?id=eq.1&select=dati', { token }),
@@ -92,7 +96,14 @@ export default createHandler(
           await sb.rest('rpc/accetta_offerta', { method: 'POST', token, body: { p_offerta: params.id } });
           delete data.stato;
         }
-        if (data.stato === 'inviata') data.inviata_il = new Date().toISOString();
+        if (data.stato === 'inviata') {
+          // prima dell'invio serve l'indirizzo completo del cliente; si crea il link segreto per l'accettazione online
+          const rows = await sb.rest(`offerte?id=eq.${params.id}&select=token,evento:eventi(cliente:clienti(indirizzo))`, { token });
+          if (!Array.isArray(rows) || rows.length !== 1) throw new HttpError(404, 'not_found');
+          if (!rows[0].evento?.cliente?.indirizzo) throw new HttpError(409, 'conflict', { field: 'indirizzo_cliente' });
+          data.inviata_il = new Date().toISOString();
+          if (!rows[0].token) data.token = randomBytes(24).toString('hex');
+        }
         let rows;
         if (Object.keys(data).length) {
           rows = await sb.rest(`offerte?id=eq.${params.id}&select=${SELECT}`, { method: 'PATCH', token, body: data, prefer: 'return=representation' });

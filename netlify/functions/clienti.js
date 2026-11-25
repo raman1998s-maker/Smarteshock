@@ -6,7 +6,7 @@ import { validate } from './_lib/validate.js';
 
 export const config = { path: ['/api/clienti', '/api/clienti/:id'] };
 
-const SELECT = 'id,nome,azienda,email,telefono,lingua,note,created_at,updated_at';
+const SELECT = 'id,nome,azienda,email,telefono,lingua,indirizzo,anrede,note,created_at,updated_at';
 
 /** Testo di ricerca ripulito dai caratteri speciali della sintassi PostgREST. */
 function testoRicerca(raw) {

@@ -972,10 +972,22 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 /* offerta */
 .offerta__righe td { vertical-align: top; }
-.offerta__testo input { width: 100%; min-width: 220px; margin-bottom: var(--sp-1); font-weight: 500; }
+.offerta__testo input[type="text"] { width: 100%; min-width: 220px; margin-bottom: var(--sp-1); font-weight: 500; }
+.offerta__testo .check { display: flex; gap: var(--sp-2); align-items: center; margin-top: var(--sp-1); font-size: var(--fs-xs); color: var(--color-text-2); }
 .offerta__totali { display: flex; justify-content: flex-end; margin-top: var(--sp-4); }
 .offerta__totali .dl { min-width: 260px; }
 .stampa { display: none; }
+
+/* pagina pubblica di accettazione dell'offerta (/offerta/) */
+.login.offerta-pubblica { width: min(760px, 100%); }
+.offerta-pubblica h1 { font-size: var(--fs-xl, 26px); }
+.offerta-pubblica form { display: grid; gap: var(--sp-3); margin-top: var(--sp-4); }
+.offerta-pubblica .check { align-items: flex-start; }
+.offerta-pubblica__totale { display: flex; justify-content: space-between; align-items: baseline; margin: var(--sp-3) 0; padding: var(--sp-3) var(--sp-4);
+  background: var(--c-ink-text); color: var(--c-ivory); border-radius: var(--radius-1); }
+.offerta-pubblica__totale strong { font-size: 1.25rem; font-weight: 500; }
+.offerta-pubblica .offerta-pubblica__totale, .offerta-pubblica .offerta-pubblica__totale * { color: var(--c-ivory); }
+.offerta-pubblica__corpo { display: grid; gap: var(--sp-3); }
 
 /* ---------- Colori forzati (Windows contrasto elevato) ---------- */
 @media (forced-colors: active) {
@@ -996,45 +1008,68 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .table-wrap, .panel { border: 0; }
 }
 
-/* Offerta in PDF: si stampa solo il documento preparato da gestionale.js,
-   impaginato come le offerte Meekon (intestazione, riquadro evento, tabella, totali, firma; AGB a pagina 2). */
+/* Offerta / conferma d'ordine in PDF (area-riservata/offerta-doc.js), specifica di dicembre 2026:
+   fondo bianco, testo #161616, secondario #6A6969, celeste #4DC0DE solo per filetti, superfici avorio,
+   totale su fascia grafite, Jost 9–9,5 pt, etichette maiuscole spaziate, tabella con sole righe orizzontali. */
 @media print {
   body:has(.stampa:not(:empty)) { background: #fff; }
   body:has(.stampa:not(:empty)) .app__main > :not(.stampa) { display: none !important; }
   body:has(.stampa:not(:empty)) .app__main { padding: 0; }
-  .stampa:not(:empty) { display: block; color: #1a1a1a; font: 400 9.5pt/1.45 var(--font-text); }
-  .stampa p { margin: 0; }
-  .stampa__pagina + .stampa__pagina { break-before: page; }
-  .stampa__head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 5mm; border-bottom: .8mm solid var(--c-cyan); }
+  .stampa:not(:empty) { display: block; }
+  .doc { color: #161616; font: 400 9.25pt/1.4 var(--font-text); font-variant-numeric: tabular-nums; }
+  .doc p { margin: 0; }
+  .doc .num { text-align: right; white-space: nowrap; }
+  .doc__pagina + .doc__pagina { break-before: page; }
+  .doc__head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 4mm; border-bottom: .5mm solid #4DC0DE; }
   /* il logo ha la scritta chiara (per fondo scuro): in stampa si scurisce mantenendo le tinte */
-  .stampa__logo { width: 48mm; height: auto; filter: invert(1) hue-rotate(180deg); }
-  .stampa__titolo { text-align: right; }
-  .stampa__titolo h1 { font: 700 20pt/1.1 var(--font-text); letter-spacing: .02em; margin: 0 0 2mm; }
-  .stampa__titolo p { color: #555; }
-  .stampa__parti { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 5mm 0 7mm; }
-  .stampa__etichetta { font-size: 8pt; color: #666; margin-bottom: 1.5mm !important; }
-  .stampa__nome { font-weight: 700; font-size: 10.5pt; }
-  .stampa__multi { white-space: pre-line; }
-  .stampa__box { display: grid; grid-template-columns: 38mm 1fr; gap: 1.5mm 4mm; margin: 0 0 6mm; padding: 3mm 4mm;
-    border: .5mm solid #d6d6e6; border-radius: 3mm; background: #f6f6fb; }
-  .stampa__box dt { color: #666; }
-  .stampa__box dd { margin: 0; font-weight: 700; }
-  .stampa__righe { width: 100%; border-collapse: collapse; }
-  .stampa__righe th { background: var(--c-cyan); color: #fff; font-weight: 700; text-align: left; padding: 2mm 2mm; }
-  .stampa__righe td { padding: 2mm; border: .3mm solid #dcdce8; vertical-align: top; }
-  .stampa__righe .num, .stampa__totali .num { text-align: right; white-space: nowrap; }
-  .stampa__righe tr { break-inside: avoid; }
-  .stampa__totali { width: 85mm; margin: 4mm 0 6mm auto; border-collapse: collapse; }
-  .stampa__totali th { text-align: right; font-weight: 400; padding: 1mm 6mm 1mm 0; }
-  .stampa__totali td { padding: 1mm 0; }
-  .stampa__sconto th, .stampa__sconto td { color: #1d7a3e; }
-  .stampa__totale th, .stampa__totale td { font-weight: 700; font-size: 12pt; padding-top: 2.5mm; }
-  .stampa__testo { white-space: pre-line; margin: 0 0 2mm !important; }
-  .stampa__firma { margin-top: 12mm; }
-  .stampa__firma .stampa__nome { margin-top: 2mm !important; }
-  .stampa__piccolo { color: #666; font-size: 8.5pt; }
-  .stampa__agb h1 { font: 700 15pt/1.2 var(--font-text); margin: 0 0 5mm; }
-  .stampa__agb > .stampa__multi { font-size: 8.5pt; line-height: 1.4; }
-  .stampa__piede { margin-top: 10mm; padding-top: 3mm; border-top: .3mm solid #bbb; font-size: 7.5pt; color: #555; text-align: center; }
-  @page { size: A4; margin: 14mm 15mm; }
+  .doc__logo { width: 44mm; height: auto; filter: invert(1) hue-rotate(180deg); }
+  .doc__titolo { text-align: right; }
+  .doc__titolo h1 { font: 500 17pt/1.1 var(--font-text); text-transform: uppercase; letter-spacing: .16em; margin: 0 0 1.5mm; }
+  .doc__titolo p { color: #6A6969; }
+  .doc__etichetta { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .16em; color: #6A6969; margin-bottom: 1.2mm !important; }
+  .doc__nome { font-weight: 500; }
+  .doc__multi { white-space: pre-line; }
+  .doc__det { display: block; color: #6A6969; }
+  .doc__piccolo { font-size: 8pt; color: #6A6969; }
+  .doc__parti { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 5mm 0; }
+  .doc__evento { display: grid; grid-template-columns: 40mm 1fr; gap: 1mm 4mm; margin: 0 0 5mm; padding: 3.5mm 4.5mm; background: #F2ECE1; border-radius: 2.5mm; }
+  .doc__evento dt { color: #6A6969; }
+  .doc__evento dd { margin: 0; font-weight: 500; }
+  .doc__anrede { margin-bottom: 1.5mm !important; }
+  .doc__testo { white-space: pre-line; margin: 0 0 4mm !important; }
+  .doc__righe { width: 100%; border-collapse: collapse; }
+  .doc__righe th { font-size: 7.5pt; font-weight: 500; text-transform: uppercase; letter-spacing: .16em; color: #6A6969; text-align: left;
+    padding: 0 2mm 1.8mm; border-bottom: .53mm solid #4DC0DE; }
+  .doc__righe th.num { text-align: right; }
+  .doc__righe td { padding: 2mm; border-bottom: .3mm solid #E5E1D8; vertical-align: top; }
+  .doc__righe td:first-child, .doc__righe th:first-child { padding-left: 0; width: 8mm; }
+  .doc__righe td:last-child, .doc__righe th:last-child { padding-right: 0; }
+  .doc__righe tr { break-inside: avoid; }
+  .doc__inbegriffen { margin: 2.5mm 0 0 !important; color: #6A6969; }
+  .doc__totali { width: 85mm; margin: 4mm 0 0 auto; border-collapse: collapse; }
+  .doc__totali th { text-align: left; font-weight: 400; color: #6A6969; padding: .8mm 0; }
+  .doc__totali td { padding: .8mm 0; }
+  .doc__totale { display: flex; justify-content: space-between; align-items: baseline; width: 85mm; margin: 2mm 0 0 auto; padding: 3mm 4mm;
+    background: #161616; color: #F2ECE1; border-radius: 2.5mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc__totale strong { font-size: 14pt; font-weight: 500; }
+  .doc__davon { width: 85mm; margin: 1.5mm 0 0 auto !important; text-align: right; font-size: 8pt; color: #6A6969; }
+  .doc__opzionali { margin-top: 5mm; }
+  .doc__riquadri { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin: 6mm 0 4mm; break-inside: avoid; }
+  .doc__riquadro { padding: 3.5mm 4mm; background: #F2ECE1; border-radius: 2.5mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc__riquadro dl { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: .6mm 4mm; margin: 0 0 1.8mm; }
+  .doc__riquadro dd { margin: 0; text-align: right; font-weight: 500; }
+  .doc__riquadro > p:last-child { font-size: 8pt; color: #6A6969; }
+  .doc__accetta { margin: 4mm 0; padding: 3.5mm 4mm; border: .3mm solid #E5E1D8; border-radius: 2.5mm; break-inside: avoid; }
+  .doc__bottone { display: inline-block; margin: 1.5mm 0; padding: 1.8mm 5mm; border: .4mm solid #161616; border-radius: 2mm; color: #161616; text-decoration: none; font-weight: 500; }
+  .doc__link { font-size: 7.5pt; color: #6A6969; word-break: break-all; margin-bottom: 2.5mm !important; }
+  .doc__firma-carta { margin-top: 9mm; padding-top: 1mm; border-top: .3mm solid #161616; width: 95mm; font-size: 7.5pt; color: #6A6969; }
+  .doc__chiusura { margin-top: 6mm; break-inside: avoid; }
+  .doc__saluti { margin-top: 3mm !important; }
+  .doc__agb h2 { font: 500 12pt/1.2 var(--font-text); text-transform: uppercase; letter-spacing: .12em; margin: 0 0 1mm; }
+  .doc__agb-testo { margin-top: 4mm; columns: 2; column-gap: 7mm; font-size: 7.5pt; line-height: 1.35; }
+  @page {
+    size: A4; margin: 14mm 15mm 20mm;
+    @bottom-left { content: var(--mk-piede-1, "") "\A" var(--mk-piede-2, ""); white-space: pre-wrap; font: 400 6.5pt/1.35 "Jost", sans-serif; color: #6A6969; vertical-align: top; padding-top: 3mm; }
+    @bottom-right { content: var(--mk-pagina, "") counter(page) "/" counter(pages); font: 400 6.5pt/1.35 "Jost", sans-serif; color: #6A6969; vertical-align: top; padding-top: 3mm; }
+  }
 }

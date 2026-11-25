@@ -52,11 +52,11 @@
     }
     /** Totali come nel database (vista offerte_totali): sconti, IVA inclusa o aggiunta, totale ai 5 centesimi. */
     function calcolaTotali(righe, { scontoPct = 0, scontoChf = 0, ivaPct = 0, inclusa = true } = {}) {
-      const subtotale = round2(righe.reduce((s, r) => s + round2((r.quantita || 0) * (r.giorni || 0) * (r.prezzo_unitario || 0) * (1 - (r.sconto_percento || 0) / 100)), 0));
+      const subtotale = round2(righe.filter((r) => !r.opzionale).reduce((s, r) => s + round2((r.quantita || 0) * (r.giorni || 0) * (r.prezzo_unitario || 0) * (1 - (r.sconto_percento || 0) / 100)), 0));
       const scontoPctChf = round2(subtotale * scontoPct / 100);
       const imponibile = Math.max(round2(subtotale - scontoPctChf - scontoChf), 0);
       const totale = inclusa ? Math.round(imponibile * 20) / 20 : Math.round((imponibile + round2(imponibile * ivaPct / 100)) * 20) / 20;
-      const iva = inclusa ? round2(totale - totale / (1 + ivaPct / 100)) : round2(imponibile * ivaPct / 100);
+      const iva = inclusa ? Math.round(totale * ivaPct / (100 + ivaPct) * 20) / 20 : round2(imponibile * ivaPct / 100);
       return { subtotale, sconto_percento: scontoPct, sconto_percento_chf: scontoPctChf, sconto_chf: scontoChf, imponibile, iva_percento: ivaPct, prezzi_iva_inclusa: inclusa, iva, totale };
     }
 
@@ -511,18 +511,7 @@
       return panel;
     }
 
-    // Etichette del PDF nella lingua del cliente (i testi liberi vengono dalle impostazioni).
-    const PDF = {
-      de: { titolo: 'OFFERTE', anfrage: 'Ihre Anfrage für', cliente: 'Kundenname', location: 'Eventlocation', data: 'Eventdatum', nr: 'Auftrags-Nr.', offertaDel: 'Offerte-Datum', valida: 'Gültig bis', pos: 'Pos', artikel: 'Artikel', descr: 'Bezeichnung', qta: 'Anzahl', giorni: 'Tage', prezzo: 'Einzelpreis', importo: 'Preis CHF', sub: 'Zwischentotal', sconto: 'Rabatt', totInkl: 'Total inkl. MwSt.', totExkl: 'Total', netto: 'Total exkl. MwSt.', iva: 'MwSt.', ivaInkl: 'davon MwSt.', agb: 'Allgemeine Geschäftsbedingungen (AGB)' },
-      it: { titolo: 'OFFERTA', anfrage: 'La vostra richiesta per il', cliente: 'Cliente', location: 'Luogo dell\'evento', data: 'Data dell\'evento', nr: 'N. d\'ordine', offertaDel: 'Data dell\'offerta', valida: 'Valida fino al', pos: 'Pos', artikel: 'Articolo', descr: 'Descrizione', qta: 'Quantità', giorni: 'Giorni', prezzo: 'Prezzo unitario', importo: 'Prezzo CHF', sub: 'Subtotale', sconto: 'Sconto', totInkl: 'Totale IVA inclusa', totExkl: 'Totale', netto: 'Totale IVA esclusa', iva: 'IVA', ivaInkl: 'di cui IVA', agb: 'Condizioni generali (CG)' },
-      fr: { titolo: 'OFFRE', anfrage: 'Votre demande pour le', cliente: 'Client', location: 'Lieu de l\'événement', data: 'Date de l\'événement', nr: 'N° de commande', offertaDel: 'Date de l\'offre', valida: 'Valable jusqu\'au', pos: 'Pos', artikel: 'Article', descr: 'Désignation', qta: 'Quantité', giorni: 'Jours', prezzo: 'Prix unitaire', importo: 'Prix CHF', sub: 'Sous-total', sconto: 'Rabais', totInkl: 'Total TVA incluse', totExkl: 'Total', netto: 'Total hors TVA', iva: 'TVA', ivaInkl: 'dont TVA', agb: 'Conditions générales (CG)' },
-      en: { titolo: 'QUOTATION', anfrage: 'Your request for', cliente: 'Customer', location: 'Event location', data: 'Event date', nr: 'Order no.', offertaDel: 'Quotation date', valida: 'Valid until', pos: 'Pos', artikel: 'Item', descr: 'Description', qta: 'Qty', giorni: 'Days', prezzo: 'Unit price', importo: 'Price CHF', sub: 'Subtotal', sconto: 'Discount', totInkl: 'Total incl. VAT', totExkl: 'Total', netto: 'Total excl. VAT', iva: 'VAT', ivaInkl: 'incl. VAT', agb: 'General terms and conditions' },
-    };
     const LINGUE_OFFERTA = { de: 'Tedesco', it: 'Italiano', fr: 'Francese', en: 'Inglese' };
-    /** Data svizzera breve: 29.8.2026 */
-    const dataCh = (v) => { const g = giorno(v); if (!g) return '—'; const [y, m, d] = g.split('-').map(Number); return `${d}.${m}.${y}`; };
-    /** 2'295.– per gli importi tondi, 2'295.50 altrimenti (come nelle offerte Meekon). */
-    const chfTondo = (n) => (Math.abs(n - Math.round(n)) < 0.005 ? `${fmtMoney(n).slice(0, -3)}.–` : fmtMoney(n));
     const importoRiga = (r) => round2(r.quantita * r.giorni * r.prezzo_unitario * (1 - r.sconto_percento / 100));
     const testoCliente = (txt, cli) => String(txt || '').replace(/\{cliente\}/g, cli.azienda || cli.nome || '');
 
@@ -542,18 +531,21 @@
       const ditta = imp.ditta || {};
       const testiDi = (l) => (imp.testi && (imp.testi[l] || imp.testi.de)) || {};
       const bozza = o.stato === 'bozza';
-      const numeroOfferta = `${ev.numero_ordine || ''}/${o.versione}`;
+      const numeroOfferta = o.versione > 1 ? `${ev.numero_ordine || ''}/${o.versione}` : (ev.numero_ordine || '');
+      const OD = window.MeekonOffertaDoc;
       const giorniEvento = ev.data_inizio
         ? Math.max(1, Math.round((parseDate(giorno(ev.data_fine) || giorno(ev.data_inizio)) - parseDate(giorno(ev.data_inizio))) / 86400000) + 1)
         : 1;
       const righe = (data.righe || []).map((r) => ({
         articolo_id: r.articolo_id, titolo: r.titolo || '', descrizione: r.descrizione, quantita: Number(r.quantita), giorni: Number(r.giorni),
-        prezzo_unitario: Number(r.prezzo_unitario), sconto_percento: Number(r.sconto_percento),
+        prezzo_unitario: Number(r.prezzo_unitario), sconto_percento: Number(r.sconto_percento), opzionale: !!r.opzionale,
       }));
 
       // campi dell'offerta
       const lingua = select('lingua', Object.entries(LINGUE_OFFERTA), o.lingua || 'de');
       lingua.disabled = !bozza;
+      const anrede = h('input', { type: 'text', maxlength: '200', disabled: !bozza, placeholder: 'es. Liebe Anna, lieber Marco · Sehr geehrter Herr Muster' });
+      anrede.value = o.anrede || cli.anrede || '';
       const valida = h('input', { type: 'date', value: o.valida_fino || '', disabled: !bozza });
       const iva = h('input', { inputmode: 'decimal', value: String(o.iva_percento ?? 8.1), disabled: !bozza });
       const ivaInclusa = check('prezzi_iva_inclusa', 'Prezzi IVA inclusa (come nelle vostre offerte)', o.prezzi_iva_inclusa !== false);
@@ -565,14 +557,16 @@
       // testi predefiniti dalle impostazioni, nella lingua scelta (solo se l'offerta non ne ha già)
       const riempiTesti = (forza) => {
         const tx = testiDi(lingua.value);
-        if (forza || !intro.value.trim()) intro.value = testoCliente(tx.introduzione, cli);
+        const std = OD.L[lingua.value] || OD.L.de;
+        if (forza || !intro.value.trim()) intro.value = testoCliente(tx.introduzione || std.intro, cli);
         if (forza || !cond.value.trim()) cond.value = testoCliente(tx.condizioni, cli);
+        if (forza || !anrede.value.trim()) anrede.value = cli.anrede || std.anrede(cli.nome || '').trim();
       };
       intro.value = o.introduzione || '';
       cond.value = o.condizioni || '';
       if (bozza) riempiTesti(false);
       lingua.addEventListener('change', () => {
-        if (window.confirm('Sostituire testo iniziale e condizioni con quelli predefiniti nella nuova lingua?')) riempiTesti(true);
+        if (window.confirm('Sostituire saluto, testo iniziale e condizioni con quelli predefiniti nella nuova lingua?')) riempiTesti(true);
       });
 
       const tbody = h('tbody');
@@ -616,7 +610,11 @@
             h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Sposta su riga ${i + 1}`, disabled: i === 0, onclick: () => { righe.splice(i - 1, 0, righe.splice(i, 1)[0]); disegnaRighe(); } }, '↑'),
             h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Togli riga ${i + 1}`, onclick: () => { righe.splice(i, 1); disegnaRighe(); disegnaTotali(); } }, '×')) : null;
           tbody.append(h('tr', null,
-            h('td', { 'data-label': 'Articolo e descrizione', class: 'table__primary offerta__testo' }, tit, desc),
+            h('td', { 'data-label': 'Articolo e descrizione', class: 'table__primary offerta__testo' }, tit, desc, (() => {
+              const op = h('input', { type: 'checkbox', checked: r.opzionale, disabled: !bozza, 'aria-label': `Opzionale riga ${i + 1}` });
+              op.addEventListener('change', () => { r.opzionale = op.checked; disegnaTotali(); });
+              return h('label', { class: 'check' }, op, h('span', null, 'Opzionale (nel PDF, non sommata)'));
+            })()),
             h('td', { 'data-label': 'Q.tà', class: 'num' }, num('quantita', 'Quantità')),
             h('td', { 'data-label': 'Giorni', class: 'num' }, num('giorni', 'Giorni')),
             h('td', { 'data-label': 'Prezzo CHF', class: 'num' }, num('prezzo_unitario', 'Prezzo')),
@@ -667,7 +665,7 @@
         const scP = numero(scontoPct.value) || 0;
         if (!Number.isFinite(ivaN) || !Number.isFinite(scN) || !Number.isFinite(scP) || scP > 100) { alert.append(alertBox('Controllate IVA e sconti: solo numeri, sconto in % al massimo 100.')); return false; }
         await api(`offerte/${encodeURIComponent(o.id)}`, { method: 'PATCH', body: {
-          lingua: lingua.value, valida_fino: valida.value || null, iva_percento: ivaN,
+          lingua: lingua.value, anrede: anrede.value.trim() || null, valida_fino: valida.value || null, iva_percento: ivaN,
           prezzi_iva_inclusa: ivaInclusa.querySelector('input').checked, sconto_percento: scP, sconto_chf: scN,
           introduzione: intro.value.trim() || null, condizioni: cond.value.trim() || null,
         } });
@@ -693,7 +691,13 @@
               await api(`offerte/${encodeURIComponent(o.id)}`, { method: 'PATCH', body: { stato } });
               toast(msg);
               viewOfferta([id], alive);
-            } catch (err) { alert.append(alertBox(errorMessage(err))); }
+            } catch (err) {
+              const conflitto = err instanceof ApiError && err.status === 409;
+              alert.append(alertBox(conflitto && err.field === 'indirizzo_cliente'
+                ? "Prima dell'invio serve l'indirizzo completo del cliente: aggiungetelo nella scheda del cliente."
+                : conflitto && stato === 'accettata' ? "Per confermare serve la location dell'evento (località o indirizzo): aggiungetela nell'evento."
+                  : errorMessage(err)));
+            }
           });
         });
         return b;
@@ -728,80 +732,63 @@
         actions.unshift(del);
       }
 
-      // documento da stampare (nascosto a schermo, visibile solo in stampa), impaginato come le offerte Meekon
+      // documento da stampare (nascosto a schermo, visibile solo in stampa): offerta-doc.js
       const doc = h('section', { class: 'stampa', 'aria-hidden': 'true' });
-      function stampa() {
-        const L = PDF[lingua.value] || PDF.de;
-        const tx = testiDi(lingua.value);
-        const t = totali();
-        const conGiorni = righe.some((r) => r.giorni !== 1);
-        const conSconto = righe.some((r) => r.sconto_percento);
-        const righeTot = [
-          [L.sub, chfTondo(t.subtotale)],
-          t.sconto_percento_chf ? [`${L.sconto} ${t.sconto_percento}%`, `- ${chfTondo(t.sconto_percento_chf)}`, 'stampa__sconto'] : null,
-          t.sconto_chf ? [L.sconto, `- ${chfTondo(t.sconto_chf)}`, 'stampa__sconto'] : null,
-          t.prezzi_iva_inclusa ? null : [L.netto, chfTondo(t.imponibile)],
-          t.prezzi_iva_inclusa ? null : [`${L.iva} ${t.iva_percento}%`, chfTondo(t.iva)],
-        ].filter(Boolean);
-        const luogo = [ev.sala, ev.indirizzo || ev.localita].filter(Boolean).join(', ');
+      const linkCliente = o.token ? `${window.location.origin}/offerta/?t=${o.token}` : null;
+      function stampa(tipo = 'offerta') {
+        const res = OD.build({ h, add }, {
+          tipo, lingua: lingua.value, numero: numeroOfferta, numeroOrdine: ev.numero_ordine, oggi: oggi(), valida: valida.value || null,
+          offerta: o, evento: ev, cliente: cli, impostazioni: imp, righe, totali: totali(),
+          anrede: anrede.value.trim(), intro: intro.value.trim(), condizioni: cond.value.trim(), link: linkCliente,
+        });
         clear(doc);
-        put(doc,
-          h('div', { class: 'stampa__pagina' },
-            h('header', { class: 'stampa__head' },
-              h('img', { src: '/assets/img/logo.png', alt: 'Meekon Displays', class: 'stampa__logo', width: '595', height: '246' }),
-              h('div', { class: 'stampa__titolo' }, h('h1', null, L.titolo), ev.data_inizio ? h('p', null, `${L.anfrage} ${dataCh(ev.data_inizio)}`) : null)),
-            h('div', { class: 'stampa__parti' },
-              h('div', null, h('p', { class: 'stampa__etichetta' }, L.cliente),
-                h('p', { class: 'stampa__nome' }, cli.azienda || cli.nome || '—'),
-                cli.azienda && cli.nome ? h('p', null, cli.nome) : null,
-                cli.telefono ? h('p', null, cli.telefono) : null,
-                cli.email ? h('p', null, cli.email) : null),
-              h('div', null, h('p', { class: 'stampa__etichetta' }, ditta.nome || 'Meekon Display'),
-                ditta.persona ? h('p', { class: 'stampa__nome' }, ditta.persona) : null,
-                ditta.indirizzo ? h('p', { class: 'stampa__multi' }, ditta.indirizzo) : null,
-                ditta.telefono ? h('p', null, `Tel: ${ditta.telefono}`) : null,
-                h('p', null, ditta.email || 'info@meekondisplay.ch'))),
-            h('dl', { class: 'stampa__box' },
-              h('dt', null, `${L.location}:`), h('dd', null, luogo || '—'),
-              h('dt', null, `${L.data}:`), h('dd', null, ev.data_fine && giorno(ev.data_fine) !== giorno(ev.data_inizio) ? `${dataCh(ev.data_inizio)} – ${dataCh(ev.data_fine)}` : dataCh(ev.data_inizio)),
-              h('dt', null, `${L.nr}:`), h('dd', null, numeroOfferta),
-              h('dt', null, `${L.offertaDel}:`), h('dd', null, dataCh(oggi())),
-              valida.value ? [h('dt', null, `${L.valida}:`), h('dd', null, dataCh(valida.value))] : null),
-            h('table', { class: 'stampa__righe' },
-              h('thead', null, h('tr', null,
-                h('th', { class: 'num' }, L.pos), h('th', null, L.artikel), h('th', null, L.descr), h('th', { class: 'num' }, L.qta),
-                conGiorni ? h('th', { class: 'num' }, L.giorni) : null, h('th', { class: 'num' }, L.prezzo),
-                conSconto ? h('th', { class: 'num' }, L.sconto) : null, h('th', { class: 'num' }, L.importo))),
-              h('tbody', null, righe.map((r, i) => h('tr', null,
-                h('td', { class: 'num' }, i + 1), h('td', null, r.titolo || ''), h('td', null, r.descrizione),
-                h('td', { class: 'num' }, r.quantita), conGiorni ? h('td', { class: 'num' }, r.giorni) : null,
-                h('td', { class: 'num' }, chfTondo(r.prezzo_unitario).replace('.–', '')),
-                conSconto ? h('td', { class: 'num' }, r.sconto_percento ? `${r.sconto_percento}%` : '') : null,
-                h('td', { class: 'num' }, chfTondo(importoRiga(r)).replace('.–', '')))))),
-            h('table', { class: 'stampa__totali' }, h('tbody', null,
-              righeTot.map(([k, v, cls]) => h('tr', { class: cls || null }, h('th', null, k), h('td', { class: 'num' }, v.replace(/\.–$/, '')))),
-              h('tr', { class: 'stampa__totale' }, h('th', null, t.prezzi_iva_inclusa ? L.totInkl : L.totExkl), h('td', { class: 'num' }, chfTondo(t.totale))))),
-            intro.value.trim() ? h('p', { class: 'stampa__testo' }, intro.value.trim()) : null,
-            cond.value.trim() ? h('p', { class: 'stampa__testo' }, cond.value.trim()) : null,
-            h('div', { class: 'stampa__firma' },
-              h('p', { class: 'stampa__multi' }, tx.saluti || 'Mit freundlichen Grüssen'),
-              ditta.persona ? h('p', { class: 'stampa__nome' }, ditta.persona) : null,
-              h('p', { class: 'stampa__piccolo' }, [ditta.nome || 'Meekon Display', ditta.slogan].filter(Boolean).join(' – ')),
-              h('p', { class: 'stampa__piccolo' }, [ditta.telefono, ditta.email || 'info@meekondisplay.ch'].filter(Boolean).join(' · ')))),
-          tx.agb ? h('div', { class: 'stampa__pagina stampa__agb' },
-            h('h1', null, `${L.agb.split(' (')[0]} — ${ditta.nome || 'Meekon Display'}`),
-            h('p', { class: 'stampa__multi' }, tx.agb),
-            ditta.piede ? h('footer', { class: 'stampa__piede stampa__multi' }, ditta.piede) : null) : null);
+        doc.append(res.doc);
+        // footer di ogni pagina: testi passati alle margin box di @page (CSS) come variabili
+        const root = document.documentElement.style;
+        root.setProperty('--mk-piede-1', JSON.stringify(res.piede[0]));
+        root.setProperty('--mk-piede-2', JSON.stringify(res.piede[1]));
+        root.setProperty('--mk-pagina', JSON.stringify(res.pagina.replace(/X\/Y$/, '')));
         const titolo = document.title;
-        document.title = `${L.titolo} ${numeroOfferta} ${cli.azienda || cli.nome || ''}`.trim();
+        document.title = `${res.titolo} ${cli.azienda || cli.nome || ''}`.trim();
         window.print();
         document.title = titolo;
+      }
+      if (o.stato === 'accettata') {
+        const conf = h('button', { class: 'btn btn--primary', type: 'button' }, 'Conferma d\'ordine (PDF)');
+        conf.addEventListener('click', () => {
+          if (!ev.localita && !ev.indirizzo) { alert.append(alertBox("Per la conferma d'ordine serve la location dell'evento.")); return; }
+          stampa('conferma');
+        });
+        actions.unshift(conf);
+      }
+
+      // avvisi
+      const avvisi = [];
+      if (!cli.indirizzo && (bozza || o.stato === 'inviata')) avvisi.push(alertBox("Manca l'indirizzo completo del cliente: serve prima di inviare l'offerta. Aggiungetelo nella scheda del cliente."));
+      const mwstOk = ditta.mwst_pflichtig === false || !!ditta.mwst_nr;
+      if (!mwstOk) avvisi.push(alertBox('IVA non ancora impostata: in "Impostazioni" inserite il numero IVA (CHE-…) oppure segnate "non assoggettato all\'IVA". Fino ad allora il PDF scrive solo "Total" senza IVA.', 'info'));
+      if (linkCliente && o.stato === 'inviata') {
+        const copia = h('button', { class: 'btn btn--sm', type: 'button' }, 'Copia link');
+        copia.addEventListener('click', async () => { try { await navigator.clipboard.writeText(linkCliente); toast('Link copiato.'); } catch (err) { toast('Copiate il link a mano.', 'error'); } });
+        avvisi.push(h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Link per il cliente'), copia),
+          h('p', null, 'Il cliente conferma l\'offerta online da qui (è anche nel PDF):'), h('p', null, h('a', { href: linkCliente, target: '_blank', rel: 'noopener' }, linkCliente))));
+      }
+      if (o.accettata_il) {
+        avvisi.push(h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Accettazione')),
+          dl([
+            ['Quando', `${fmtDate(giorno(o.accettata_il))} ${new Date(o.accettata_il).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}`],
+            ['Come', o.accettata_online ? 'Online dal cliente' : "Dall'ufficio"],
+            o.accettata_online ? ['Nome', dash(o.accettata_nome)] : undefined,
+            o.accettata_online ? ['IP', dash(o.accettata_ip)] : undefined,
+            o.accettata_online ? ['Versione AGB', dash(o.accettata_agb)] : undefined,
+            o.accettata_online ? ['Foto con persone come referenza', o.foto_consenso ? 'Sì, consentito' : 'No'] : undefined,
+          ].filter(Boolean))));
       }
 
       disegnaRighe();
       disegnaTotali();
       const senzaImpostazioni = !imp.ditta && isAdmin()
-        ? alertBox('Intestazione, testi e AGB delle offerte non sono ancora compilati: inseriteli una volta in "Impostazioni offerte" e compariranno in tutti i PDF.', 'info')
+        ? alertBox('Intestazione, IBAN e AGB non sono ancora compilati: inseriteli una volta in "Impostazioni" e compariranno in tutti i PDF.', 'info')
         : null;
       page({
         title: `Offerta N. ${numeroOfferta}`,
@@ -811,6 +798,7 @@
       },
       alert,
       senzaImpostazioni,
+      avvisi,
       bozza ? null : alertBox(o.stato === 'accettata' ? "Offerta accettata: l'evento è confermato." : 'Questa offerta non si modifica più. Per cambiarla create una nuova versione.', 'info'),
       panels(
         h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Cliente')),
@@ -827,13 +815,14 @@
         wide(h('section', { class: 'panel' },
           h('div', { class: 'fields' },
             field('Lingua del PDF', lingua, { hint: 'Di norma quella del cliente.' }),
+            field('Saluto (Anrede)', anrede, { hint: 'Privati: "Liebe Anna, lieber Marco". Aziende: "Sehr geehrte Frau Muster".' }),
             field('Valida fino al', valida),
             h('div', { class: 'field' }, ivaInclusa),
             field('IVA %', iva, { hint: '8,1 % per tutti i clienti.' }),
             field('Sconto sul totale (%)', scontoPct),
             field('Sconto sul totale (CHF)', sconto),
-            field('Testo sotto il totale', intro, { full: true, hint: '{cliente} diventa il nome del cliente.' }),
-            field('Condizioni', cond, { full: true }))))),
+            field('Testo iniziale', intro, { full: true, hint: 'Sotto il saluto, prima della tabella. {cliente} diventa il nome del cliente.' }),
+            field('Note aggiuntive', cond, { full: true, hint: 'Facoltative: pagamento e annullamento sono già nei riquadri del PDF.' }))))),
       doc);
     }
 
@@ -841,32 +830,76 @@
     async function viewImpostazioni(_, alive) {
       loading();
       let dati;
-      try { dati = (await api('impostazioni')).impostazioni || {}; } catch (err) { if (alive()) failure('Impostazioni offerte', err); return; }
+      try { dati = (await api('impostazioni')).impostazioni || {}; } catch (err) { if (alive()) failure('Impostazioni', err); return; }
       if (!alive()) return;
+      const OD = window.MeekonOffertaDoc;
       const d = dati.ditta || {};
-      const inp = (v, attrs = {}) => h('input', { type: 'text', value: v || '', ...attrs });
-      const area = (v, rows, max) => { const t = h('textarea', { rows: String(rows), maxlength: String(max) }); t.value = v || ''; return t; };
+      const inp = (v, attrs = {}) => h('input', { type: 'text', value: v ?? '', ...attrs });
+      const area = (v, rows, max, ph) => { const t = h('textarea', { rows: String(rows), maxlength: String(max), placeholder: ph || null }); t.value = v || ''; return t; };
       const f = {
         nome: inp(d.nome, { maxlength: '120', placeholder: 'Meekon Display' }),
-        persona: inp(d.persona, { maxlength: '120', placeholder: 'Nome di chi firma' }),
+        persona: inp(d.persona, { maxlength: '120', placeholder: 'Nome e cognome di chi firma' }),
+        titolo_firma: inp(d.titolo_firma, { maxlength: '80', placeholder: 'Inhaber' }),
         slogan: inp(d.slogan, { maxlength: '160', placeholder: 'LED, Licht- & Tontechnik' }),
         indirizzo: area(d.indirizzo, 3, 300),
         telefono: inp(d.telefono, { type: 'tel', maxlength: '40' }),
         email: inp(d.email, { type: 'email', maxlength: '254', placeholder: 'info@meekondisplay.ch' }),
-        piede: area(d.piede, 3, 1000),
+        iban: inp(d.iban, { maxlength: '42', placeholder: 'CH00 0000 0000 0000 0000 0' }),
+        twint: inp(d.twint, { type: 'tel', maxlength: '40' }),
+        whatsapp: inp(d.whatsapp, { type: 'tel', maxlength: '40' }),
+        mwst_nr: inp(d.mwst_nr, { maxlength: '40', placeholder: 'CHE-123.456.789 MWST' }),
+        piede: area(d.piede, 2, 1000),
       };
+      // IVA: con numero IVA, oppure "non assoggettato" (scelta del titolare)
+      const mwst = select('mwst', [['', '— da decidere —'], ['si', 'Assoggettato all\'IVA (serve il numero IVA)'], ['no', 'Non assoggettato all\'IVA ("nicht mehrwertsteuerpflichtig")']],
+        d.mwst_pflichtig === true ? 'si' : d.mwst_pflichtig === false ? 'no' : '');
+      const reg = { ...OD.REGOLE, ...(dati.regole || {}) };
+      const num = (k, max) => h('input', { type: 'number', min: '0', max: String(max), inputmode: 'numeric', value: String(reg[k]), 'aria-label': k });
+      const g = {
+        validita_giorni: num('validita_giorni', 365), acconto_percento: num('acconto_percento', 100), acconto_giorni: num('acconto_giorni', 90),
+        saldo_giorni_prima: num('saldo_giorni_prima', 90), sofort_sotto_giorni: num('sofort_sotto_giorni', 365), indennita_percento: num('indennita_percento', 100),
+        bedenkfrist_giorni: num('bedenkfrist_giorni', 60), km_inclusi: num('km_inclusi', 1000),
+        agb_versione: inp(reg.agb_versione, { maxlength: '20' }), agb_stand: inp(reg.agb_stand, { maxlength: '40' }),
+      };
+      const scaglioni = (dati.scaglioni && dati.scaglioni.length ? dati.scaglioni : OD.SCAGLIONI).map((x) => ({ ...x }));
+      const tbSc = h('tbody');
+      const disegnaSc = () => {
+        clear(tbSc);
+        scaglioni.forEach((x, i) => {
+          const gm = h('input', { type: 'number', min: '0', max: '3650', class: 'input--num', value: String(x.giorni_min), 'aria-label': `Giorni minimi scaglione ${i + 1}` });
+          const pc = h('input', { type: 'number', min: '0', max: '100', class: 'input--num', value: String(x.percento), 'aria-label': `Percentuale scaglione ${i + 1}` });
+          gm.addEventListener('input', () => { x.giorni_min = Number(gm.value); });
+          pc.addEventListener('input', () => { x.percento = Number(pc.value); });
+          tbSc.append(h('tr', null, h('td', { 'data-label': 'Da quanti giorni prima', class: 'num' }, gm), h('td', { 'data-label': '% dovuta', class: 'num' }, pc),
+            h('td', { 'data-label': '' }, h('button', { class: 'btn btn--ghost btn--sm', type: 'button', onclick: () => { scaglioni.splice(i, 1); disegnaSc(); } }, '×'))));
+        });
+      };
+      disegnaSc();
+
       const testi = {};
       const schede = Object.entries(LINGUE_OFFERTA).map(([l, nome]) => {
         const tx = (dati.testi && dati.testi[l]) || {};
-        testi[l] = { introduzione: area(tx.introduzione, 4, 2000), condizioni: area(tx.condizioni, 4, 4000), saluti: area(tx.saluti, 2, 300), agb: area(tx.agb, 14, 20000) };
+        const std = OD.L[l];
+        testi[l] = {
+          introduzione: area(tx.introduzione, 3, 2000, std.intro),
+          inbegriffen: area(tx.inbegriffen, 2, 500, std.inbegriffen),
+          condizioni: area(tx.condizioni, 2, 4000),
+          chiusura: area(tx.chiusura, 2, 500, std.chiusura),
+          saluti: area(tx.saluti, 1, 300, std.saluti),
+          agb: area(tx.agb, 14, 30000),
+        };
         return h('details', { class: 'panel', open: l === 'de' ? true : null },
-          h('summary', null, h('strong', null, `Testi in ${nome.toLowerCase()}`)),
+          h('summary', null, h('strong', null, `Testi in ${nome.toLowerCase()}`), l === 'de' ? ' (vincolanti per le AGB)' : ''),
+          h('p', { class: 'muted' }, 'Lasciate vuoto per usare il testo grigio proposto.'),
           h('div', { class: 'fields' },
-            field('Testo sotto il totale', testi[l].introduzione, { full: true, hint: 'es. "Sehr geehrte/r {cliente} …". {cliente} diventa il nome del cliente.' }),
-            field('Condizioni', testi[l].condizioni, { full: true, hint: 'es. acconto 50 %, saldo, validità 14 giorni.' }),
-            field('Saluti finali', testi[l].saluti, { full: true }),
-            field('AGB / condizioni generali (seconda pagina del PDF)', testi[l].agb, { full: true })));
+            field('Testo iniziale (dopo il saluto)', testi[l].introduzione, { full: true }),
+            field('Riga "Inbegriffen"', testi[l].inbegriffen, { full: true, hint: '{km} = km inclusi, {von} e {bis} = orari di servizio dell\'evento.' }),
+            field('Note aggiuntive predefinite', testi[l].condizioni, { full: true, hint: 'Facoltative: pagamento e annullamento sono già nei riquadri.' }),
+            field('Chiusura', testi[l].chiusura, { full: true }),
+            field('Saluti', testi[l].saluti, { full: true }),
+            field('AGB (ultima pagina del PDF, su due colonne)', testi[l].agb, { full: true, hint: l === 'de' ? 'Versione tedesca: è quella che fa fede.' : 'Senza testo qui si stampa la versione tedesca.' })));
       });
+
       // tariffe proposte per la paga della squadra
       const tariffe = (dati.tariffe || []).map((t) => ({ ...t }));
       const tbTar = h('tbody');
@@ -885,23 +918,37 @@
         });
       };
       disegnaTariffe();
-      const pannelloTariffe = h('section', { class: 'panel' },
-        h('div', { class: 'panel__head' }, h('h2', null, 'Tariffe della squadra'),
-          h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { tariffe.push({ ruolo: '', tariffa: 0, per_giorno: false }); disegnaTariffe(); } }, 'Aggiungi tariffa')),
-        h('p', { class: 'muted' }, 'Proposte quando si assegna la paga sull\'evento; si possono sempre cambiare caso per caso.'),
-        tabella(['Ruolo', 'CHF', 'Al giorno', ''], tbTar));
+
       const alert = h('div');
       const save = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Salva impostazioni');
       const form = h('form', { novalidate: true },
         alert,
-        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Intestazione della ditta')),
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Ditta (intestazione e firma del PDF)')),
+          h('p', { class: 'muted' }, 'Questi dati stanno solo nel database e compaiono solo nei PDF: mai sul sito pubblico, mai nel codice.'),
           h('div', { class: 'fields' },
-            field('Nome della ditta', f.nome), field('Chi firma', f.persona), field('Slogan', f.slogan),
-            field('Indirizzo', f.indirizzo, { hint: 'Compare solo nei PDF delle offerte, mai sul sito.' }),
-            field('Telefono', f.telefono), field('E-mail', f.email),
-            field('Riga in fondo alle AGB', f.piede, { full: true, hint: 'es. banca, IBAN, TWINT. Resta nel database, non nel codice del sito.' }))),
+            field('Ragione sociale', f.nome), field('Slogan', f.slogan),
+            field('Chi firma', f.persona), field('Titolo di chi firma', f.titolo_firma),
+            field('Indirizzo', f.indirizzo), field('Telefono', f.telefono), field('E-mail', f.email),
+            field('IBAN', f.iban, { hint: 'Nel footer a gruppi di 4.' }), field('TWINT', f.twint), field('WhatsApp', f.whatsapp),
+            field('Riga libera nel footer', f.piede, { full: true }))),
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'IVA')),
+          h('p', { class: 'muted' }, '"Total inkl. 8,1 % MWST" si può scrivere solo con un numero IVA. Senza numero: "nicht mehrwertsteuerpflichtig". Finché non si sceglie, il PDF scrive solo "Total".'),
+          h('div', { class: 'fields' }, field('Situazione IVA', mwst), field('Numero IVA', f.mwst_nr))),
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Regole dell\'offerta')),
+          h('div', { class: 'fields' },
+            field('Validità (giorni)', g.validita_giorni), field('Acconto (%)', g.acconto_percento), field('Acconto entro (giorni dalla conferma)', g.acconto_giorni),
+            field('Saldo (giorni prima dell\'evento)', g.saldo_giorni_prima), field('Tutto subito se l\'evento è entro (giorni)', g.sofort_sotto_giorni),
+            field('Indennità di riservazione (%)', g.indennita_percento), field('Periodo di riflessione (giorni)', g.bedenkfrist_giorni), field('Km inclusi (solo andata)', g.km_inclusi),
+            field('Versione AGB', g.agb_versione), field('Stato AGB', g.agb_stand, { hint: 'es. Dezember 2026' })),
+          h('h3', null, 'Scaglioni di annullamento'),
+          tabella(['Da quanti giorni prima', '% dovuta', ''], tbSc),
+          h('div', { class: 'panel__foot' }, h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { scaglioni.push({ giorni_min: 0, percento: 0 }); disegnaSc(); } }, 'Aggiungi scaglione'))),
         schede,
-        pannelloTariffe,
+        h('section', { class: 'panel' },
+          h('div', { class: 'panel__head' }, h('h2', null, 'Tariffe della squadra'),
+            h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { tariffe.push({ ruolo: '', tariffa: 0, per_giorno: false }); disegnaTariffe(); } }, 'Aggiungi tariffa')),
+          h('p', { class: 'muted' }, 'Proposte quando si assegna la paga sull\'evento; si possono sempre cambiare caso per caso.'),
+          tabella(['Ruolo', 'CHF', 'Al giorno', ''], tbTar)),
         h('div', { class: 'panel__foot' }, save));
       form.addEventListener('submit', (ev) => {
         ev.preventDefault();
@@ -909,18 +956,26 @@
         const val = (x) => x.value.trim() || null;
         const errTar = tariffe.findIndex((t) => !String(t.ruolo || '').trim() || !(Number.isFinite(t.tariffa) && t.tariffa >= 0));
         if (errTar >= 0) { alert.append(alertBox(`Controllate la tariffa ${errTar + 1}: ruolo e importo sono obbligatori.`)); return; }
-        const body = { ditta: {}, testi: {}, tariffe: tariffe.map((t) => ({ ruolo: t.ruolo.trim(), tariffa: t.tariffa, per_giorno: !!t.per_giorno })) };
+        if (mwst.value === 'si' && !f.mwst_nr.value.trim()) { alert.append(alertBox('Con "assoggettato all\'IVA" serve il numero IVA (CHE-…).')); return; }
+        const body = {
+          ditta: {}, testi: {}, regole: {},
+          scaglioni: scaglioni.map((x) => ({ giorni_min: x.giorni_min, percento: x.percento })),
+          tariffe: tariffe.map((t) => ({ ruolo: t.ruolo.trim(), tariffa: t.tariffa, per_giorno: !!t.per_giorno })),
+        };
         Object.entries(f).forEach(([k, el]) => { body.ditta[k] = val(el); });
+        if (body.ditta.iban) body.ditta.iban = body.ditta.iban.replace(/\s+/g, '').toUpperCase();
+        if (mwst.value) body.ditta.mwst_pflichtig = mwst.value === 'si';
+        Object.entries(g).forEach(([k, el]) => { const v = el.value.trim(); if (v !== '') body.regole[k] = el.type === 'number' ? Number(v) : v; });
         Object.entries(testi).forEach(([l, campi]) => {
           const o = {};
           Object.entries(campi).forEach(([k, el]) => { o[k] = val(el); });
           if (Object.values(o).some(Boolean)) body.testi[l] = o;
         });
         busy(save, async () => {
-          try { await api('impostazioni', { method: 'PUT', body }); toast('Impostazioni salvate: valgono per tutte le nuove offerte e i PDF.'); } catch (err) { markInvalid(form, err); alert.append(alertBox(errorMessage(err))); }
+          try { await api('impostazioni', { method: 'PUT', body }); toast('Impostazioni salvate: valgono per tutte le offerte e i PDF.'); } catch (err) { markInvalid(form, err); alert.append(alertBox(errorMessage(err))); }
         });
       });
-      page({ title: 'Impostazioni', sub: 'Intestazione, testi e AGB delle offerte; tariffe della squadra' }, form);
+      page({ title: 'Impostazioni', sub: 'Ditta, IVA, regole e testi delle offerte; tariffe della squadra' }, form);
     }
 
     // ---------------------------------------------------------------- Google Calendar

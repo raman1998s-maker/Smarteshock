@@ -155,6 +155,13 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - "Aggiungi a Google Calendar": link `calendar.google.com/calendar/render?action=TEMPLATE…` su evento e agenda (titolo, orario, luogo, link al gestionale; nessun prezzo).
 - Numero d'ordine: resta `AAAA-NNNN`, l'offerta è `AAAA-NNNN/versione` (deciso con il referente il 25.11.2026).
 
+### Offerta v2 (`0011_offerta_v2.sql`, specifica approvata a dicembre 2026)
+- Cliente: `indirizzo` (obbligatorio prima dell'invio: `PATCH stato=inviata` → `409 {field:"indirizzo_cliente"}`) e `anrede`. Evento: `montaggio_da`, `smontaggio_da` (anche nella vista della squadra). Righe: `opzionale` (nel PDF, non sommate).
+- Con prezzi IVA inclusa la quota "davon MWST" = totale × 8,1 / 108,1 arrotondata ai 5 centesimi. La riga IVA del PDF dipende dalle Impostazioni: con numero IVA "Total inkl. 8,1 % MWST" + "davon MWST"; con `mwst_pflichtig = false` "Total" + "Nicht mehrwertsteuerpflichtig"; se non deciso solo "Total" e un avviso nell'editor.
+- La conferma dall'ufficio (`accetta_offerta`) richiede la location dell'evento (località o indirizzo), altrimenti `55000` → `409`.
+- Accettazione online: all'invio l'API crea `offerte.token` (48 caratteri esadecimali casuali). Il cliente apre `/offerta/?t=…` (pagina pubblica, noindex, no-store, no-referrer) → `GET/POST /api/offerta-pubblica` (`offerta-pubblica.js`, ruolo anon solo lato server) → funzioni `offerta_pubblica(token)` e `accetta_offerta_online(token, nome, foto, ip)` (SECURITY DEFINER, eseguibili solo da anon). Due caselle obbligatorie (AGB, indennità/annullamento) e una facoltativa (foto); si registrano nome, data/ora, IP, versione AGB, consenso foto. Solo offerte "inviate" e non scadute.
+- PDF: `area-riservata/offerta-doc.js` (offerta e conferma d'ordine, etichette DE/IT/FR/EN, regole e scaglioni dalle Impostazioni con i valori della specifica come predefiniti); footer con indirizzo, IBAN a gruppi di 4, "Seite x/y" e versione AGB nelle margin box di `@page` (testo passato con variabili CSS). AGB nell'ultima pagina su due colonne; nelle lingue diverse dal tedesco con la nota che fa fede la versione tedesca. Non ancora: QR per l'accettazione e QR-fattura dell'acconto (servirebbe una libreria per i QR).
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|
@@ -165,7 +172,8 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 | `GET /api/offerte?evento=` · `GET /api/offerte/:id` · `POST /api/offerte` `{evento_id, copia_da?}` · `PATCH /api/offerte/:id` · `DELETE` (solo bozza) | gestione | `offerte.js` |
 | `PUT /api/offerte/:id/righe` `{righe:[…]}` (max 200) | gestione | `offerte-righe.js` |
 | `GET /api/assenze?da=&a=` · `POST /api/assenze` · `DELETE /api/assenze/:id` | tutti (RLS) | `assenze.js` |
-| `GET /api/impostazioni` · `PUT /api/impostazioni` `{ditta, testi:{de,it,fr,en}, tariffe:[…]}` | gestione · admin | `impostazioni.js` |
+| `GET /api/impostazioni` · `PUT /api/impostazioni` `{ditta, regole, scaglioni, testi:{de,it,fr,en}, tariffe:[…]}` | gestione · admin | `impostazioni.js` |
+| `GET /api/offerta-pubblica?t=` · `POST /api/offerta-pubblica` `{t, nome, agb:true, annullamento:true, foto?}` | pubblico (token) | `offerta-pubblica.js` |
 | `GET/PUT /api/eventi/:id/compensi` `{compensi:[{staff_id, ruolo, quantita, tariffa_chf}]}` | gestione | `eventi-compensi.js` |
 | `GET /api/compensi?da=&a=` (i propri) | tutti | `compensi.js` |
 | `GET /api/spese?da=&a=&stato=&tutte=1` · `POST /api/spese` · `PATCH /api/spese/:id` `{stato}` (gestione) · `DELETE` | tutti (RLS) | `spese.js` |

@@ -18,13 +18,38 @@ const dittaSchema = {
   indirizzo: t.string({ max: 300, multiline: true }),
   telefono: t.phone(),
   email: t.email(),
-  piede: t.string({ max: 1000, multiline: true }), // es. banca, IBAN, TWINT (riga in fondo alle AGB)
+  titolo_firma: t.string({ max: 80 }), // es. "Inhaber"
+  iban: t.string({ max: 42, pattern: /^[A-Z]{2}[0-9]{2}[A-Z0-9 ]{10,36}$/ }),
+  twint: t.phone(),
+  whatsapp: t.phone(),
+  mwst_pflichtig: t.bool({ empty: false }), // false = "nicht mehrwertsteuerpflichtig" (niente IVA nel PDF)
+  mwst_nr: t.string({ max: 40, pattern: /^CHE-?\d{3}\.?\d{3}\.?\d{3}( ?(MWST|TVA|IVA))?$/ }),
+  piede: t.string({ max: 1000, multiline: true }), // riga libera in fondo alle pagine
+};
+// Regole dell'offerta (valori predefiniti della specifica di dicembre 2026, modificabili dall'admin).
+const regoleSchema = {
+  validita_giorni: t.int({ min: 1, max: 365 }),
+  acconto_percento: t.int({ min: 0, max: 100 }),
+  acconto_giorni: t.int({ min: 0, max: 90 }),
+  saldo_giorni_prima: t.int({ min: 0, max: 90 }),
+  sofort_sotto_giorni: t.int({ min: 0, max: 365 }),
+  indennita_percento: t.int({ min: 0, max: 100 }),
+  bedenkfrist_giorni: t.int({ min: 0, max: 60 }),
+  km_inclusi: t.int({ min: 0, max: 1000 }),
+  agb_versione: t.string({ max: 20 }),
+  agb_stand: t.string({ max: 40 }),
+};
+const scaglioneSchema = {
+  giorni_min: t.int({ min: 0, max: 3650, required: true }),
+  percento: t.int({ min: 0, max: 100, required: true }),
 };
 const testiSchema = {
   introduzione: t.string({ max: 2000, multiline: true }),
   condizioni: t.string({ max: 4000, multiline: true }),
   saluti: t.string({ max: 300, multiline: true }),
-  agb: t.string({ max: 20000, multiline: true }),
+  inbegriffen: t.string({ max: 500, multiline: true }), // {von} {bis} = orari di servizio
+  chiusura: t.string({ max: 500, multiline: true }),
+  agb: t.string({ max: 30000, multiline: true }),
 };
 
 // Tariffe proposte per la paga della squadra (es. "Autista + Installatore", 300 CHF; "Magazzino", 150 CHF al giorno).
@@ -36,10 +61,18 @@ const tariffaSchema = {
 
 export function validaImpostazioni(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'invalid_input');
-  if (Object.keys(body).some((k) => !['ditta', 'testi', 'tariffe'].includes(k))) throw new HttpError(400, 'invalid_input');
+  if (Object.keys(body).some((k) => !['ditta', 'testi', 'tariffe', 'regole', 'scaglioni'].includes(k))) throw new HttpError(400, 'invalid_input');
+  const scaglioni = body.scaglioni ?? [];
+  if (!Array.isArray(scaglioni) || scaglioni.length > 10) throw new HttpError(400, 'invalid_input', { field: 'scaglioni' });
   const tariffe = body.tariffe ?? [];
   if (!Array.isArray(tariffe) || tariffe.length > 30) throw new HttpError(400, 'invalid_input', { field: 'tariffe' });
-  const out = { ditta: validate(body.ditta ?? {}, dittaSchema), testi: {}, tariffe: tariffe.map((x) => validate(x, tariffaSchema)) };
+  const out = {
+    ditta: validate(body.ditta ?? {}, dittaSchema),
+    regole: validate(body.regole ?? {}, regoleSchema),
+    scaglioni: scaglioni.map((x) => validate(x, scaglioneSchema)).sort((a, b) => b.giorni_min - a.giorni_min),
+    testi: {},
+    tariffe: tariffe.map((x) => validate(x, tariffaSchema)),
+  };
   const testi = body.testi ?? {};
   if (typeof testi !== 'object' || Array.isArray(testi)) throw new HttpError(400, 'invalid_input', { field: 'testi' });
   for (const k of Object.keys(testi)) {
