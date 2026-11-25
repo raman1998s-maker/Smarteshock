@@ -1,4 +1,5 @@
 // GET/POST /api/eventi · GET/PATCH/DELETE /api/eventi/:id
+import { isGestione } from './_lib/auth.js';
 import { createHandler } from './_lib/handler.js';
 import { HttpError, json, readJson } from './_lib/http.js';
 import { STATI_EVENTO, eventoSchema, perTecnico } from './_lib/schemas.js';
@@ -7,13 +8,13 @@ import { isValidDate, validate } from './_lib/validate.js';
 export const config = { path: ['/api/eventi', '/api/eventi/:id'] };
 
 const LIST_ADMIN =
-  'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,paese,ospiti,servizi,' +
+  'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,indirizzo,paese,ospiti,servizi,' +
   'importo_chf,acconto_pagato,saldo_pagato,cliente_id,cliente:clienti(nome,azienda)';
 const LIST_TECNICO =
-  'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,paese,ospiti,servizi,' +
+  'id,numero_ordine,titolo,tipo,stato,data_inizio,data_fine,localita,sala,indirizzo,paese,ospiti,servizi,' +
   'cliente_id,cliente_nome,cliente_telefono';
 // Colonne esplicite (non *): il tecnico chiede solo ciò che può vedere.
-const DETAIL_TECNICO = `${LIST_TECNICO},programma,note_squadra,created_at,updated_at`;
+const DETAIL_TECNICO = `${LIST_TECNICO},contatto_luogo_nome,contatto_luogo_telefono,programma,note_squadra,created_at,updated_at`;
 const DETAIL_ADMIN = '*,cliente:clienti(id,nome,azienda,email,telefono,lingua)';
 
 function filtri(url) {
@@ -47,7 +48,7 @@ async function elenco({ url, sb, token, user }) {
   const q = filtri(url);
   q.set('order', 'data_inizio.asc.nullslast,numero_ordine.asc');
   q.set('limit', '500');
-  if (user.ruolo === 'admin') {
+  if (isGestione(user)) {
     q.set('select', LIST_ADMIN);
     const rows = await sb.rest(`eventi?${q}`, { token });
     return json(200, { eventi: rows || [] });
@@ -59,13 +60,14 @@ async function elenco({ url, sb, token, user }) {
 
 async function dettaglio({ params, sb, token, user }) {
   const id = params.id;
-  const isAdmin = user.ruolo === 'admin';
+  const isAdmin = isGestione(user);
   const [eventi, staff, checklist] = await Promise.all([
     isAdmin
       ? sb.rest(`eventi?id=eq.${id}&select=${encodeURIComponent(DETAIL_ADMIN)}`, { token })
       : sb.rest(`eventi_tecnico?id=eq.${id}&select=${encodeURIComponent(DETAIL_TECNICO)}`, { token }),
     sb.rest(`eventi_staff?evento_id=eq.${id}&select=staff_id,ruolo_evento,staff(nome,telefono)`, { token }),
-    sb.rest(`checklist?evento_id=eq.${id}&select=id,voce,quantita,caricato,note,updated_at&order=created_at.asc`, { token }),
+    // ruolo base: la RLS non restituisce la checklist
+    sb.rest(`checklist?evento_id=eq.${id}&select=id,voce,quantita,articolo_id,caricato,rientrato,note,updated_at&order=created_at.asc`, { token }),
   ]);
   if (!Array.isArray(eventi) || eventi.length !== 1) throw new HttpError(404, 'not_found');
   const evento = isAdmin ? eventi[0] : perTecnico(eventi[0]);
@@ -88,7 +90,7 @@ export default createHandler(
       fn: (ctx) => (ctx.params.id ? dettaglio(ctx) : elenco(ctx)),
     },
     POST: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: false,
       async fn({ req, sb, token }) {
         const data = validate(await readJson(req), eventoSchema);
@@ -98,7 +100,7 @@ export default createHandler(
       },
     },
     PATCH: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: true,
       async fn({ req, params, sb, token }) {
         const data = validate(await readJson(req), eventoSchema, { partial: true });

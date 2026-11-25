@@ -8,7 +8,7 @@ export const PAESI = ['CH', 'IT', 'DE', 'FR'];
 export const LINGUE = ['it', 'de', 'fr', 'en'];
 export const STATI_RICHIESTA = ['nuova', 'gestita', 'scartata'];
 export const CAMPI_ECONOMICI = ['importo_chf', 'acconto_pagato', 'saldo_pagato'];
-/** Campi che il tecnico non riceve mai: importi + note solo per l'admin. */
+/** Campi che tecnico e base non ricevono mai: importi + note interne. */
 export const CAMPI_SOLO_ADMIN = [...CAMPI_ECONOMICI, 'note_interne'];
 
 export const eventoSchema = {
@@ -20,6 +20,9 @@ export const eventoSchema = {
   data_fine: t.datetime(),
   localita: t.string({ max: 200 }),
   sala: t.string({ max: 200 }),
+  indirizzo: t.string({ max: 300 }),
+  contatto_luogo_nome: t.string({ max: 120 }),
+  contatto_luogo_telefono: t.phone(),
   paese: t.enumOf(PAESI, { default: 'CH' }),
   ospiti: t.int({ min: 0, max: 100000 }),
   servizi: t.array(t.string({ max: 80 }), { max: 30 }),
@@ -43,11 +46,14 @@ export const clienteSchema = {
 export const checklistCreateSchema = {
   voce: t.string({ max: 200, required: true }),
   quantita: t.int({ min: 1, max: 100000, default: 1 }),
+  articolo_id: t.uuid(),
   note: t.string({ max: 1000, multiline: true }),
 };
 
+// Il tecnico può cambiare solo caricato, rientrato e note (trigger nel DB).
 export const checklistUpdateSchema = {
   caricato: t.bool(),
+  rientrato: t.bool(),
   note: t.string({ max: 1000, multiline: true }),
 };
 
@@ -142,3 +148,46 @@ export function perTecnico(obj) {
   for (const k of CAMPI_SOLO_ADMIN) delete copy[k];
   return copy;
 }
+
+// ---------------------------------------------------------------------
+// Gestionale: magazzino, offerte, assenze
+// ---------------------------------------------------------------------
+export const articoloSchema = {
+  categoria: t.string({ max: 60, required: true }),
+  marca: t.string({ max: 80 }),
+  descrizione: t.string({ max: 300, required: true }),
+  accessori: t.string({ max: 1000, multiline: true }),
+  note: t.string({ max: 1000, multiline: true }),
+  quantita: t.int({ min: 0, max: 100000, default: 0, empty: 0 }),
+  prezzo_noleggio_giorno: t.money(),
+  prezzo_vendita: t.money(),
+  in_vendita: t.bool({ default: false, empty: false }),
+  attivo: t.bool({ default: true, empty: true }),
+};
+
+export const STATI_OFFERTA = ['bozza', 'inviata', 'accettata', 'rifiutata', 'scaduta'];
+
+export const offertaSchema = {
+  stato: t.enumOf(STATI_OFFERTA),
+  valida_fino: t.date(),
+  iva_percento: t.decimal({ min: 0, max: 30, decimals: 2, empty: 8.1 }),
+  sconto_chf: t.money({ empty: 0 }),
+  introduzione: t.string({ max: 4000, multiline: true }),
+  condizioni: t.string({ max: 4000, multiline: true }),
+};
+
+export const rigaOffertaSchema = {
+  articolo_id: t.uuid(),
+  descrizione: t.string({ max: 500, required: true, multiline: true }),
+  quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),
+  giorni: t.decimal({ min: 0.01, max: 365, decimals: 2, default: 1, empty: 1 }),
+  prezzo_unitario: t.money({ default: 0, empty: 0 }),
+  sconto_percento: t.decimal({ min: 0, max: 100, decimals: 2, default: 0, empty: 0 }),
+};
+
+export const assenzaSchema = {
+  staff_id: t.uuid(),
+  dal: t.date({ required: true }),
+  al: t.date({ required: true }),
+  motivo: t.string({ max: 200 }),
+};

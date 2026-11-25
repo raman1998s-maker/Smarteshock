@@ -19,7 +19,7 @@ function testoRicerca(raw) {
 export default createHandler(
   {
     GET: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: false,
       async fn({ url, sb, token }) {
         const q = new URLSearchParams({ select: SELECT, order: 'nome.asc', limit: '500' });
@@ -33,7 +33,7 @@ export default createHandler(
       },
     },
     POST: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: false,
       async fn({ req, sb, token }) {
         const data = validate(await readJson(req), clienteSchema);
@@ -42,7 +42,7 @@ export default createHandler(
       },
     },
     PATCH: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: true,
       async fn({ req, params, sb, token }) {
         const data = validate(await readJson(req), clienteSchema, { partial: true });

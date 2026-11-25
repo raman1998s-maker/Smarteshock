@@ -32,7 +32,8 @@ export function mapRestError(status, body) {
   const code = body && typeof body === 'object' ? String(body.code || '') : '';
   if (status === 401 || code === 'PGRST301' || code === 'PGRST302' || code === 'PGRST303') return new HttpError(401, 'unauthorized');
   if (code === '42501' || status === 403) return new HttpError(403, 'forbidden');
-  if (code === '23505') return new HttpError(409, 'conflict');
+  // 55000: regola del gestionale (ultimo admin attivo, offerta non più in bozza)
+  if (code === '23505' || code === '55000') return new HttpError(409, 'conflict');
   if (code === 'P0002' || code === 'PGRST116' || status === 404) return new HttpError(404, 'not_found');
   if (INPUT_CODES.has(code) || status === 400) return new HttpError(400, 'invalid_input');
   return new HttpError(502, 'upstream_error');

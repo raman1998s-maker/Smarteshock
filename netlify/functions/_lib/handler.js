@@ -1,7 +1,7 @@
 // Costruttore delle Netlify Functions (v2): metodo, CSRF, autenticazione,
 // ruolo, gestione errori. Ogni endpoint dichiara solo la sua logica.
 
-import { authenticate, checkCsrf } from './auth.js';
+import { authenticate, checkCsrf, isGestione } from './auth.js';
 import { ConfigError, getEnv } from './env.js';
 import { HttpError, errorResponse, json } from './http.js';
 import { createSupabase } from './supabase.js';
@@ -9,7 +9,7 @@ import { createSupabase } from './supabase.js';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * @param {Record<string, {auth?: 'public'|'user'|'admin', xrw?: boolean, csrf?: boolean,
+ * @param {Record<string, {auth?: 'public'|'user'|'gestione'|'admin', xrw?: boolean, csrf?: boolean,
  *   params?: RegExp, fn: Function}>} routes  chiave = metodo HTTP
  * @param {{ pattern: RegExp, paramNames?: string[] }} opts  pattern del percorso
  */
@@ -47,6 +47,7 @@ export function createHandler(routes, { pattern, paramNames = [] }) {
       if (authMode !== 'public') {
         session = await authenticate(req, sb);
         if (authMode === 'admin' && session.user.ruolo !== 'admin') throw new HttpError(403, 'forbidden');
+        if (authMode === 'gestione' && !isGestione(session.user)) throw new HttpError(403, 'forbidden');
       }
 
       const res = await route.fn({ req, url, params, env, sb, session, user: session?.user, token: session?.token });

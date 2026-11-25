@@ -55,7 +55,7 @@ begin
        select 1 from public.staff s
        where s.id <> old.id and s.ruolo = 'admin' and s.attivo
      ) then
-    raise exception 'serve almeno un amministratore attivo' using errcode = '23514';
+    raise exception 'serve almeno un amministratore attivo' using errcode = '55000';
   end if;
   return coalesce(new, old);
 end;

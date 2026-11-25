@@ -9,10 +9,10 @@ export const config = { path: '/api/eventi/:id/checklist' };
 export default createHandler(
   {
     POST: {
-      auth: 'admin',
+      auth: 'gestione',
       async fn({ req, params, sb, token }) {
         const data = validate(await readJson(req), checklistCreateSchema);
-        const rows = await sb.rest('checklist?select=id,evento_id,voce,quantita,caricato,note,updated_at', {
+        const rows = await sb.rest('checklist?select=id,evento_id,voce,quantita,articolo_id,caricato,rientrato,note,updated_at', {
           method: 'POST',
           token,
           body: { ...data, evento_id: params.id },

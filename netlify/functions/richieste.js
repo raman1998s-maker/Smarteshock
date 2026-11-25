@@ -14,7 +14,7 @@ const SELECT = 'id,nome,email,telefono,tipo,data,localita,ospiti,servizi,messagg
 export default createHandler(
   {
     GET: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: false,
       async fn({ url, sb, token }) {
         const q = new URLSearchParams({ select: SELECT, order: 'created_at.desc', limit: '300' });
@@ -28,7 +28,7 @@ export default createHandler(
       },
     },
     PATCH: {
-      auth: 'admin',
+      auth: 'gestione',
       withId: true,
       async fn({ req, params, sb, token }) {
         const data = validate(await readJson(req), { stato: t.enumOf(STATI_RICHIESTA, { required: true }) });

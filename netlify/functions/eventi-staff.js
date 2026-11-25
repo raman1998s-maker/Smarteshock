@@ -14,7 +14,7 @@ const itemSchema = {
 export default createHandler(
   {
     PUT: {
-      auth: 'admin',
+      auth: 'gestione',
       async fn({ req, params, sb, token }) {
         const body = await readJson(req);
         if (Object.keys(body).some((k) => k !== 'assegnazioni')) throw new HttpError(400, 'invalid_input');

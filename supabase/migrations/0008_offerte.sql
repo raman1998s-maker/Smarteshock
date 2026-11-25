@@ -4,6 +4,8 @@
 --                bozza → inviata → accettata / rifiutata / scaduta
 -- offerte_righe  righe dal catalogo (articolo_id) o libere: quantità × giorni × prezzo − sconto %
 -- Totali calcolati sempre dal database (offerte_totali), mai fidandosi del browser.
+-- nuova_offerta(evento, copia_da)   nuova versione (eventualmente copiata da una precedente)
+-- imposta_righe_offerta(id, righe)  sostituisce le righe, solo in bozza
 -- accetta_offerta(id): segna accettata, conferma l'evento e ne aggiorna l'importo (stessa transazione).
 -- Solo gestione (admin + ufficio): i tecnici non vedono le offerte.
 
@@ -92,6 +94,90 @@ begin
 end;
 $$;
 
+-- Nuova offerta (versione successiva) per un evento; con p_copia_da copia testi e righe
+-- di una versione precedente. L'evento passa da "richiesta" a "offerta".
+create or replace function public.nuova_offerta(p_evento uuid, p_copia_da uuid default null)
+returns uuid
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  v_id uuid;
+  v_versione integer;
+  src public.offerte;
+begin
+  if not public.gestione() then
+    raise exception 'permesso negato' using errcode = '42501';
+  end if;
+  perform 1 from public.eventi where id = p_evento for update;
+  if not found then
+    raise exception 'evento inesistente' using errcode = 'P0002';
+  end if;
+  select coalesce(max(versione), 0) + 1 into v_versione from public.offerte where evento_id = p_evento;
+
+  if p_copia_da is not null then
+    select * into src from public.offerte where id = p_copia_da and evento_id = p_evento;
+    if not found then
+      raise exception 'offerta da copiare inesistente' using errcode = 'P0002';
+    end if;
+  end if;
+
+  insert into public.offerte (evento_id, versione, valida_fino, iva_percento, sconto_chf, introduzione, condizioni)
+    values (p_evento, v_versione,
+            public.oggi_ch() + 30,
+            coalesce(src.iva_percento, 8.1), coalesce(src.sconto_chf, 0),
+            src.introduzione, src.condizioni)
+    returning id into v_id;
+
+  if p_copia_da is not null then
+    insert into public.offerte_righe (offerta_id, articolo_id, posizione, descrizione, quantita, giorni, prezzo_unitario, sconto_percento)
+      select v_id, articolo_id, posizione, descrizione, quantita, giorni, prezzo_unitario, sconto_percento
+      from public.offerte_righe where offerta_id = p_copia_da;
+  end if;
+
+  update public.eventi set stato = 'offerta' where id = p_evento and stato = 'richiesta';
+  return v_id;
+end;
+$$;
+
+-- Sostituisce tutte le righe di un'offerta in bozza (una sola transazione).
+-- p_righe: [{"articolo_id": null, "descrizione": "...", "quantita": 1, "giorni": 1,
+--            "prezzo_unitario": 100, "sconto_percento": 0}]
+create or replace function public.imposta_righe_offerta(p_offerta uuid, p_righe jsonb)
+returns void
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  v_stato text;
+begin
+  if not public.gestione() then
+    raise exception 'permesso negato' using errcode = '42501';
+  end if;
+  if jsonb_typeof(p_righe) <> 'array' or jsonb_array_length(p_righe) > 200 then
+    raise exception 'input non valido' using errcode = '22023';
+  end if;
+  select stato into v_stato from public.offerte where id = p_offerta for update;
+  if not found then
+    raise exception 'offerta inesistente' using errcode = 'P0002';
+  end if;
+  if v_stato <> 'bozza' then
+    raise exception 'si modificano solo le offerte in bozza' using errcode = '55000';
+  end if;
+
+  delete from public.offerte_righe where offerta_id = p_offerta;
+  insert into public.offerte_righe (offerta_id, articolo_id, posizione, descrizione, quantita, giorni, prezzo_unitario, sconto_percento)
+    select p_offerta, r.articolo_id, (r.ord - 1)::integer, r.descrizione,
+           coalesce(r.quantita, 1), coalesce(r.giorni, 1), coalesce(r.prezzo_unitario, 0), coalesce(r.sconto_percento, 0)
+    from rows from (jsonb_to_recordset(p_righe) as (
+      articolo_id uuid, descrizione text, quantita numeric, giorni numeric,
+      prezzo_unitario numeric, sconto_percento numeric
+    )) with ordinality as r(articolo_id, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, ord);
+end;
+$$;
+
 alter table public.offerte enable row level security;
 alter table public.offerte_righe enable row level security;
 
@@ -107,5 +193,9 @@ revoke all on public.offerte, public.offerte_righe, public.offerte_totali from p
 grant select, insert, update, delete on public.offerte, public.offerte_righe to authenticated;
 grant select on public.offerte_totali to authenticated;
 
-revoke all on function public.accetta_offerta(uuid) from public, anon;
-grant execute on function public.accetta_offerta(uuid) to authenticated;
+revoke all on function public.accetta_offerta(uuid)              from public, anon;
+revoke all on function public.nuova_offerta(uuid, uuid)          from public, anon;
+revoke all on function public.imposta_righe_offerta(uuid, jsonb) from public, anon;
+grant execute on function public.accetta_offerta(uuid)              to authenticated;
+grant execute on function public.nuova_offerta(uuid, uuid)          to authenticated;
+grant execute on function public.imposta_righe_offerta(uuid, jsonb) to authenticated;

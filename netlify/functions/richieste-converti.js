@@ -12,7 +12,7 @@ export const config = { path: '/api/richieste/:id/converti' };
 export default createHandler(
   {
     POST: {
-      auth: 'admin',
+      auth: 'gestione',
       async fn({ req, params, sb, token }) {
         const { titolo } = validate(await readJson(req, { optional: true }), { titolo: t.string({ max: 200 }) });
         const result = await sb.rest('rpc/converti_richiesta', {
