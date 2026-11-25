@@ -746,7 +746,7 @@
             field('Testo iniziale', intro, { full: true }),
             field('Condizioni', cond, { full: true }),
             field('Valida fino al', valida),
-            field('IVA %', iva, { hint: 'Svizzera 8,1 %. Per clienti esteri può essere 0 %: verificate con la contabilità.' }),
+            field('IVA %', iva, { hint: '8,1 % per tutti i clienti.' }),
             field('Sconto sul totale (CHF)', sconto))))),
       doc);
     }
