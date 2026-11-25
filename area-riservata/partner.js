@@ -116,7 +116,13 @@
       };
       await caricaCatalogo();
       let modelli = [];
-      if (bozza) { try { modelli = (await api('modelli')).modelli || []; } catch (err) { modelli = []; } }
+      try { modelli = (await api('modelli')).modelli || []; } catch (err) { modelli = []; }
+      const scontoP = Number(prof.sconto_partner_percento || 0);
+      const prezzoModello = (m) => r2((Number(m.prezzo_giorno) || 0) * (1 - scontoP / 100));
+      const nomeCat = (id) => (catalogo.find((c) => c.id === id) || {}).descrizione || '?';
+      const contenuto = (comp) => (comp || []).map((c) => `${c.quantita}× ${nomeCat(c.articolo_id)}`).join(', ');
+      const categoriaDi = (r) => (r.tipo === 'pacchetto' ? ((modelli.find((m) => m.id === r.modello_id) || {}).categoria || 'Altro')
+        : r.tipo === 'materiale' ? ((catalogo.find((c) => c.id === r.articolo_id) || {}).categoria || '') : '');
       if (!alive()) return;
       const prezzoPartner = (id2) => (catalogo.find((c) => c.id === id2) || {}).prezzo_partner;
 
@@ -135,7 +141,8 @@
           t.sconto_percento_chf ? [`Sconto ${t.sconto_percento}%`, `– ${chf(t.sconto_percento_chf)}`] : null,
           [t.prezzi_iva_inclusa ? 'Totale IVA inclusa' : 'Totale', h('strong', null, chf(t.totale))],
         ].filter(Boolean)));
-        const costo = righe.filter((r) => r.tipo === 'materiale' && !r.opzionale).reduce((s, r) => s + r2(r.quantita * r.giorni * (Number(prezzoPartner(r.articolo_id)) || 0)), 0);
+        const costo = righe.filter((r) => !r.opzionale && (r.tipo === 'materiale' || r.tipo === 'pacchetto')).reduce((s, r) => s + r2(r.quantita * r.giorni
+          * (r.tipo === 'pacchetto' ? prezzoModello(modelli.find((m) => m.id === r.modello_id) || {}) : (Number(prezzoPartner(r.articolo_id)) || 0))), 0);
         costoBox.textContent = costo ? `Costo del materiale Meekon per voi: ${chf(costo)} (prezzo partner). Il prezzo che vede il cliente lo decidete voi nelle righe.` : 'Nessun materiale Meekon in questa offerta.';
       };
       const disegna = () => {
@@ -153,9 +160,12 @@
           desc.value = r.descrizione;
           desc.addEventListener('input', () => { r.descrizione = desc.value; });
           const art = r.tipo === 'materiale' ? catalogo.find((c) => c.id === r.articolo_id) : null;
+          const mod = r.tipo === 'pacchetto' ? modelli.find((m) => m.id === r.modello_id) : null;
           const info = r.tipo === 'materiale'
             ? h('span', { class: 'table__sub' }, `Materiale Meekon · prezzo partner ${art ? fmtMoney(art.prezzo_partner) : '—'}${art && art.disponibili != null ? ` · liberi ${art.disponibili}` : ''}`)
-            : h('span', { class: 'table__sub' }, 'Vostra prestazione');
+            : r.tipo === 'pacchetto'
+              ? h('span', { class: 'table__sub' }, `Pacchetto Meekon · prezzo partner ${mod ? fmtMoney(prezzoModello(mod)) : '—'}/giorno · ${contenuto(r.componenti)}`)
+              : h('span', { class: 'table__sub' }, 'Vostra prestazione');
           tbody.append(h('tr', null,
             h('td', { 'data-label': 'Riga', class: 'table__primary offerta__testo' }, tit, desc, info),
             h('td', { class: 'num', 'data-label': 'Q.tà' }, numIn('quantita', 'Quantità')),
@@ -190,25 +200,39 @@
         };
         // modello di allestimento (es. schermo dietro con luci sopra): aggiunge tutto il materiale
         let daModello = null;
+        let visivo = null;
+        let selM = null;
+        let addM = null;
         if (modelli.length) {
-          const selM = h('select', { 'aria-label': 'Modello di allestimento' }, h('option', { value: '' }, '— Modello di allestimento —'),
-            modelli.map((m) => h('option', { value: m.id }, m.nome)));
-          const addM = h('button', { class: 'btn', type: 'button' }, 'Aggiungi modello');
+          selM = h('select', { 'aria-label': 'Modello di allestimento' }, h('option', { value: '' }, '— Modello di allestimento —'),
+            modelli.map((m) => h('option', { value: m.id }, `${m.nome}${m.prezzo_giorno != null ? ` — ${fmtMoney(prezzoModello(m))}/giorno` : ''}`)));
+          addM = h('button', { class: 'btn', type: 'button' }, 'Aggiungi modello');
           addM.addEventListener('click', () => {
             const m = modelli.find((x) => x.id === selM.value);
             if (!m) { selM.focus(); return; }
-            m.voci.forEach((v) => {
-              const c = catalogo.find((x) => x.id === v.articolo_id);
-              if (!c) return;
-              righe.push({ tipo: 'materiale', articolo_id: c.id, titolo: c.descrizione.slice(0, 120), descrizione: (c.accessori || [c.marca, c.descrizione].filter(Boolean).join(' ')).slice(0, 500), quantita: v.quantita, giorni: giorniEv(), prezzo_unitario: Number(c.prezzo_partner) || 0, sconto_percento: 0, opzionale: false });
-            });
+            // un pacchetto = una riga con prezzo unico; gli articoli restano come componenti per Meekon
+            const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
+            righe.push({ tipo: 'pacchetto', articolo_id: null, modello_id: m.id, componenti: comp, titolo: m.nome.slice(0, 120),
+              descrizione: (m.descrizione || contenuto(comp)).slice(0, 500), quantita: 1, giorni: giorniEv(), prezzo_unitario: prezzoModello(m), sconto_percento: 0, opzionale: false });
             selM.value = '';
             disegna(); ridisegnaTotali();
             toast(`Modello "${m.nome}" aggiunto: decidete i prezzi per il cliente.`);
           });
           daModello = [selM, addM];
         }
-        aggiungi = h('div', { class: 'toolbar' }, daModello, scelta, addMat, addServ);
+        // configuratore visivo: schede con il disegno dell'allestimento, un clic aggiunge il pacchetto
+        const conDisegno = modelli.filter((m) => m.immagine);
+        if (conDisegno.length) {
+          visivo = h('div', { class: 'modelli-visivi' }, conDisegno.map((m) => {
+            const b = h('button', { class: 'modello-visivo', type: 'button', title: m.descrizione || m.nome },
+              h('img', { src: m.immagine, alt: '' }), h('strong', null, m.nome),
+              h('span', null, m.prezzo_giorno != null ? `${fmtMoney(prezzoModello(m))} CHF / giorno` : ''));
+            b.addEventListener('click', () => { selM.value = m.id; addM.click(); });
+            return b;
+          }));
+        }
+        aggiungi = h('div', null, visivo ? h('p', { class: 'muted' }, 'Scegliete l\'allestimento dal disegno, oppure dalla lista:') : null, visivo,
+          h('div', { class: 'toolbar' }, daModello, scelta, addMat, addServ));
         [f.data_inizio, f.data_fine].forEach((el) => el.addEventListener('change', async () => { await caricaCatalogo(); disegna(); ridisegnaTotali(); }));
       }
 
@@ -227,7 +251,7 @@
           introduzione: f.introduzione.value.trim() || null, condizioni: f.condizioni.value.trim() || null,
         };
         await api(`partner-offerte/${encodeURIComponent(o.id)}`, { method: 'PATCH', body });
-        await api(`partner-offerte/${encodeURIComponent(o.id)}/righe`, { method: 'PUT', body: { righe: righe.map((r) => ({ tipo: r.tipo, articolo_id: r.articolo_id || null, titolo: r.titolo.trim() || null, descrizione: r.descrizione.trim(), quantita: r.quantita, giorni: r.giorni, prezzo_unitario: r.prezzo_unitario, sconto_percento: r.sconto_percento, opzionale: !!r.opzionale })) } });
+        await api(`partner-offerte/${encodeURIComponent(o.id)}/righe`, { method: 'PUT', body: { righe: righe.map((r) => ({ tipo: r.tipo, articolo_id: r.articolo_id || null, modello_id: r.modello_id || null, componenti: r.componenti || null, titolo: r.titolo.trim() || null, descrizione: r.descrizione.trim(), quantita: r.quantita, giorni: r.giorni, prezzo_unitario: r.prezzo_unitario, sconto_percento: r.sconto_percento, opzionale: !!r.opzionale })) } });
         return true;
       };
 
@@ -240,7 +264,7 @@
         const usaMeekon = prof.usa_agb_meekon !== false;
         const imp = {
           ditta: { nome: prof.ragione_sociale || state.me.nome, persona: prof.persona, slogan: prof.slogan, indirizzo: prof.indirizzo, telefono: prof.telefono,
-            email: prof.email || '—', iban: prof.iban, twint: prof.twint, mwst_pflichtig: prof.mwst_pflichtig, mwst_nr: prof.mwst_nr },
+            email: prof.email || null, iban: prof.iban, twint: prof.twint, mwst_pflichtig: prof.mwst_pflichtig, mwst_nr: prof.mwst_nr },
           regole: usaMeekon ? agbM.regole : {},
           scaglioni: usaMeekon ? agbM.scaglioni : [],
           testi: { [l]: { agb: usaMeekon ? ((agbM.testi && (agbM.testi[l] || agbM.testi.de) || {}).agb || '') : (prof.agb || '') } },
@@ -250,7 +274,7 @@
           offerta: o, logo: prof.logo || null, senzaAnnullamento: !usaMeekon,
           evento: { titolo: f.evento_titolo.value, data_inizio: f.data_inizio.value || null, data_fine: f.data_fine.value || null, montaggio_da: f.montaggio_da.value || null, localita: f.luogo.value },
           cliente: { nome: f.cliente_nome.value, azienda: f.cliente_azienda.value, indirizzo: f.cliente_indirizzo.value, email: f.cliente_email.value, telefono: f.cliente_telefono.value },
-          impostazioni: imp, righe, totali: totaliDi(righe, header()),
+          impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totaliDi(righe, header()), partner: true,
           anrede: f.anrede.value.trim(), intro: f.introduzione.value.trim(), condizioni: f.condizioni.value.trim(), link: null,
         });
         clear(doc);

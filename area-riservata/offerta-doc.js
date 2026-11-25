@@ -89,6 +89,40 @@
     },
   };
 
+  // Gruppi della tabella: le categorie del magazzino diventano titoli (Bild & LED, Licht, Ton…), nell'ordine qui sotto.
+  const GRUPPI = [
+    { k: 'led', re: /^(led|led ?wand|display|schermo|schermi|screen|bild|video ?wall)/i, de: 'Bild & LED-Screens', it: 'Immagine e schermi LED', fr: 'Image et écrans LED', en: 'Screens & LED' },
+    { k: 'luci', re: /^(licht|light|lighting|luci|luce|lumi[eè]re)/i, de: 'Licht', it: 'Luci', fr: 'Lumière', en: 'Lighting' },
+    { k: 'audio', re: /^(audio|ton|sound|suono)/i, de: 'Ton', it: 'Audio', fr: 'Son', en: 'Sound' },
+    { k: 'video', re: /^(video|kamera|camera)/i, de: 'Video', it: 'Video', fr: 'Vidéo', en: 'Video' },
+    { k: 'rigging', re: /^(rigging|regging|truss|traversen|podest|bühne|palco|stage)/i, de: 'Rigging & Bühne', it: 'Strutture e palco', fr: 'Structures et scène', en: 'Rigging & stage' },
+    { k: 'strom', re: /^(strom|power|corrente|elettric|kabel|cables?|cavi)/i, de: 'Strom & Kabel', it: 'Corrente e cavi', fr: 'Électricité et câbles', en: 'Power & cables' },
+    { k: 'effetti', re: /^(effekt|effect|effett|nebel|fog)/i, de: 'Effekte', it: 'Effetti', fr: 'Effets', en: 'Effects' },
+  ];
+  const ALTRO = { de: 'Weiteres Material', it: 'Altro materiale', fr: 'Autre matériel', en: 'Other equipment' };
+  const SERVIZI = { de: 'Leistungen', it: 'Prestazioni', fr: 'Prestations', en: 'Services' };
+  /** Titolo del gruppo di una riga: dalla categoria dell'articolo; righe libere = "Leistungen". */
+  function gruppoDi(r, lingua) {
+    const cat = (r.categoria || '').trim();
+    if (!cat) return { k: 'zz_servizi', titolo: SERVIZI[lingua] || SERVIZI.de, ordine: 99 };
+    const i = GRUPPI.findIndex((g) => g.re.test(cat));
+    if (i >= 0) return { k: GRUPPI[i].k, titolo: GRUPPI[i][lingua] || GRUPPI[i].de, ordine: i };
+    return { k: `cat_${cat.toLowerCase()}`, titolo: /^(altro|andere|other|varie)$/i.test(cat) ? (ALTRO[lingua] || ALTRO.de) : cat, ordine: 50 };
+  }
+
+  /** AGB in Markdown semplice → nodi: "## titolo", paragrafi separati da righe vuote, "- " elenchi, **grassetto**. */
+  function agbNodi(h, testo) {
+    const pulito = String(testo || '').replace(/<!--[\s\S]*?-->/g, '').trim();
+    const inline = (riga) => riga.split(/(\*\*[^*]+\*\*)/).filter(Boolean).map((x) => (/^\*\*[^*]+\*\*$/.test(x) ? h('strong', null, x.slice(2, -2)) : x));
+    return pulito.split(/\n\s*\n/).map((blocco) => {
+      const b = blocco.trim();
+      if (/^#\s/.test(b)) return null; // il titolo principale lo stampa già la pagina
+      if (/^#{2,6}\s/.test(b)) return h('h3', null, inline(b.replace(/^#{2,6}\s+/, '')));
+      if (/^[-*]\s/m.test(b) && b.split('\n').every((l) => /^[-*]\s/.test(l.trim()))) return h('ul', null, b.split('\n').map((l) => h('li', null, inline(l.trim().replace(/^[-*]\s+/, '')))));
+      return h('p', null, inline(b.replace(/\s*\n\s*/g, ' ')));
+    }).filter(Boolean);
+  }
+
   const r05 = (n) => Math.round(n * 20) / 20;
   const r2 = (n) => Math.round(n * 100) / 100;
   const giorno = (v) => (v ? String(v).slice(0, 10) : null);
@@ -149,9 +183,24 @@
       h('td', { class: 'num' }, r.quantita),
       h('td', { class: 'num' }, chfT(r.prezzo_unitario)),
       h('td', { class: 'num' }, chfT(importo(r))));
-    const tabella = (list) => h('table', { class: 'doc__righe' },
-      h('thead', null, h('tr', null, h('th', { class: 'num' }, tx.pos), h('th', null, tx.leistung), h('th', { class: 'num' }, tx.menge), h('th', { class: 'num' }, tx.prezzo), h('th', { class: 'num' }, tx.totale))),
-      h('tbody', null, list.map(rigaTab)));
+    // righe raggruppate per categoria (titolo del gruppo + subtotale), numerazione continua
+    const tabella = (list) => {
+      const gruppi = new Map();
+      list.forEach((r) => {
+        const g = gruppoDi(r, d.lingua);
+        if (!gruppi.has(g.k)) gruppi.set(g.k, { ...g, righe: [] });
+        gruppi.get(g.k).righe.push(r);
+      });
+      const ordinati = [...gruppi.values()].sort((a, b) => a.ordine - b.ordine || a.titolo.localeCompare(b.titolo));
+      const piuGruppi = ordinati.length > 1;
+      let n = 0;
+      return h('table', { class: 'doc__righe' },
+        h('thead', null, h('tr', null, h('th', { class: 'num' }, tx.pos), h('th', null, tx.leistung), h('th', { class: 'num' }, tx.menge), h('th', { class: 'num' }, tx.prezzo), h('th', { class: 'num' }, tx.totale))),
+        ordinati.map((g) => h('tbody', { class: 'doc__gruppo' },
+          piuGruppi ? h('tr', { class: 'doc__gruppo-titolo' }, h('th', { colspan: '4' }, g.titolo),
+            h('th', { class: 'num' }, chfT(g.righe.reduce((t2, r) => t2 + importo(r), 0)))) : null,
+          g.righe.map((r) => rigaTab(r, n++)))));
+    };
 
     // pagamento
     const giornoEvento = giorno(ev.data_inizio);
@@ -179,38 +228,46 @@
 
     const pagina1 = h('div', { class: 'doc__pagina' },
       h('header', { class: 'doc__head' },
-        // logo: quello del partner (data URL dal profilo) o quello di Meekon
+        // logo: quello del partner (data URL dal profilo), quello di Meekon, o il nome del partner senza logo
         d.logo
           ? h('img', { src: d.logo, alt: ditta.nome || '', class: 'doc__logo doc__logo--partner' })
-          : h('img', { src: '/assets/img/logo.png', alt: 'Meekon Displays', class: 'doc__logo', width: '595', height: '246' }),
+          : d.partner
+            ? h('p', { class: 'doc__logo-testo' }, ditta.nome || '')
+            : h('img', { src: '/assets/img/logo.png', alt: 'Meekon Displays', class: 'doc__logo', width: '595', height: '246' }),
         h('div', { class: 'doc__titolo' },
           h('h1', null, titoloDoc),
-          h('p', null, conferma
-            ? `${numeroDoc} · ${dataCh(oggi)}`
-            : [`${tx.nr} ${d.numero}`, dataCh(oggi), d.valida ? `${tx.valida} ${dataCh(d.valida)}` : null].filter(Boolean).join(' · ')),
-          conferma && d.offerta.accettata_il ? h('p', null, tx.accettataIl(`${dataCh(d.offerta.accettata_il)}, ${new Date(d.offerta.accettata_il).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}`, d.offerta.accettata_nome)) : null)),
-      h('div', { class: 'doc__parti' },
-        h('div', null, h('p', { class: 'doc__etichetta' }, tx.per),
-          h('p', { class: 'doc__nome' }, cli.azienda || cli.nome || '—'),
-          cli.azienda && cli.nome ? h('p', null, cli.nome) : null,
-          cli.indirizzo ? h('p', { class: 'doc__multi' }, cli.indirizzo) : null,
-          cli.email ? h('p', null, cli.email) : null,
-          cli.telefono ? h('p', null, cli.telefono) : null),
-        h('div', null, h('p', { class: 'doc__etichetta' }, tx.da),
-          h('p', { class: 'doc__nome' }, ditta.nome || 'Meekon Display'),
-          ditta.indirizzo ? h('p', { class: 'doc__multi' }, ditta.indirizzo) : null,
-          ditta.telefono ? h('p', null, ditta.telefono) : null,
-          h('p', null, ditta.email || 'info@meekondisplay.ch'))),
-      h('dl', { class: 'doc__evento' },
-        h('dt', null, tx.anlass), h('dd', null, ev.titolo || '—'),
-        h('dt', null, tx.datum), h('dd', null, ev.data_fine && giorno(ev.data_fine) !== giorno(ev.data_inizio) ? `${dataCh(ev.data_inizio)} – ${dataCh(ev.data_fine)}` : dataCh(ev.data_inizio)),
-        h('dt', null, tx.location), h('dd', null, luogo || tx.daDefinire),
-        ev.montaggio_da ? [h('dt', null, tx.aufbau), h('dd', null, quandoCh(ev.montaggio_da))] : null,
-        betrieb ? [h('dt', null, tx.betrieb), h('dd', null, betrieb)] : null,
-        ev.smontaggio_da ? [h('dt', null, tx.abbau), h('dd', null, quandoCh(ev.smontaggio_da))] : null,
-        ev.contatto_luogo_nome || ev.contatto_luogo_telefono ? [h('dt', null, tx.kontakt), h('dd', null, [ev.contatto_luogo_nome, ev.contatto_luogo_telefono].filter(Boolean).join(', '))] : null),
+          h('dl', { class: 'doc__meta' },
+            conferma
+              ? [h('div', null, h('dt', null, fattura ? tx.fatturaNr : tx.auftrag), h('dd', null, fattura ? d.numero : d.numeroOrdine)),
+                h('div', null, h('dt', null, tx.datum), h('dd', null, dataCh(oggi)))]
+              : [h('div', null, h('dt', null, tx.nr), h('dd', null, d.numero)),
+                h('div', null, h('dt', null, tx.datum), h('dd', null, dataCh(oggi))),
+                d.valida ? h('div', null, h('dt', null, tx.valida), h('dd', null, dataCh(d.valida))) : null]),
+          conferma && d.offerta.accettata_il ? h('p', { class: 'doc__accettata' }, tx.accettataIl(`${dataCh(d.offerta.accettata_il)}, ${new Date(d.offerta.accettata_il).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}`, d.offerta.accettata_nome)) : null)),
+      h('div', { class: 'doc__intestazione' },
+        h('div', { class: 'doc__parti' },
+          h('div', { class: 'doc__parte' }, h('p', { class: 'doc__etichetta' }, tx.per),
+            h('p', { class: 'doc__nome' }, cli.azienda || cli.nome || '—'),
+            cli.azienda && cli.nome ? h('p', null, cli.nome) : null,
+            cli.indirizzo ? h('p', { class: 'doc__multi' }, cli.indirizzo) : null,
+            cli.email || cli.telefono ? h('p', { class: 'doc__piccolo' }, [cli.email, cli.telefono].filter(Boolean).join(' · ')) : null),
+          h('div', { class: 'doc__parte' }, h('p', { class: 'doc__etichetta' }, tx.da),
+            h('p', { class: 'doc__nome' }, ditta.nome || 'Meekon Display'),
+            ditta.indirizzo ? h('p', { class: 'doc__multi' }, ditta.indirizzo) : null,
+            [ditta.telefono, ditta.email || (d.partner ? null : 'info@meekondisplay.ch')].filter(Boolean).length
+              ? h('p', { class: 'doc__piccolo' }, [ditta.telefono, ditta.email || (d.partner ? null : 'info@meekondisplay.ch')].filter(Boolean).join(' · ')) : null)),
+        h('section', { class: 'doc__evento' },
+          h('p', { class: 'doc__etichetta' }, tx.anlass),
+          h('p', { class: 'doc__evento-titolo' }, ev.titolo || '—'),
+          h('dl', null,
+            h('dt', null, tx.datum), h('dd', null, ev.data_fine && giorno(ev.data_fine) !== giorno(ev.data_inizio) ? `${dataCh(ev.data_inizio)} – ${dataCh(ev.data_fine)}` : dataCh(ev.data_inizio)),
+            h('dt', null, tx.location), h('dd', null, luogo || tx.daDefinire),
+            ev.montaggio_da ? [h('dt', null, tx.aufbau), h('dd', null, quandoCh(ev.montaggio_da))] : null,
+            betrieb ? [h('dt', null, tx.betrieb), h('dd', null, betrieb)] : null,
+            ev.smontaggio_da ? [h('dt', null, tx.abbau), h('dd', null, quandoCh(ev.smontaggio_da))] : null,
+            ev.contatto_luogo_nome || ev.contatto_luogo_telefono ? [h('dt', null, tx.kontakt), h('dd', null, [ev.contatto_luogo_nome, ev.contatto_luogo_telefono].filter(Boolean).join(', '))] : null))),
       d.anrede ? h('p', { class: 'doc__anrede' }, `${d.anrede},`) : null,
-      d.intro ? h('p', { class: 'doc__testo' }, fill(d.intro)) : null,
+      d.intro && !fattura ? h('p', { class: 'doc__testo' }, fill(d.intro)) : null,
       tabella(base),
       h('p', { class: 'doc__inbegriffen' }, fill(testi.inbegriffen || tx.inbegriffen)),
       h('table', { class: 'doc__totali' }, h('tbody', null,
@@ -226,7 +283,7 @@
           h('dl', null, pagamento.map(([k, v]) => [h('dt', null, k), h('dd', null, v)])),
           h('p', null, tx.modo),
           ditta.iban ? h('p', null, `${tx.pagabile}: ${ditta.nome || ''}, IBAN ${iban4(ditta.iban)}`) : null),
-        d.senzaAnnullamento ? null : h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.annullamento),
+        d.senzaAnnullamento || fattura ? null : h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.annullamento),
           h('dl', null, righeAnnullamento(tx, scaglioni).map(([k, v]) => [h('dt', null, k), h('dd', null, v)])),
           h('p', null, [tx.indennita(reg.indennita_percento), giorniAlEvento == null || giorniAlEvento > reg.sofort_sotto_giorni ? tx.bedenk(reg.bedenkfrist_giorni) : null].filter(Boolean).join(' ')))),
       d.condizioni ? h('p', { class: 'doc__testo' }, fill(d.condizioni)) : null,
@@ -242,11 +299,11 @@
     const agb = !conferma && agbTesto ? h('div', { class: 'doc__pagina doc__agb' },
       h('h2', null, tx.agbTitolo),
       h('p', { class: 'doc__piccolo' }, [tx.agbStand(reg.agb_versione, reg.agb_stand), tx.massgebend].filter(Boolean).join(' · ')),
-      h('div', { class: 'doc__agb-testo doc__multi' }, agbTesto)) : null;
+      h('div', { class: 'doc__agb-testo' }, agbNodi(h, agbTesto))) : null;
 
     // footer di tutte le pagine (testo nelle "margin box" di @page tramite variabili CSS)
     const piede = [
-      [ditta.nome || 'Meekon Display', (ditta.indirizzo || '').replace(/\s*\n\s*/g, ', '), ditta.telefono, ditta.email || 'info@meekondisplay.ch'].filter(Boolean).join(' · '),
+      [ditta.nome || 'Meekon Display', (ditta.indirizzo || '').replace(/\s*\n\s*/g, ', '), ditta.telefono, ditta.email || (d.partner ? null : 'info@meekondisplay.ch')].filter(Boolean).join(' · '),
       [ditta.iban ? `IBAN ${iban4(ditta.iban)}` : null, ditta.twint ? `TWINT ${ditta.twint}` : null, ditta.whatsapp ? `WhatsApp ${ditta.whatsapp}` : null,
         mwst === 'si' ? `MWST ${ditta.mwst_nr}` : null, tx.agbRef(reg.agb_versione), ditta.piede || null].filter(Boolean).join(' · '),
     ];

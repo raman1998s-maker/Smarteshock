@@ -17,6 +17,7 @@ export default createHandler(
         if (!Array.isArray(body.righe) || body.righe.length > 200) throw new HttpError(400, 'invalid_input', { field: 'righe' });
         const righe = body.righe.map((r) => validate(r, partnerRigaSchema));
         if (righe.some((r) => r.tipo === 'materiale' && !r.articolo_id)) throw new HttpError(400, 'invalid_input', { field: 'articolo_id' });
+        if (righe.some((r) => r.tipo === 'pacchetto' && !(r.componenti && r.componenti.length))) throw new HttpError(400, 'invalid_input', { field: 'componenti' });
         await sb.rest('rpc/imposta_righe_partner', { method: 'POST', token, body: { p_offerta: params.id, p_righe: righe } });
         return json(200, { ok: true, righe: righe.length });
       },

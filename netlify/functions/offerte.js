@@ -59,7 +59,7 @@ export default createHandler(
         if (!Array.isArray(rows) || rows.length !== 1) throw new HttpError(404, 'not_found');
         const offerta = rows[0];
         const [righe, eventi, tot, imp] = await Promise.all([
-          sb.rest(`offerte_righe?offerta_id=eq.${offerta.id}&select=id,articolo_id,posizione,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento,opzionale&order=posizione.asc`, { token }),
+          sb.rest(`offerte_righe?offerta_id=eq.${offerta.id}&select=id,articolo_id,modello_id,componenti,posizione,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento,opzionale&order=posizione.asc`, { token }),
           sb.rest(`eventi?id=eq.${offerta.evento_id}&select=${encodeURIComponent(SELECT_EVENTO)}`, { token }),
           totaliPer(sb, token, [offerta.id]),
           sb.rest('impostazioni?id=eq.1&select=dati', { token }),

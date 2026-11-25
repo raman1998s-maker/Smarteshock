@@ -188,6 +188,12 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - API: `GET/POST /api/guasti`, `PATCH/DELETE /api/guasti/:id`, `GET/POST /api/veicoli`, `PATCH/DELETE /api/veicoli/:id`, `GET/PUT /api/eventi/:id/veicoli`; `PATCH /api/checklist/:id` accetta anche `veicolo_id` e `quantita` (gestione).
 - Etichette del magazzino: oggi sono **codici a barre** (non QR) con i codici tipo E000006623.
 
+### Pacchetti e PDF per categorie (`0017_pacchetti.sql`)
+- Di solito Meekon fa un prezzo per pacchetto, non per pezzo: un modello di allestimento (`modelli.prezzo_giorno`, `categoria`, `immagine` = disegno dello schema) entra nell'offerta come **una riga** con prezzo unico e testo "cosa comprende"; i singoli articoli restano nella riga (`modello_id`, `componenti`) per magazzino, peso e disponibilità. Opzione "Come singoli articoli" per il vecchio comportamento.
+- Partner: righe `pacchetto` con prezzo partner = prezzo del pacchetto − sconto del partner; la conferma del materiale espande i componenti nella lista materiale. Il partner sceglie anche cliccando sul disegno dell'allestimento (configuratore visivo, `.modelli-visivi`).
+- Offerta Meekon accettata: pulsante "Lista materiale dall'offerta" (articoli + componenti dei pacchetti → lista materiale dell'evento).
+- PDF: righe raggruppate per categoria (Bild & LED-Screens, Licht, Ton, Video, Rigging & Bühne, Strom & Kabel, Effekte, altre, Leistungen) con subtotale; intestazione con titolo, numero/data/validità, Für/Von e riquadro evento; AGB in Markdown (titoli `##`, `**grassetto**`) nella lingua del PDF; fattura senza testo d'offerta né annullamento.
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|

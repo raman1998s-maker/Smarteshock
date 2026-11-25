@@ -396,7 +396,7 @@
     function sceltaModello(modelli, onApply) {
       if (!modelli || !modelli.length) return null;
       const sel = h('select', { 'aria-label': 'Modello di allestimento' }, h('option', { value: '' }, '— Modello di allestimento —'),
-        modelli.filter((m) => m.attivo !== false).map((m) => h('option', { value: m.id }, `${m.nome} (${m.voci.length} voci)`)));
+        modelli.filter((m) => m.attivo !== false).map((m) => h('option', { value: m.id }, `${m.nome}${m.prezzo_giorno != null ? ` — ${fmtMoney(m.prezzo_giorno)}/giorno` : ''}`)));
       const btn = h('button', { class: 'btn', type: 'button' }, 'Aggiungi modello');
       btn.addEventListener('click', () => { const m = modelli.find((x) => x.id === sel.value); if (!m) { sel.focus(); return; } onApply(m); sel.value = ''; });
       return [sel, btn];
@@ -411,9 +411,10 @@
         const nuovo = h('button', { class: 'btn btn--sm btn--primary', type: 'button', onclick: () => editor(null) }, 'Nuovo modello');
         put(panel, h('div', { class: 'panel__head' }, h('h2', null, 'Modelli di allestimento'), nuovo),
           h('p', { class: 'muted' }, 'Pacchetti di materiale pronti: nelle offerte (anche dei partner) e nella lista materiale degli eventi si aggiungono con un clic, poi si modificano.'),
-          modelli.length ? tabella(['Modello', 'Voci', 'Per i partner', ''], modelli.map((m) => h('tr', null,
+          modelli.length ? tabella(['Modello', 'Voci', 'CHF/giorno', 'Per i partner', ''], modelli.map((m) => h('tr', null,
             h('td', { 'data-label': 'Modello', class: 'table__primary' }, h('span', null, m.nome, m.descrizione ? h('span', { class: 'table__sub' }, m.descrizione) : null)),
             td('Voci', m.voci.map((v) => `${v.quantita}× ${(descr.get(v.articolo_id) || {}).descrizione || '?'}`).join(', ')),
+            h('td', { class: 'num', 'data-label': 'CHF/giorno' }, h('span', null, m.prezzo_giorno == null ? '—' : fmtMoney(m.prezzo_giorno))),
             td('Per i partner', m.per_partner ? 'Sì' : 'No'),
             h('td', { 'data-label': '' }, h('button', { class: 'btn btn--sm', type: 'button', onclick: () => editor(m) }, 'Modifica')))))
             : h('p', { class: 'muted' }, 'Nessun modello ancora.'));
@@ -421,6 +422,34 @@
       const editor = (m) => {
         const voci = m ? m.voci.map((v) => ({ ...v })) : [];
         const nome = h('input', { type: 'text', maxlength: '120', value: m ? m.nome : '', list: 'mk-nomi-modello', required: true });
+        const prezzo = h('input', { inputmode: 'decimal', value: m && m.prezzo_giorno != null ? String(m.prezzo_giorno) : '', placeholder: 'es. 1200' });
+        const cat = h('input', { type: 'text', maxlength: '60', value: (m && m.categoria) || '', list: 'mk-cat-modello', placeholder: 'es. LED' });
+        // disegno dell'allestimento (foto o scansione del disegno a mano), ridotto a 1400 px
+        let immagine = (m && m.immagine) || null;
+        const anteprimaImg = h('div', { class: 'partner-logo' });
+        const mostraImg = () => { clear(anteprimaImg); anteprimaImg.append(immagine ? h('img', { src: immagine, alt: 'Disegno' }) : h('span', { class: 'muted' }, 'Nessun disegno')); };
+        mostraImg();
+        const fileImg = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp' });
+        fileImg.addEventListener('change', () => {
+          const fl = fileImg.files && fileImg.files[0];
+          if (!fl) return;
+          const url = URL.createObjectURL(fl);
+          const img = new Image();
+          img.onload = () => {
+            const k = Math.min(1, 1400 / img.width, 1000 / img.height);
+            const c = document.createElement('canvas');
+            c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+            const g = c.getContext('2d');
+            g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+            g.drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            const du = c.toDataURL('image/jpeg', 0.82);
+            if (du.length > 900000) { toast('Disegno troppo pesante: usate una foto più piccola.', 'error'); return; }
+            immagine = du; mostraImg();
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); toast('File non leggibile come immagine.', 'error'); };
+          img.src = url;
+        });
         const desc = h('textarea', { rows: '2', maxlength: '500', placeholder: 'es. Schermo dietro il DJ, luci sopra lo schermo, audio ai lati' });
         desc.value = (m && m.descrizione) || '';
         const pp = check('per_partner', 'Visibile ai partner DJ', m ? m.per_partner : true);
@@ -441,7 +470,13 @@
         const save = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Salva modello');
         const form = h('form', { novalidate: true },
           h('datalist', { id: 'mk-nomi-modello' }, NOMI_MODELLO.map((n) => h('option', { value: n }))),
-          h('div', { class: 'fields' }, field('Nome', nome, { full: true }), field('Disposizione / note di montaggio', desc, { full: true }), h('div', { class: 'field' }, pp, att)),
+          h('datalist', { id: 'mk-cat-modello' }, ['LED', 'Licht', 'Audio', 'Video', 'Rigging', 'Effekte'].map((c) => h('option', { value: c }))),
+          h('div', { class: 'fields' }, field('Nome', nome, { full: true }),
+            field('Prezzo del pacchetto (CHF al giorno)', prezzo, { hint: 'Nell\'offerta il pacchetto è una riga con questo prezzo; i singoli articoli restano per magazzino e peso.' }),
+            field('Gruppo nel PDF', cat, { hint: 'es. LED, Licht, Audio' }),
+            field('Disposizione / cosa comprende (testo per il cliente)', desc, { full: true }), h('div', { class: 'field' }, pp, att),
+            h('div', { class: 'field field--full' }, h('label', null, 'Disegno dell\'allestimento (per i partner)'), anteprimaImg,
+              h('div', { class: 'toolbar' }, fileImg, h('button', { class: 'btn btn--ghost btn--sm', type: 'button', onclick: () => { immagine = null; mostraImg(); } }, 'Togli disegno')))),
           tabella(['Articolo', 'Q.tà', ''], tb),
           h('div', { class: 'panel__foot' },
             h('button', { class: 'btn btn--sm', type: 'button', onclick: () => { if (!articoli.length) return; voci.push({ articolo_id: articoli[0].id, quantita: 1 }); disegna(); } }, 'Aggiungi voce'),
@@ -450,7 +485,9 @@
         form.addEventListener('submit', (ev) => {
           ev.preventDefault();
           if (!nome.value.trim()) { nome.setAttribute('aria-invalid', 'true'); nome.focus(); return; }
-          const body = { nome: nome.value.trim(), descrizione: desc.value.trim() || null, per_partner: pp.querySelector('input').checked, attivo: att.querySelector('input').checked, voci };
+          const pz = numero(prezzo.value);
+          if (Number.isNaN(pz)) { prezzo.setAttribute('aria-invalid', 'true'); prezzo.focus(); return; }
+          const body = { nome: nome.value.trim(), descrizione: desc.value.trim() || null, per_partner: pp.querySelector('input').checked, attivo: att.querySelector('input').checked, prezzo_giorno: pz, categoria: cat.value.trim() || null, immagine, voci };
           busy(save, async () => {
             try { await api(m ? `modelli/${encodeURIComponent(m.id)}` : 'modelli', { method: m ? 'PUT' : 'POST', body }); toast('Modello salvato.'); carica(); } catch (err) { toast(errorMessage(err), 'error'); }
           });
@@ -908,10 +945,10 @@
       let modelli = [];
       try {
         data = await api(`offerte/${encodeURIComponent(id)}`);
-        if (data.offerta.stato === 'bozza') {
-          catalogo = (await api('articoli')).articoli || [];
-          modelli = (await api('modelli')).modelli || [];
-        }
+        [catalogo, modelli] = await Promise.all([
+          api('articoli?tutti=1').then((r) => r.articoli || []),
+          api('modelli').then((r) => r.modelli || []),
+        ]);
       } catch (err) { if (alive()) failure('Offerta', err); return; }
       if (!alive()) return;
       const o = data.offerta;
@@ -929,7 +966,13 @@
       const righe = (data.righe || []).map((r) => ({
         articolo_id: r.articolo_id, titolo: r.titolo || '', descrizione: r.descrizione, quantita: Number(r.quantita), giorni: Number(r.giorni),
         prezzo_unitario: Number(r.prezzo_unitario), sconto_percento: Number(r.sconto_percento), opzionale: !!r.opzionale,
+        modello_id: r.modello_id || null, componenti: r.componenti || null,
       }));
+      // gruppo nel PDF: categoria dell'articolo o del pacchetto
+      const categoriaDi = (r) => (r.modello_id ? ((modelli.find((m) => m.id === r.modello_id) || {}).categoria || 'Altro')
+        : r.articolo_id ? ((catalogo.find((a) => a.id === r.articolo_id) || {}).categoria || '') : '');
+      const nomeArt = (id) => (catalogo.find((a) => a.id === id) || {}).descrizione || '?';
+      const contenuto = (comp) => (comp || []).map((c) => `${c.quantita}× ${nomeArt(c.articolo_id)}`).join(', ');
 
       // campi dell'offerta
       const lingua = select('lingua', Object.entries(LINGUE_OFFERTA), o.lingua || 'de');
@@ -1000,7 +1043,8 @@
             h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Sposta su riga ${i + 1}`, disabled: i === 0, onclick: () => { righe.splice(i - 1, 0, righe.splice(i, 1)[0]); disegnaRighe(); } }, '↑'),
             h('button', { class: 'btn btn--ghost btn--sm', type: 'button', 'aria-label': `Togli riga ${i + 1}`, onclick: () => { righe.splice(i, 1); disegnaRighe(); disegnaTotali(); } }, '×')) : null;
           tbody.append(h('tr', null,
-            h('td', { 'data-label': 'Articolo e descrizione', class: 'table__primary offerta__testo' }, tit, desc, (() => {
+            h('td', { 'data-label': 'Articolo e descrizione', class: 'table__primary offerta__testo' }, tit, desc,
+              r.componenti && r.componenti.length ? h('span', { class: 'table__sub' }, `Pacchetto: ${contenuto(r.componenti)}`) : null, (() => {
               const op = h('input', { type: 'checkbox', checked: r.opzionale, disabled: !bozza, 'aria-label': `Opzionale riga ${i + 1}` });
               op.addEventListener('change', () => { r.opzionale = op.checked; disegnaTotali(); });
               return h('label', { class: 'check' }, op, h('span', null, 'Opzionale (nel PDF, non sommata)'));
@@ -1041,16 +1085,26 @@
           disegnaRighe(); disegnaTotali();
         });
         const addFree = h('button', { class: 'btn', type: 'button', onclick: () => { righe.push({ articolo_id: null, titolo: '', descrizione: '', quantita: 1, giorni: 1, prezzo_unitario: 0, sconto_percento: 0 }); disegnaRighe(); disegnaTotali(); tbody.querySelector('tr:last-child input')?.focus(); } }, 'Riga libera (es. montaggio, trasporto)');
+        // modello = una riga "pacchetto" con prezzo unico; i suoi articoli restano come componenti (magazzino, peso)
+        const singoli = check('singoli', 'Come singoli articoli', false);
         const daModello = sceltaModello(modelli, (m) => {
-          m.voci.forEach((v) => {
-            const a = catalogo.find((x) => x.id === v.articolo_id);
-            if (!a) return;
-            righe.push({ articolo_id: a.id, titolo: a.descrizione.slice(0, 120), descrizione: (a.accessori || [a.marca, a.descrizione].filter(Boolean).join(' ')).replace(/\s+/g, ' ').slice(0, 500),
-              quantita: v.quantita, giorni: giorniEvento, prezzo_unitario: Number(a.prezzo_noleggio_giorno) || 0, sconto_percento: 0, opzionale: false });
-          });
+          if (singoli.querySelector('input').checked) {
+            m.voci.forEach((v) => {
+              const a = catalogo.find((x) => x.id === v.articolo_id);
+              if (!a) return;
+              righe.push({ articolo_id: a.id, titolo: a.descrizione.slice(0, 120), descrizione: (a.accessori || [a.marca, a.descrizione].filter(Boolean).join(' ')).replace(/\s+/g, ' ').slice(0, 500),
+                quantita: v.quantita, giorni: giorniEvento, prezzo_unitario: Number(a.prezzo_noleggio_giorno) || 0, sconto_percento: 0, opzionale: false });
+            });
+          } else {
+            const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
+            righe.push({ articolo_id: null, modello_id: m.id, componenti: comp, titolo: m.nome.slice(0, 120),
+              descrizione: (m.descrizione || contenuto(comp)).slice(0, 500), quantita: 1, giorni: giorniEvento,
+              prezzo_unitario: Number(m.prezzo_giorno) || 0, sconto_percento: 0, opzionale: false });
+          }
           disegnaRighe(); disegnaTotali();
           toast(`Modello "${m.nome}" aggiunto: controllate quantità e prezzi.`);
         });
+        if (daModello) daModello.push(singoli);
         aggiungi = h('div', { class: 'toolbar' }, daModello, scelta, comeVendita, addArt, addFree);
       }
 
@@ -1138,7 +1192,7 @@
       function stampa(tipo = 'offerta') {
         const res = OD.build({ h, add }, {
           tipo, lingua: lingua.value, numero: numeroOfferta, numeroOrdine: ev.numero_ordine, oggi: oggi(), valida: valida.value || null,
-          offerta: o, evento: ev, cliente: cli, impostazioni: imp, righe, totali: totali(),
+          offerta: o, evento: ev, cliente: cli, impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totali(),
           anrede: anrede.value.trim(), intro: intro.value.trim(), condizioni: cond.value.trim(), link: linkCliente,
         });
         clear(doc);
@@ -1160,6 +1214,26 @@
           stampa('conferma');
         });
         actions.unshift(conf);
+        // lista materiale dell'evento dall'offerta: articoli singoli e componenti dei pacchetti
+        const lista = h('button', { class: 'btn', type: 'button' }, 'Lista materiale dall\'offerta');
+        lista.addEventListener('click', () => {
+          const voci = new Map();
+          righe.filter((r) => !r.opzionale).forEach((r) => {
+            if (r.articolo_id) voci.set(r.articolo_id, (voci.get(r.articolo_id) || 0) + Math.ceil(r.quantita));
+            (r.componenti || []).forEach((c) => voci.set(c.articolo_id, (voci.get(c.articolo_id) || 0) + Math.ceil(c.quantita * r.quantita)));
+          });
+          if (!voci.size) { toast('Nell\'offerta non ci sono articoli del magazzino.', 'error'); return; }
+          if (!window.confirm(`Aggiungere ${voci.size} articoli alla lista materiale dell'evento?`)) return;
+          busy(lista, async () => {
+            try {
+              for (const [id, q] of voci) {
+                await api(`eventi/${encodeURIComponent(o.evento_id)}/checklist`, { method: 'POST', body: { voce: nomeArt(id).slice(0, 200), quantita: q, articolo_id: id } });
+              }
+              toast('Lista materiale creata: la trovate nell\'evento.');
+            } catch (err) { toast(errorMessage(err), 'error'); }
+          });
+        });
+        actions.splice(1, 0, lista);
       }
 
       // avvisi

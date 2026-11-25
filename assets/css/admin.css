@@ -1002,6 +1002,11 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .carico__veicolo--troppo progress { accent-color: var(--color-danger); }
 
 /* area partner: anteprima del logo */
+.modelli-visivi { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-3); margin: var(--sp-3) 0; }
+.modello-visivo { display: grid; gap: var(--sp-1); padding: var(--sp-2); text-align: left; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-1); cursor: pointer; font: inherit; }
+.modello-visivo:hover, .modello-visivo:focus-visible { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgb(var(--c-cyan-rgb) / .2); }
+.modello-visivo img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; border-radius: var(--radius-1); }
+.modello-visivo span { font-size: var(--fs-sm); color: var(--color-text-2); }
 .partner-logo { display: flex; align-items: center; min-height: 80px; padding: var(--sp-3); background: var(--color-surface-2); border-radius: var(--radius-1); }
 .partner-logo img { max-height: 90px; max-width: 280px; width: auto; height: auto; }
 
@@ -1047,21 +1052,30 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc p { margin: 0; }
   .doc .num { text-align: right; white-space: nowrap; }
   .doc__pagina + .doc__pagina { break-before: page; }
-  .doc__head { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 4mm; border-bottom: .5mm solid #4DC0DE; }
+  .doc__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10mm; padding-bottom: 5mm; border-bottom: .5mm solid #4DC0DE; }
   /* il logo ha la scritta chiara (per fondo scuro): in stampa si scurisce mantenendo le tinte */
-  .doc__logo { width: 44mm; height: auto; filter: invert(1) hue-rotate(180deg); }
-  .doc__logo--partner { width: auto; max-width: 50mm; max-height: 22mm; filter: none; }
+  .doc__logo { width: 46mm; height: auto; filter: invert(1) hue-rotate(180deg); }
+  .doc__logo--partner { width: auto; max-width: 52mm; max-height: 24mm; filter: none; }
+  .doc__logo-testo { font: 500 16pt/1.1 "Cormorant Garamond", Garamond, serif; letter-spacing: .02em; }
   .doc__titolo { text-align: right; }
-  .doc__titolo h1 { font: 500 17pt/1.1 var(--font-text); text-transform: uppercase; letter-spacing: .16em; margin: 0 0 1.5mm; }
-  .doc__titolo p { color: #6A6969; }
-  .doc__etichetta { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .16em; color: #6A6969; margin-bottom: 1.2mm !important; }
-  .doc__nome { font-weight: 500; }
+  .doc__titolo h1 { font: 500 24pt/1 "Cormorant Garamond", Garamond, serif; text-transform: uppercase; letter-spacing: .2em; margin: 0 0 3mm; }
+  .doc__meta { display: flex; justify-content: flex-end; gap: 6mm; margin: 0; }
+  .doc__meta div { text-align: left; padding-left: 3mm; border-left: .3mm solid #E5E1D8; }
+  .doc__meta dt { font-size: 6.8pt; text-transform: uppercase; letter-spacing: .16em; color: #6A6969; }
+  .doc__meta dd { margin: .5mm 0 0; font-weight: 500; font-size: 9.5pt; }
+  .doc__accettata { margin-top: 2mm !important; font-size: 8pt; color: #6A6969; }
+  .doc__etichetta { font-size: 7pt; text-transform: uppercase; letter-spacing: .16em; color: #6A6969; margin-bottom: 1.5mm !important; }
+  .doc__nome { font-weight: 500; font-size: 10pt; }
   .doc__multi { white-space: pre-line; }
   .doc__det { display: block; color: #6A6969; }
-  .doc__piccolo { font-size: 8pt; color: #6A6969; }
-  .doc__parti { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 5mm 0; }
-  .doc__evento { display: grid; grid-template-columns: 40mm 1fr; gap: 1mm 4mm; margin: 0 0 5mm; padding: 3.5mm 4.5mm; background: #F2ECE1; border-radius: 2.5mm; }
-  .doc__evento dt { color: #6A6969; }
+  .doc__piccolo { font-size: 8pt; color: #6A6969; margin-top: 1mm !important; }
+  .doc__intestazione { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin: 6mm 0; align-items: stretch; }
+  .doc__parti { display: grid; gap: 5mm; align-content: start; }
+  .doc__parte { padding-left: 3.5mm; border-left: .5mm solid #4DC0DE; }
+  .doc__evento { padding: 4mm 5mm; background: #F2ECE1; border-radius: 2.5mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc__evento-titolo { font: 500 13pt/1.2 "Cormorant Garamond", Garamond, serif; margin-bottom: 2.5mm !important; }
+  .doc__evento dl { display: grid; grid-template-columns: 26mm 1fr; gap: 1mm 3mm; margin: 0; }
+  .doc__evento dt { color: #6A6969; font-size: 8.5pt; }
   .doc__evento dd { margin: 0; font-weight: 500; }
   .doc__anrede { margin-bottom: 1.5mm !important; }
   .doc__testo { white-space: pre-line; margin: 0 0 4mm !important; }
@@ -1073,6 +1087,9 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc__righe td:first-child, .doc__righe th:first-child { padding-left: 0; width: 8mm; }
   .doc__righe td:last-child, .doc__righe th:last-child { padding-right: 0; }
   .doc__righe tr { break-inside: avoid; }
+  .doc__gruppo-titolo th { padding: 4mm 2mm 1.5mm 0 !important; border-bottom: .3mm solid #161616 !important; font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; color: #161616 !important; text-align: left; }
+  .doc__gruppo-titolo th.num { text-align: right; font-weight: 500; letter-spacing: 0; }
+  .doc__gruppo { break-inside: auto; }
   .doc__inbegriffen { margin: 2.5mm 0 0 !important; color: #6A6969; }
   .doc__totali { width: 85mm; margin: 4mm 0 0 auto; border-collapse: collapse; }
   .doc__totali th { text-align: left; font-weight: 400; color: #6A6969; padding: .8mm 0; }
@@ -1095,6 +1112,9 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc__saluti { margin-top: 3mm !important; }
   .doc__agb h2 { font: 500 12pt/1.2 var(--font-text); text-transform: uppercase; letter-spacing: .12em; margin: 0 0 1mm; }
   .doc__agb-testo { margin-top: 4mm; columns: 2; column-gap: 7mm; font-size: 7.5pt; line-height: 1.35; }
+  .doc__agb-testo h3 { font-size: 7.8pt; font-weight: 600; margin: 2.5mm 0 1mm; break-after: avoid; }
+  .doc__agb-testo p { margin: 0 0 1.5mm !important; }
+  .doc__agb-testo ul { margin: 0 0 1.5mm; padding-left: 4mm; }
   @page {
     size: A4; margin: 14mm 15mm 20mm;
     @bottom-left { content: var(--mk-piede-1, "") "\A" var(--mk-piede-2, ""); white-space: pre-wrap; font: 400 6.5pt/1.35 "Jost", sans-serif; color: #6A6969; vertical-align: top; padding-top: 3mm; }

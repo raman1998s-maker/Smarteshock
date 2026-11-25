@@ -15,6 +15,9 @@ const modelloSchema = {
   descrizione: t.string({ max: 500, multiline: true }),
   per_partner: t.bool({ default: true, empty: true }),
   attivo: t.bool({ default: true, empty: true }),
+  prezzo_giorno: t.money(), // prezzo di noleggio del pacchetto al giorno
+  categoria: t.string({ max: 60 }), // gruppo nel PDF (es. LED, Licht, Audio)
+  immagine: t.string({ max: 900000, pattern: /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/ }), // disegno dell'allestimento
 };
 const voceSchema = { articolo_id: t.uuid({ required: true }), quantita: t.int({ min: 1, max: 100000, default: 1, empty: 1 }) };
 
@@ -26,7 +29,7 @@ function leggi(body) {
 }
 
 async function salva({ req, params, sb, token }) {
-  const d = leggi(await readJson(req));
+  const d = leggi(await readJson(req, { maxBytes: 1024 * 1024 }));
   const id = await sb.rest('rpc/salva_modello', { method: 'POST', token, body: { p_id: params.id ?? null, p_dati: d } });
   return json(params.id ? 200 : 201, { id });
 }
@@ -38,7 +41,7 @@ export default createHandler(
       withId: false,
       async fn({ sb, token, user }) {
         if (!isGestione(user) && user.ruolo !== 'partner') throw new HttpError(403, 'forbidden');
-        const rows = await sb.rest('modelli?select=id,nome,descrizione,per_partner,attivo,voci:modelli_voci(articolo_id,quantita,posizione)&order=posizione.asc,nome.asc', { token });
+        const rows = await sb.rest('modelli?select=id,nome,descrizione,per_partner,attivo,prezzo_giorno,categoria,immagine,voci:modelli_voci(articolo_id,quantita,posizione)&order=posizione.asc,nome.asc', { token });
         return json(200, { modelli: (rows || []).map((m) => ({ ...m, voci: (m.voci || []).sort((a, b) => a.posizione - b.posizione) })) });
       },
     },

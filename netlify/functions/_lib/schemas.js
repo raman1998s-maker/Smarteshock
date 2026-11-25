@@ -192,8 +192,16 @@ export const offertaSchema = {
   condizioni: t.string({ max: 4000, multiline: true }),
 };
 
+// componenti di un pacchetto (modello di allestimento): [{ articolo_id, quantita }] per 1 pacchetto
+const componentiSchema = t.array((v, f) => {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) throw new HttpError(400, 'invalid_input', { field: f });
+  return validate(v, { articolo_id: t.uuid({ required: true }), quantita: t.int({ min: 1, max: 100000, required: true }) });
+}, { max: 200, empty: null });
+
 export const rigaOffertaSchema = {
   articolo_id: t.uuid(),
+  modello_id: t.uuid(),
+  componenti: componentiSchema,
   titolo: t.string({ max: 120 }),
   descrizione: t.string({ max: 500, required: true, multiline: true }),
   quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),
@@ -262,8 +270,10 @@ export const partnerOffertaSchema = {
 };
 
 export const partnerRigaSchema = {
-  tipo: t.enumOf(['servizio', 'materiale'], { default: 'servizio', empty: 'servizio' }),
+  tipo: t.enumOf(['servizio', 'materiale', 'pacchetto'], { default: 'servizio', empty: 'servizio' }),
   articolo_id: t.uuid(),
+  modello_id: t.uuid(),
+  componenti: componentiSchema,
   titolo: t.string({ max: 120 }),
   descrizione: t.string({ max: 500, required: true, multiline: true }),
   quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),

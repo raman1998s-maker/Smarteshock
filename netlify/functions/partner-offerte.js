@@ -47,7 +47,7 @@ export default createHandler(
         if (!Array.isArray(rows) || rows.length !== 1) throw new HttpError(404, 'not_found');
         const o = rows[0];
         const [righe, tot, costo, profilo, agb] = await Promise.all([
-          sb.rest(`partner_righe?offerta_id=eq.${o.id}&select=id,posizione,tipo,articolo_id,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento,opzionale&order=posizione.asc`, { token }),
+          sb.rest(`partner_righe?offerta_id=eq.${o.id}&select=id,posizione,tipo,articolo_id,modello_id,componenti,titolo,descrizione,quantita,giorni,prezzo_unitario,sconto_percento,opzionale&order=posizione.asc`, { token }),
           sb.rest(`partner_offerte_totali?offerta_id=eq.${o.id}`, { token }),
           sb.rest('rpc/costo_materiale_partner', { method: 'POST', token, body: { p_offerta: o.id } }),
           sb.rest(`partner_profili?staff_id=eq.${o.partner_id}&select=*`, { token }),
