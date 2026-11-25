@@ -423,10 +423,17 @@ def djs_html(rows, lang, t):
         name = r.get("nome", "")
         foto = local_path(r.get("foto"), "dj.foto")
         link = safe_url(r.get("link"), "dj.link")
-        media = (
-            f'<img class="dj__photo" src="{foto}" alt="" loading="lazy" width="800" height="1000">'
-            if foto else f'<div class="dj__initials" aria-hidden="true">{E(initials(name))}</div>'
-        )
+        logo = local_path(r.get("logo"), "dj.logo")
+        if logo:
+            # logo del DJ (PNG/WebP trasparente) centrato nello stesso riquadro della foto
+            media = f'<div class="dj__logo"><img src="{logo}" alt="{E(name)}" loading="lazy" decoding="async"></div>'
+        elif foto:
+            media = f'<img class="dj__photo" src="{foto}" alt="" loading="lazy" width="800" height="1000">'
+        elif r.get("nome_nel_riquadro"):
+            # nessun logo disponibile: il nome scritto nel riquadro, stesso stile delle iniziali
+            media = f'<div class="dj__initials dj__initials--name" aria-hidden="true">{E(name)}</div>'
+        else:
+            media = f'<div class="dj__initials" aria-hidden="true">{E(initials(name))}</div>'
         genre = tr(r.get("genere"), lang)
         out.append(
             '<li class="dj">' + media
