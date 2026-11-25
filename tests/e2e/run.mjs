@@ -507,7 +507,7 @@ async function selfTest() {
 }
 
 // ------------------------------------------------------------------ 1. sito pubblico
-const APPROVED_ADDRESS = { street: 'Lukasstrasse 18', city: '9008 St. Gallen' };
+const APPROVED_ADDRESS = { street: 'Lukasstrasse 18', city: '9000 St. Gallen' };
 const ADDRESS_PATTERNS = [
   [/\bIBAN\b/i, 'IBAN'],
   [/\bCH\d{2}[ ]?\d{4}[ ]?\d{4}/, 'numero IBAN CH'],

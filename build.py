@@ -374,7 +374,7 @@ def jsonld(lang, t):
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "Lukasstrasse 18",
-            "postalCode": "9008",
+            "postalCode": "9000",
             "addressLocality": "St. Gallen",
             "addressRegion": "SG",
             "addressCountry": "CH",
@@ -568,7 +568,7 @@ PRIVACY_PAGE = """<!doctype html>
       <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246" loading="lazy">
       <p class="footer__claim">{claim}</p>
       <nav class="lang lang--footer" aria-label="{lang_label}">{langlinks}</nav>
-      <p class="footer__small">© {year} Meekon Displays · Lukasstrasse 18, 9008 St. Gallen · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
+      <p class="footer__small">© {year} Meekon Displays · Lukasstrasse 18, 9000 St. Gallen · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
     </div>
   </footer>
 </body>
