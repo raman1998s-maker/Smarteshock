@@ -17,7 +17,7 @@ const modelloSchema = {
   attivo: t.bool({ default: true, empty: true }),
   prezzo_giorno: t.money(), // prezzo di noleggio del pacchetto al giorno
   categoria: t.string({ max: 60 }), // gruppo nel PDF (es. LED, Licht, Audio)
-  parte: t.enumOf(['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor', 'welcome_board']), // parte del disegno nel configuratore dei partner
+  parte: t.enumOf(['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor', 'welcome_board', 'uplight', 'photo_booth', 'palco', 'tv_stativo']), // parte del disegno nel configuratore dei partner
   immagine: t.string({ max: 900000, pattern: /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/ }), // disegno dell'allestimento
 };
 const voceSchema = { articolo_id: t.uuid({ required: true }), quantita: t.int({ min: 1, max: 100000, default: 1, empty: 1 }) };

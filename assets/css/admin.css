@@ -1044,6 +1044,7 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .cfg__parte--scelta .cfg__scintilla { stroke: #E0A100; }
 .cfg__parte--scelta .cfg__nuvola { fill: var(--c-white); stroke: var(--c-stone-3); }
 .cfg__parte--off { cursor: default; opacity: .3; }
+.cfg__parte--scelta .cfg__palco { fill: var(--c-anthracite); }
 /* materiale portato dal DJ: solo contorno tratteggiato, senza riempimento scuro */
 .cfg__parte--dj { stroke-dasharray: 4 3; }
 .cfg__parte--dj :is(.cfg__cassa, .cfg__testa, .cfg__apparecchio, .cfg__driver, .cfg__metallo, .cfg__piano) { fill: var(--c-white); }

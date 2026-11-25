@@ -11,7 +11,7 @@ alter table public.modelli
   add column if not exists prezzo_giorno numeric(12, 2) check (prezzo_giorno is null or prezzo_giorno >= 0),
   add column if not exists categoria text check (categoria is null or char_length(categoria) <= 60),
   -- parte del disegno del configuratore a cui corrisponde il pacchetto (es. schermo_dietro)
-  add column if not exists parte text check (parte is null or parte in ('truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor', 'welcome_board')),
+  add column if not exists parte text check (parte is null or parte in ('truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor', 'welcome_board', 'uplight', 'photo_booth', 'palco', 'tv_stativo')),
   -- disegno dello schema di allestimento (data URL PNG/JPEG/WebP): i partner scelgono guardando il disegno
   add column if not exists immagine text check (immagine is null or (char_length(immagine) <= 900000 and immagine ~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$'));
 

@@ -27,6 +27,10 @@
     nebbia: { nomi: { it: 'Macchina della nebbia / fumo', de: 'Nebel- / Rauchmaschine', fr: 'Machine à brouillard / fumée', en: 'Fog / smoke machine' }, watt: 1500 },
     effetti: { nomi: { it: 'Effetti speciali (spark, CO2, coriandoli)', de: 'Spezialeffekte (Spark, CO2, Konfetti)', fr: 'Effets spéciaux (spark, CO2, confettis)', en: 'Special effects (spark, CO2, confetti)' }, tipo: 'numero', n: 2, max: 8, watt: 600 },
     welcome_board: { nomi: { it: 'Welcome board (schermo di benvenuto)', de: 'Welcome Board (Begrüssungs-Screen)', fr: 'Welcome board (écran d\'accueil)', en: 'Welcome board' }, tipo: 'numero', n: 1, max: 4, watt: 300 },
+    uplight: { nomi: { it: 'Uplight (luci a LED sulle pareti)', de: 'Uplights (LED-Wandbeleuchtung)', fr: 'Uplights (éclairage LED des murs)', en: 'Uplights (LED wall lighting)' }, tipo: 'numero', n: 8, max: 40, watt: 50, dj: true },
+    photo_booth: { nomi: { it: 'Photo booth (con stampa)', de: 'Fotobox (mit Druck)', fr: 'Photobooth (avec impression)', en: 'Photo booth (with prints)' }, tipo: 'numero', n: 1, max: 2, watt: 500 },
+    palco: { nomi: { it: 'Palco / pedana', de: 'Bühne / Podest', fr: 'Scène / estrade', en: 'Stage / riser' }, tipo: 'mq', w: 4, h: 3, maxW: 12, maxH: 8, watt: 0 },
+    tv_stativo: { nomi: { it: 'TV su stativo', de: 'TV auf Ständer', fr: 'TV sur pied', en: 'TV on stand' }, tipo: 'numero', n: 1, max: 4, watt: 150 },
     dance_floor: { nomi: { it: 'LED dance floor', de: 'LED-Tanzfläche', fr: 'Piste de danse LED', en: 'LED dance floor' }, tipo: 'pannelli', w: 4, h: 4, maxW: 10, maxH: 10, watt: 120 },
   };
   const NOMI = Object.fromEntries(Object.entries(PARTI_DEF).map(([k, v]) => [k, v.nomi]));
@@ -42,14 +46,14 @@
   /** Configurazione predefinita di una parte. */
   function base(k) {
     const d = PARTI_DEF[k] || {};
-    if (d.tipo === 'moduli' || d.tipo === 'pannelli') return { parte: k, w: d.w, h: d.h };
+    if (d.tipo === 'moduli' || d.tipo === 'pannelli' || d.tipo === 'mq') return { parte: k, w: d.w, h: d.h };
     if (d.tipo === 'numero') return { parte: k, n: d.n };
     return { parte: k };
   }
   /** Unità (moduli, pezzi, pannelli) per il prezzo e la quantità della riga. */
   function unita(c) {
     const d = PARTI_DEF[c.parte] || {};
-    if (d.tipo === 'moduli' || d.tipo === 'pannelli') return Math.max(1, c.w * c.h);
+    if (d.tipo === 'moduli' || d.tipo === 'pannelli' || d.tipo === 'mq') return Math.max(1, c.w * c.h);
     if (d.tipo === 'numero') return Math.max(1, c.n);
     return 1;
   }
@@ -66,6 +70,7 @@
     const e = ETICHETTE[l] || ETICHETTE.de;
     if (d.tipo === 'moduli') return `${metri(c.w * 0.5, l)} × ${metri(c.h * 1, l)} m · ${c.w * c.h} ${e.moduli} à 0,5 × 1 m`;
     if (d.tipo === 'pannelli') return `${metri(c.w, l)} × ${metri(c.h, l)} m · ${c.w * c.h} ${e.pannelli} à 1 × 1 m`;
+    if (d.tipo === 'mq') return `${metri(c.w, l)} × ${metri(c.h, l)} m · ${c.w * c.h} m²`;
     if (d.tipo === 'numero') return `${c.n} ${e.pz}`;
     return '';
   }
@@ -86,6 +91,8 @@
         el('stop', { offset: '0', 'stop-color': '#2a3a4a' }), el('stop', { offset: '1', 'stop-color': '#0f1418' })),
       el('linearGradient', { id: `${id}b`, x1: 0, y1: 0, x2: 0, y2: 1 },
         el('stop', { offset: '0', 'stop-color': '#4DC0DE', 'stop-opacity': '.45' }), el('stop', { offset: '1', 'stop-color': '#4DC0DE', 'stop-opacity': '0' })),
+      el('linearGradient', { id: `${id}u`, x1: 0, y1: 1, x2: 0, y2: 0 },
+        el('stop', { offset: '0', 'stop-color': '#7b5cd6', 'stop-opacity': '.5' }), el('stop', { offset: '1', 'stop-color': '#7b5cd6', 'stop-opacity': '0' })),
     );
   }
 
@@ -234,8 +241,39 @@
         txt(x, y + 38, 'Welcome', 'cfg__testo cfg__chiaro cfg__piccolo'), txt(x, y + 50, '♥', 'cfg__testo cfg__chiaro cfg__piccolo'),
         el('line', { x1: x, y1: y + 82, x2: x, y2: SUOLO - 6, class: 'cfg__asta' }), el('rect', { x: x - 18, y: SUOLO - 6, width: 36, height: 6, rx: 2, class: 'cfg__metallo' })];
     }), nWb ? txt(120, SUOLO + 16, nome('welcome_board'), 'cfg__testo cfg__piccolo') : null];
+    // uplight: piccoli fari a terra lungo la parete di fondo, fascio viola verso l'alto
+    const nUp = Math.max(0, c('uplight').n || 0);
+    const passoUp = (W - 60) / Math.max(1, nUp);
+    gruppi.uplight = Array.from({ length: nUp }, (_, i) => {
+      const x = 30 + passoUp * (i + 0.5);
+      return [el('polygon', { points: `${x - 4},${SUOLO - 8} ${x + 4},${SUOLO - 8} ${x + 18},${SUOLO - 150} ${x - 18},${SUOLO - 150}`, fill: `url(#${gid}u)`, class: 'cfg__fascio' }),
+        el('rect', { x: x - 6, y: SUOLO - 8, width: 12, height: 8, rx: 2, class: 'cfg__apparecchio' })];
+    });
+    // TV su stativo: ai lati del truss
+    const nTv = Math.max(0, c('tv_stativo').n || 0);
+    gruppi.tv_stativo = [Array.from({ length: nTv }, (_, i) => {
+      const lato = i % 2 === 0 ? -1 : 1;
+      const x = (lato < 0 ? tX1 - 50 : tX2 + 64) + lato * Math.floor(i / 2) * 64;
+      const y = SUOLO - 150;
+      return [el('rect', { x: x - 28, y, width: 56, height: 34, rx: 2, fill: `url(#${gid}s)`, class: 'cfg__schermo' }),
+        el('line', { x1: x, y1: y + 34, x2: x, y2: SUOLO - 4, class: 'cfg__asta' }), el('path', { d: `M${x - 16} ${SUOLO} l16 -6 l16 6`, class: 'cfg__asta' })];
+    }), nTv ? txt(tX1 - 50, SUOLO - 158, nome('tv_stativo'), 'cfg__testo cfg__piccolo') : null];
+    // palco / pedana: il bordo frontale sotto il DJ, largo come il palco
+    const pc = c('palco');
+    const pW = Math.max(2, pc.w) * M;
+    gruppi.palco = [el('rect', { x: CX - pW / 2, y: SUOLO, width: pW, height: 10, rx: 1, class: 'cfg__palco' }),
+      txt(CX + pW / 2 + 6, SUOLO + 9, `${nome('palco')} ${metri(pc.w, l)} × ${metri(pc.h, l)} m`, 'cfg__testo cfg__piccolo', { 'text-anchor': 'start' })];
+    // photo booth: cabina davanti a destra
+    const nPb = Math.max(0, c('photo_booth').n || 0);
+    gruppi.photo_booth = [Array.from({ length: nPb }, (_, i) => {
+      const x = W - 80 - i * 70;
+      const y = yB - 66;
+      return [el('rect', { x: x - 26, y, width: 52, height: 66, rx: 4, class: 'cfg__cassa' }),
+        el('rect', { x: x - 14, y: y + 10, width: 28, height: 18, rx: 2, fill: `url(#${gid}s)`, class: 'cfg__schermo' }),
+        el('circle', { cx: x, cy: y + 38, r: 5, class: 'cfg__lente' }), el('rect', { x: x - 10, y: y + 50, width: 20, height: 4, rx: 1, class: 'cfg__metallo' })];
+    }), nPb ? txt(W - 80, yB + 18, nome('photo_booth'), 'cfg__testo cfg__piccolo') : null];
     // ordine di disegno: dietro → davanti
-    const ordine = ['truss', 'luci_truss', 'schermo_dietro', 'luci_stativo', 'welcome_board', 'casse_top', 'sub', 'dance_floor', 'nebbia', 'effetti'];
+    const ordine = ['uplight', 'truss', 'luci_truss', 'schermo_dietro', 'luci_stativo', 'welcome_board', 'tv_stativo', 'palco', 'photo_booth', 'casse_top', 'sub', 'dance_floor', 'nebbia', 'effetti'];
     const gEls = {};
     const crea = (k) => {
       if (!mostra(k)) return null;
@@ -295,7 +333,7 @@
     // gruppi della lista accanto al disegno: l'allestimento di base e gli extra che il cliente può chiedere
     const GRUPPI = [
       ['Allestimento', ['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj']],
-      ['Extra su richiesta del cliente', ['dance_floor', 'welcome_board', 'effetti', 'nebbia', 'luci_stativo', 'microfono', 'live_stream']],
+      ['Extra su richiesta del cliente', ['dance_floor', 'welcome_board', 'uplight', 'photo_booth', 'palco', 'tv_stativo', 'effetti', 'nebbia', 'luci_stativo', 'microfono', 'live_stream']],
     ];
     const TIPICO = ['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj'];
 
@@ -305,7 +343,7 @@
         return [etichetta('Larghezza (moduli da 0,5 m)', numIn(c.w, 1, d.maxW, (n) => { c.w = n; aggiornaInfo(); }, 'Larghezza in moduli')),
           etichetta('Altezza (moduli da 1 m)', numIn(c.h, 1, d.maxH, (n) => { c.h = n; aggiornaInfo(); }, 'Altezza in moduli'))];
       }
-      if (d.tipo === 'pannelli') {
+      if (d.tipo === 'pannelli' || d.tipo === 'mq') {
         return [etichetta('Larghezza (m)', numIn(c.w, 1, d.maxW, (n) => { c.w = n; aggiornaInfo(); }, 'Larghezza in metri')),
           etichetta('Profondità (m)', numIn(c.h, 1, d.maxH, (n) => { c.h = n; aggiornaInfo(); }, 'Profondità in metri'))];
       }
