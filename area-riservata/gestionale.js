@@ -969,7 +969,7 @@
       const righe = (data.righe || []).map((r) => ({
         articolo_id: r.articolo_id, titolo: r.titolo || '', descrizione: r.descrizione, quantita: Number(r.quantita), giorni: Number(r.giorni),
         prezzo_unitario: Number(r.prezzo_unitario), sconto_percento: Number(r.sconto_percento), opzionale: !!r.opzionale,
-        modello_id: r.modello_id || null, componenti: r.componenti || null,
+        modello_id: r.modello_id || null, componenti: r.componenti || null, configurazione: r.configurazione || null,
       }));
       // gruppo nel PDF: categoria dell'articolo o del pacchetto
       const categoriaDi = (r) => (r.modello_id ? ((modelli.find((m) => m.id === r.modello_id) || {}).categoria || 'Altro')
@@ -1108,7 +1108,24 @@
           toast(`Modello "${m.nome}" aggiunto: controllate quantità e prezzi.`);
         });
         if (daModello) daModello.push(singoli);
-        aggiungi = h('div', { class: 'toolbar' }, daModello, scelta, comeVendita, addArt, addFree);
+        // configuratore visivo: si cliccano le parti del disegno e si scelgono misure e quantità
+        const cfg = window.MeekonConfiguratore && modelli.some((m) => m.parte)
+          ? window.MeekonConfiguratore.crea({
+            modelli, prezzo: (m) => Number(m.prezzo_giorno) || 0, fmt: fmtMoney,
+            onAggiungi: (lista) => {
+              lista.forEach(({ modello: m, configurazione, quantita, misura }) => {
+                const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
+                righe.push({ articolo_id: null, modello_id: m.id, componenti: comp, configurazione, titolo: m.nome.slice(0, 120),
+                  descrizione: [misura, m.descrizione || contenuto(comp)].filter(Boolean).join(' · ').slice(0, 500), quantita, giorni: giorniEvento,
+                  prezzo_unitario: Number(m.prezzo_giorno) || 0, sconto_percento: 0, opzionale: false });
+              });
+              disegnaRighe(); disegnaTotali();
+              toast(`${lista.length} pacchetti aggiunti: controllate quantità e prezzi.`);
+            },
+          })
+          : null;
+        aggiungi = h('div', null, cfg ? h('details', { class: 'cfg__apri' }, h('summary', null, 'Configuratore visivo (disegno)'), cfg) : null,
+          h('div', { class: 'toolbar' }, daModello, scelta, comeVendita, addArt, addFree));
       }
 
       // azioni
@@ -1196,7 +1213,7 @@
         const res = OD.build({ h, add }, {
           tipo, lingua: lingua.value, numero: numeroOfferta, numeroOrdine: ev.numero_ordine, oggi: oggi(), valida: valida.value || null,
           offerta: o, evento: ev, cliente: cli, impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totali(),
-          parti: [...new Set(righe.filter((r) => r.modello_id && !r.opzionale).map((r) => (modelli.find((m) => m.id === r.modello_id) || {}).parte).filter(Boolean))],
+          parti: window.MeekonConfiguratore ? window.MeekonConfiguratore.partiDisegno(righe.filter((r) => r.modello_id), modelli) : [],
           anrede: anrede.value.trim(), intro: intro.value.trim(), condizioni: cond.value.trim(), link: linkCliente,
         });
         clear(doc);

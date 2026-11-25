@@ -1001,29 +1001,56 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .carico progress { width: 100%; height: 10px; accent-color: var(--color-primary); }
 .carico__veicolo--troppo progress { accent-color: var(--color-danger); }
 
-/* configuratore visivo (disegno dell'allestimento) */
+/* configuratore visivo (disegno dell'allestimento): disegno a linee, parti scelte in nero con accenti ciano */
 .cfg { border: 1px solid var(--color-line); border-radius: var(--radius-1); background: var(--color-surface); padding: var(--sp-3); margin: var(--sp-2) 0 var(--sp-4); }
-.cfg__svg { width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; }
-.cfg__parte { cursor: pointer; fill: #fff; stroke: var(--c-ink-text); stroke-width: 1.6; stroke-linejoin: round; outline: none; }
-.cfg__parte line { stroke: var(--c-ink-text); }
-.cfg__parte .cfg__truss { fill: var(--c-stone-2, #ddd); }
-.cfg__parte .cfg__schermo { fill: #1b1d21; }
-.cfg__parte .cfg__pista { fill: var(--c-paper, #f6f4ef); }
-.cfg__testo { fill: var(--c-ink-text); stroke: none; font: 500 12px var(--font-text); pointer-events: none; }
-.cfg__piccolo { font-size: 9.5px; }
-.cfg__parte .cfg__schermo + .cfg__testo, .cfg__parte:has(.cfg__schermo) .cfg__testo { fill: #fff; }
-.cfg__parte:hover, .cfg__parte:focus-visible { stroke: var(--color-primary); }
-.cfg__parte:hover *, .cfg__parte:focus-visible * { stroke: var(--color-primary); }
-.cfg__parte--scelta { stroke: var(--color-primary); }
-.cfg__parte--scelta rect, .cfg__parte--scelta circle, .cfg__parte--scelta polygon { fill: var(--c-cyan); }
-.cfg__parte--scelta .cfg__schermo { fill: var(--color-primary); }
-.cfg__parte--off { cursor: default; opacity: .35; }
-.cfg__parte .cfg__chiaro { fill: #fff; }
-.cfg__parte .cfg__nuvola { fill: #eef1f4; stroke-dasharray: 3 2; }
-.cfg__parte .cfg__scintilla { stroke: #e0a100; stroke-width: 2; }
-.cfg__dj { fill: var(--c-ink-text); stroke: none; pointer-events: none; }
-.cfg__dj .cfg__cuffie { fill: none; stroke: var(--c-ink-text); stroke-width: 2.4; }
-.cfg__dj .cfg__testo { fill: var(--c-ink-text); }
+.cfg__svg { width: 100%; max-width: 860px; height: auto; display: block; margin: 0 auto; background: var(--c-paper-2); border-radius: var(--radius-1); }
+.cfg__suolo { stroke: var(--c-stone-2); stroke-width: 1.2; }
+.cfg__parte { cursor: pointer; outline: none; fill: none; stroke: var(--c-stone-2); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
+.cfg__parte :where(rect, path, circle, ellipse, polygon):where(:not(.cfg__piastrella, .cfg__fascio, .cfg__schermo)) { fill: var(--c-white); }
+.cfg__parte:not(.cfg__parte--scelta) .cfg__schermo { fill: var(--c-stone-1); }
+.cfg__parte .cfg__modulo { stroke: var(--c-white); stroke-width: 1; }
+.cfg__parte .cfg__truss { fill: var(--c-white); }
+.cfg__parte .cfg__traliccio { stroke-width: .8; }
+.cfg__parte .cfg__fascio, .cfg__parte .cfg__cuffie { display: none; }
+.cfg__parte:not(.cfg__parte--scelta) .cfg__piastrella { fill: var(--c-stone-1); stroke: var(--c-white); }
+.cfg__parte .cfg__asta { stroke-width: 2; }
+.cfg__parte .cfg__nuvola { fill: var(--c-paper); stroke-dasharray: 3 2; }
+.cfg__parte .cfg__scintilla { stroke-width: 1.6; }
+.cfg__testo { fill: var(--c-ivory-3); stroke: none; font: 500 12px var(--font-text); letter-spacing: .02em; pointer-events: none; }
+.cfg__piccolo { font-size: 10px; }
+.cfg__parte:hover, .cfg__parte:focus-visible { stroke: var(--c-cyan-ink); }
+.cfg__parte:hover .cfg__testo, .cfg__parte:focus-visible .cfg__testo { fill: var(--c-cyan-ink); }
+/* scelta: tratto scuro, schermi accesi, pista LED colorata, fasci di luce */
+.cfg__parte--scelta { stroke: var(--c-ink-text); }
+.cfg__parte--scelta .cfg__testo { fill: var(--c-ink-text); }
+.cfg__parte--scelta .cfg__schermo { stroke: var(--c-ink-0); }
+.cfg__parte--scelta .cfg__modulo { stroke: rgb(var(--c-cyan-rgb) / .35); }
+.cfg__parte--scelta .cfg__chiaro { fill: var(--c-ivory); }
+.cfg__parte .cfg__chiaro { fill: var(--c-ivory-3); }
+.cfg__parte--scelta .cfg__cassa, .cfg__parte--scelta .cfg__testa, .cfg__parte--scelta .cfg__apparecchio { fill: var(--c-ink-3); }
+.cfg__parte--scelta .cfg__driver { fill: var(--c-ink-1); stroke: var(--c-anthracite); }
+.cfg__parte--scelta .cfg__lente { fill: var(--c-cyan); stroke: none; }
+.cfg__parte--scelta .cfg__metallo, .cfg__parte--scelta .cfg__piano { fill: var(--c-anthracite); }
+.cfg__parte--scelta .cfg__truss { fill: var(--c-paper); }
+.cfg__parte--scelta .cfg__fascio { display: inline; stroke: none; }
+.cfg__parte--scelta .cfg__piastrella { fill-opacity: .85; stroke: var(--c-ink-1); stroke-width: 1; }
+.cfg__parte--scelta .cfg__scintilla { stroke: #E0A100; }
+.cfg__parte--scelta .cfg__nuvola { fill: var(--c-white); stroke: var(--c-stone-3); }
+.cfg__parte--off { cursor: default; opacity: .3; }
+.cfg__dj { fill: var(--c-anthracite); stroke: var(--c-ivory); stroke-width: 1; pointer-events: none; }
+.cfg__dj .cfg__cuffie { fill: none; stroke: var(--c-cyan-ink); stroke-width: 2.6; }
+.cfg__opzioni { display: grid; gap: var(--sp-3); margin-top: var(--sp-3); }
+.cfg__opzioni > .btn { justify-self: start; }
+.cfg__gruppo { border: 1px solid var(--color-line); border-radius: var(--radius-1); padding: var(--sp-2) var(--sp-3); margin: 0; }
+.cfg__gruppo legend { padding: 0 var(--sp-1); font-weight: 600; font-size: var(--fs-sm); }
+.cfg__riga { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); padding: var(--sp-1) 0; border-bottom: 1px solid var(--c-stone-1); }
+.cfg__riga:last-child { border-bottom: 0; }
+.cfg__riga--on { background: var(--c-cyan-wash); margin: 0 calc(-1 * var(--sp-2)); padding-inline: var(--sp-2); border-radius: var(--radius-1); }
+.cfg__opzione { display: inline-flex; align-items: center; gap: var(--sp-1); font-size: var(--fs-sm); }
+.cfg__opzione .input--num { width: 4.5em; }
+.cfg__scelta { flex: 1 1 14em; font-weight: 500; flex-direction: row-reverse; justify-content: flex-end; }
+.cfg__info { margin-left: auto; font-size: var(--fs-sm); color: var(--color-text-2); font-variant-numeric: tabular-nums; }
+.cfg__apri > summary { cursor: pointer; font-weight: 500; margin-bottom: var(--sp-2); }
 .cfg__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-3); }
 .cfg__riepilogo { margin: 0; font-size: var(--fs-sm); color: var(--color-text-2); }
 
@@ -1127,16 +1154,7 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc__opzionali { margin-top: 5mm; }
   .doc__setup { margin: 6mm 0 2mm; padding: 4mm 5mm; border: .3mm solid #E5E1D8; border-radius: 2.5mm; break-inside: avoid; }
   .doc__setup .cfg__svg--pdf { display: block; width: 100%; max-height: 95mm; margin: 2mm auto; }
-  /* nel PDF le parti scelte si mostrano con i colori normali (le altre non ci sono) */
-  .doc__setup .cfg__parte--scelta rect, .doc__setup .cfg__parte--scelta circle, .doc__setup .cfg__parte--scelta polygon { fill: #fff; }
-  .doc__setup .cfg__parte--scelta { stroke: #161616; }
-  .doc__setup .cfg__parte--scelta * { stroke: #161616; }
-  .doc__setup .cfg__parte--scelta .cfg__schermo { fill: #1b1d21; }
-  .doc__setup .cfg__parte--scelta .cfg__truss { fill: #ddd; }
-  .doc__setup .cfg__parte--scelta .cfg__pista { fill: #F2ECE1; }
-  .doc__setup .cfg__testo { stroke: none; }
-  .doc__setup .cfg__chiaro { fill: #fff; }
-  .doc__setup .cfg__scintilla { stroke: #e0a100; }
+  .doc__setup .cfg__svg--pdf { background: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .doc__riquadri { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin: 6mm 0 4mm; break-inside: avoid; }
   .doc__riquadro { padding: 3.5mm 4mm; background: #F2ECE1; border-radius: 2.5mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .doc__riquadro dl { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: .6mm 4mm; margin: 0 0 1.8mm; }

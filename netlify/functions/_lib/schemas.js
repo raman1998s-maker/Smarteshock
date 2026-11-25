@@ -198,10 +198,22 @@ const componentiSchema = t.array((v, f) => {
   return validate(v, { articolo_id: t.uuid({ required: true }), quantita: t.int({ min: 1, max: 100000, required: true }) });
 }, { max: 200, empty: null });
 
+// scelta nel configuratore visivo: schermi/pista { parte, w, h }, pezzi { parte, n }
+const configurazioneSchema = (v, f) => {
+  if (v == null || v === '') return null;
+  if (typeof v !== 'object' || Array.isArray(v)) throw new HttpError(400, 'invalid_input', { field: f });
+  const c = validate(v, {
+    parte: t.enumOf(['luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor'], { required: true }),
+    w: t.int({ min: 1, max: 30 }), h: t.int({ min: 1, max: 30 }), n: t.int({ min: 1, max: 30 }),
+  });
+  return Object.fromEntries(Object.entries(c).filter(([, x]) => x != null));
+};
+
 export const rigaOffertaSchema = {
   articolo_id: t.uuid(),
   modello_id: t.uuid(),
   componenti: componentiSchema,
+  configurazione: configurazioneSchema,
   titolo: t.string({ max: 120 }),
   descrizione: t.string({ max: 500, required: true, multiline: true }),
   quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),
@@ -274,6 +286,7 @@ export const partnerRigaSchema = {
   articolo_id: t.uuid(),
   modello_id: t.uuid(),
   componenti: componentiSchema,
+  configurazione: configurazioneSchema,
   titolo: t.string({ max: 120 }),
   descrizione: t.string({ max: 500, required: true, multiline: true }),
   quantita: t.decimal({ min: 0.01, max: 100000, decimals: 2, default: 1, empty: 1 }),

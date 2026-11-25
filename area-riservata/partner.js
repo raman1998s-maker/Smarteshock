@@ -216,17 +216,18 @@
             disegna(); ridisegnaTotali();
             toast(`Modello "${m.nome}" aggiunto: decidete i prezzi per il cliente.`);
           });
-          const aggiungiPacchetto = (m) => {
+          const aggiungiPacchetto = (m, scelta) => {
             // un pacchetto = una riga con prezzo unico; gli articoli restano come componenti per Meekon
             const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
-            righe.push({ tipo: 'pacchetto', articolo_id: null, modello_id: m.id, componenti: comp, titolo: m.nome.slice(0, 120),
-              descrizione: (m.descrizione || contenuto(comp)).slice(0, 500), quantita: 1, giorni: giorniEv(), prezzo_unitario: prezzoModello(m), sconto_percento: 0, opzionale: false });
+            const desc = [scelta && scelta.misura, m.descrizione || contenuto(comp)].filter(Boolean).join(' · ');
+            righe.push({ tipo: 'pacchetto', articolo_id: null, modello_id: m.id, componenti: comp, configurazione: scelta ? scelta.configurazione : null, titolo: m.nome.slice(0, 120),
+              descrizione: desc.slice(0, 500), quantita: scelta ? scelta.quantita : 1, giorni: giorniEv(), prezzo_unitario: prezzoModello(m), sconto_percento: 0, opzionale: false });
           };
           // configuratore visivo dal disegno di Meekon: le parti collegate a un pacchetto si cliccano
           if (window.MeekonConfiguratore && modelli.some((m) => m.parte)) {
             configuratore = window.MeekonConfiguratore.crea({
               modelli, prezzo: prezzoModello, fmt: fmtMoney,
-              onAggiungi: (lista) => { lista.forEach(aggiungiPacchetto); disegna(); ridisegnaTotali(); toast(`${lista.length} pacchetti aggiunti: decidete i prezzi per il cliente.`); },
+              onAggiungi: (lista) => { lista.forEach((s) => aggiungiPacchetto(s.modello, s)); disegna(); ridisegnaTotali(); toast(`${lista.length} pacchetti aggiunti: decidete i prezzi per il cliente.`); },
             });
           }
           daModello = [selM, addM];
@@ -264,7 +265,7 @@
           introduzione: f.introduzione.value.trim() || null, condizioni: f.condizioni.value.trim() || null,
         };
         await api(`partner-offerte/${encodeURIComponent(o.id)}`, { method: 'PATCH', body });
-        await api(`partner-offerte/${encodeURIComponent(o.id)}/righe`, { method: 'PUT', body: { righe: righe.map((r) => ({ tipo: r.tipo, articolo_id: r.articolo_id || null, modello_id: r.modello_id || null, componenti: r.componenti || null, titolo: r.titolo.trim() || null, descrizione: r.descrizione.trim(), quantita: r.quantita, giorni: r.giorni, prezzo_unitario: r.prezzo_unitario, sconto_percento: r.sconto_percento, opzionale: !!r.opzionale })) } });
+        await api(`partner-offerte/${encodeURIComponent(o.id)}/righe`, { method: 'PUT', body: { righe: righe.map((r) => ({ tipo: r.tipo, articolo_id: r.articolo_id || null, modello_id: r.modello_id || null, componenti: r.componenti || null, configurazione: r.configurazione || null, titolo: r.titolo.trim() || null, descrizione: r.descrizione.trim(), quantita: r.quantita, giorni: r.giorni, prezzo_unitario: r.prezzo_unitario, sconto_percento: r.sconto_percento, opzionale: !!r.opzionale })) } });
         return true;
       };
 
@@ -288,7 +289,7 @@
           evento: { titolo: f.evento_titolo.value, data_inizio: f.data_inizio.value || null, data_fine: f.data_fine.value || null, montaggio_da: f.montaggio_da.value || null, localita: f.luogo.value },
           cliente: { nome: f.cliente_nome.value, azienda: f.cliente_azienda.value, indirizzo: f.cliente_indirizzo.value, email: f.cliente_email.value, telefono: f.cliente_telefono.value },
           impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totaliDi(righe, header()), partner: true,
-          parti: [...new Set(righe.filter((r) => r.tipo === 'pacchetto' && !r.opzionale).map((r) => (modelli.find((m) => m.id === r.modello_id) || {}).parte).filter(Boolean))],
+          parti: window.MeekonConfiguratore ? window.MeekonConfiguratore.partiDisegno(righe.filter((r) => r.tipo === 'pacchetto'), modelli) : [],
           anrede: f.anrede.value.trim(), intro: f.introduzione.value.trim(), condizioni: f.condizioni.value.trim(), link: null,
         });
         clear(doc);

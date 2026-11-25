@@ -11,17 +11,21 @@ alter table public.modelli
   add column if not exists prezzo_giorno numeric(12, 2) check (prezzo_giorno is null or prezzo_giorno >= 0),
   add column if not exists categoria text check (categoria is null or char_length(categoria) <= 60),
   -- parte del disegno del configuratore a cui corrisponde il pacchetto (es. schermo_dietro)
-  add column if not exists parte text check (parte is null or parte in ('luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'audio_sx', 'audio_dx', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor')),
+  add column if not exists parte text check (parte is null or parte in ('luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'casse_top', 'sub', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor')),
   -- disegno dello schema di allestimento (data URL PNG/JPEG/WebP): i partner scelgono guardando il disegno
   add column if not exists immagine text check (immagine is null or (char_length(immagine) <= 900000 and immagine ~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$'));
 
 alter table public.offerte_righe
   add column if not exists modello_id uuid references public.modelli (id) on delete set null,
-  add column if not exists componenti jsonb check (componenti is null or (jsonb_typeof(componenti) = 'array' and jsonb_array_length(componenti) <= 200));
+  add column if not exists componenti jsonb check (componenti is null or (jsonb_typeof(componenti) = 'array' and jsonb_array_length(componenti) <= 200)),
+  -- scelta nel configuratore: { parte, w, h } (schermi in moduli 0,5 × 1 m, pista in pannelli 1 × 1 m) o { parte, n }
+  add column if not exists configurazione jsonb check (configurazione is null or (jsonb_typeof(configurazione) = 'object' and pg_column_size(configurazione) <= 400));
 
 alter table public.partner_righe
   add column if not exists modello_id uuid references public.modelli (id) on delete set null,
-  add column if not exists componenti jsonb check (componenti is null or (jsonb_typeof(componenti) = 'array' and jsonb_array_length(componenti) <= 200));
+  add column if not exists componenti jsonb check (componenti is null or (jsonb_typeof(componenti) = 'array' and jsonb_array_length(componenti) <= 200)),
+  -- scelta nel configuratore: { parte, w, h } (schermi in moduli 0,5 × 1 m, pista in pannelli 1 × 1 m) o { parte, n }
+  add column if not exists configurazione jsonb check (configurazione is null or (jsonb_typeof(configurazione) = 'object' and pg_column_size(configurazione) <= 400));
 alter table public.partner_righe drop constraint if exists partner_righe_tipo_check;
 alter table public.partner_righe add constraint partner_righe_tipo_check check (tipo in ('servizio', 'materiale', 'pacchetto'));
 alter table public.partner_righe drop constraint if exists partner_righe_materiale;
@@ -94,13 +98,13 @@ begin
     raise exception 'si modificano solo le offerte in bozza' using errcode = '55000';
   end if;
   delete from public.offerte_righe where offerta_id = p_offerta;
-  insert into public.offerte_righe (offerta_id, articolo_id, modello_id, componenti, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale)
-    select p_offerta, r.articolo_id, r.modello_id, r.componenti, (r.ord - 1)::integer, nullif(btrim(r.titolo), ''), r.descrizione,
+  insert into public.offerte_righe (offerta_id, articolo_id, modello_id, componenti, configurazione, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale)
+    select p_offerta, r.articolo_id, r.modello_id, r.componenti, r.configurazione, (r.ord - 1)::integer, nullif(btrim(r.titolo), ''), r.descrizione,
            coalesce(r.quantita, 1), coalesce(r.giorni, 1), coalesce(r.prezzo_unitario, 0), coalesce(r.sconto_percento, 0), coalesce(r.opzionale, false)
     from rows from (jsonb_to_recordset(p_righe) as (
-      articolo_id uuid, modello_id uuid, componenti jsonb, titolo text, descrizione text, quantita numeric, giorni numeric,
+      articolo_id uuid, modello_id uuid, componenti jsonb, configurazione jsonb, titolo text, descrizione text, quantita numeric, giorni numeric,
       prezzo_unitario numeric, sconto_percento numeric, opzionale boolean
-    )) with ordinality as r(articolo_id, modello_id, componenti, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale, ord);
+    )) with ordinality as r(articolo_id, modello_id, componenti, configurazione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale, ord);
 end;
 $$;
 
@@ -118,13 +122,13 @@ begin
     raise exception 'offerta inesistente' using errcode = 'P0002';
   end if;
   delete from public.partner_righe where offerta_id = p_offerta;
-  insert into public.partner_righe (offerta_id, posizione, tipo, articolo_id, modello_id, componenti, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale)
-    select p_offerta, (r.ord - 1)::integer, coalesce(r.tipo, 'servizio'), r.articolo_id, r.modello_id, r.componenti, nullif(btrim(r.titolo), ''), r.descrizione,
+  insert into public.partner_righe (offerta_id, posizione, tipo, articolo_id, modello_id, componenti, configurazione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale)
+    select p_offerta, (r.ord - 1)::integer, coalesce(r.tipo, 'servizio'), r.articolo_id, r.modello_id, r.componenti, r.configurazione, nullif(btrim(r.titolo), ''), r.descrizione,
            coalesce(r.quantita, 1), coalesce(r.giorni, 1), coalesce(r.prezzo_unitario, 0), coalesce(r.sconto_percento, 0), coalesce(r.opzionale, false)
     from rows from (jsonb_to_recordset(p_righe) as (
-      tipo text, articolo_id uuid, modello_id uuid, componenti jsonb, titolo text, descrizione text, quantita numeric, giorni numeric,
+      tipo text, articolo_id uuid, modello_id uuid, componenti jsonb, configurazione jsonb, titolo text, descrizione text, quantita numeric, giorni numeric,
       prezzo_unitario numeric, sconto_percento numeric, opzionale boolean
-    )) with ordinality as r(tipo, articolo_id, modello_id, componenti, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale, ord);
+    )) with ordinality as r(tipo, articolo_id, modello_id, componenti, configurazione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento, opzionale, ord);
 end;
 $$;
 
@@ -135,10 +139,10 @@ begin
   def := pg_get_functiondef('public.nuova_offerta(uuid, uuid)'::regprocedure);
   def := replace(def,
     'insert into public.offerte_righe (offerta_id, articolo_id, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento)',
-    'insert into public.offerte_righe (offerta_id, articolo_id, modello_id, componenti, opzionale, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento)');
+    'insert into public.offerte_righe (offerta_id, articolo_id, modello_id, componenti, configurazione, opzionale, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento)');
   def := replace(def,
     'select v_id, articolo_id, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento',
-    'select v_id, articolo_id, modello_id, componenti, opzionale, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento');
+    'select v_id, articolo_id, modello_id, componenti, configurazione, opzionale, posizione, titolo, descrizione, quantita, giorni, prezzo_unitario, sconto_percento');
   if position('modello_id, componenti' in def) = 0 then
     raise exception 'nuova_offerta: sostituzione non riuscita';
   end if;

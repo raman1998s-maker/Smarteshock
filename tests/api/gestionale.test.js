@@ -231,6 +231,17 @@ describe('offerte', () => {
     assert.deepEqual(calls.at(-1).body.p_righe[0], { descrizione: 'LED', quantita: 2.5, giorni: 1, prezzo_unitario: 100, sconto_percento: 0, opzionale: false });
   });
 
+  test('configurazione del disegno: misure valide passano, parti o misure sbagliate → 400', async () => {
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/rpc\/imposta_righe_offerta$/, () => ({ status: 204 })]]);
+    let res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', quantita: 24, configurazione: { parte: 'schermo_dietro', w: 8, h: 3 } }] } }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls.at(-1).body.p_righe[0].configurazione, { parte: 'schermo_dietro', w: 8, h: 3 });
+    res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', configurazione: { parte: 'razzo', n: 1 } }] } }));
+    assert.equal(res.status, 400);
+    res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', configurazione: { parte: 'casse_top', n: 500 } }] } }));
+    assert.equal(res.status, 400);
+  });
+
   test('offerta non più in bozza → 409', async () => {
     mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/rpc\/imposta_righe_offerta$/, () => ({ status: 400, body: { code: '55000', message: 'x' } })]]);
     const res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [] } }));

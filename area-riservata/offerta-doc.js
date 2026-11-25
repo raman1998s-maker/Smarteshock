@@ -292,7 +292,11 @@
         ? h('section', { class: 'doc__setup' },
           h('p', { class: 'doc__etichetta' }, (window.MeekonConfiguratore.ETICHETTE[d.lingua] || window.MeekonConfiguratore.ETICHETTE.de).setup),
           window.MeekonConfiguratore.statico(d.parti, d.lingua),
-          h('p', { class: 'doc__piccolo' }, d.parti.map((k) => (window.MeekonConfiguratore.NOMI[k] || {})[d.lingua] || (window.MeekonConfiguratore.NOMI[k] || {}).de || k).join(' · ')))
+          h('p', { class: 'doc__piccolo' }, d.parti.map((c) => {
+            const n = window.MeekonConfiguratore.NOMI[c.parte] || {};
+            const mis = window.MeekonConfiguratore.misura(c, d.lingua);
+            return `${n[d.lingua] || n.de || c.parte}${mis ? ` (${mis})` : ''}`;
+          }).join(' · ')))
         : null,
       h('div', { class: 'doc__riquadri' },
         h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.pagamento),
