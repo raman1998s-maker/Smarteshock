@@ -184,6 +184,7 @@ TECH_GROUPS = [
     ]),
     ("corrente", TECH_ALL, [
         ("check", "prese", ["230v", "cee16", "cee32", "cee63", "cee125", "non_so"], None),  # prese industriali CEE per amperaggio
+        ("qty", "prese", ["230v", "cee16", "cee32", "cee63", "cee125"]),  # quante per ogni tipo spuntato
         ("radio", "prese_vicine", YNN, None),
     ]),
     ("orari", TECH_ALL, [
@@ -247,6 +248,12 @@ def tech_html(tt):
         if kind == "row":
             pair = " tech__pair" if all(f[0] in ("num", "time") for f in item[1]) else ""
             return f'<div class="form__row{pair}"{cond(item[2])}>' + "".join(field(f) for f in item[1]) + "</div>"
+        if kind == "qty":  # quantità per ogni opzione spuntata (es. quante prese CEE 32 A)
+            _, key, values = item
+            return '<div class="form__row tech__pair">' + "".join(
+                f'<label data-if="{key}={v}">{E(tt["qty"].format(opt(key, v)))}'
+                f'<input name="dt_{key}_{v}_n" type="number" min="1" max="50" step="1" inputmode="numeric"></label>'
+                for v in values) + "</div>"
         if kind == "note":
             return f'<p class="tech__note">{E(tt[item[1]])}</p>'
         return field(item, item[3] if len(item) > 3 else None)

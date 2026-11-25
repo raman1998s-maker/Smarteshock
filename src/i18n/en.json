@@ -226,6 +226,7 @@
     },
     "note_fumo": "Some detectors also react to haze: we'll check this together with the venue.",
     "note_mp4": "Please send videos as MP4 (not MOV), no later than 3 days before the event.",
+    "qty": "{}: how many sockets?",
     "fornitori_intro": "Optional: only include people who are happy to be contacted.",
     "roles": {
       "decorazioni": "Decoration / florist",

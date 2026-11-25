@@ -33,6 +33,8 @@
   // Dettagli tecnici sul luogo (richieste_web.dettagli_tecnici): etichette e valori in italiano.
   // Le chiavi e i valori sono quelli di dettagliTecniciSchema (netlify/functions/_lib/schemas.js).
   const SNN = { si: 'Sì', no: 'No', non_so: 'Non so' };
+  // tipi di presa (richiesta del sito e offerta del partner)
+  const PRESE = { '230v': 'Normali 230 V', cee16: 'CEE 16 A', cee32: 'CEE 32 A', cee63: 'CEE 63 A', cee125: 'CEE 125 A', cee400: 'CEE 400 V (forza)' };
   const DETTAGLI = [
     ['spazio', 'Tipo di spazio', { sala: 'Sala chiusa', tendone: 'Tendone', capannone: 'Capannone o spazio molto alto', aperto: "All'aperto" }],
     ['copertura', 'Copertura (all\'aperto)', SNN],
@@ -41,7 +43,7 @@
     ['altezza_m', 'Altezza della sala', (v) => `${String(v).replace('.', ',')} m`],
     ['accesso', 'Accesso per il materiale', { piano_terra: 'Piano terra senza gradini', ascensore: 'Ascensore', scale: 'Scale', non_so: 'Non so' }],
     ['scarico', 'Parcheggio / scarico vicino', SNN],
-    ['prese', 'Prese di corrente', { '230v': 'Normali 230 V', cee16: 'CEE 16 A', cee32: 'CEE 32 A', cee63: 'CEE 63 A', cee125: 'CEE 125 A', cee400: 'CEE 400 V (forza)', non_so: 'Non so' }],
+    ['prese', 'Prese di corrente', (v, d) => { const n = d[`prese_${v}_n`]; return `${PRESE[v] || (v === 'non_so' ? 'Non so' : v)}${n ? ` × ${n}` : ''}`; }],
     ['prese_vicine', 'Prese vicine al punto di installazione', { si: 'Sì', no: 'No, a più di ~20 m', non_so: 'Non so' }],
     ['montaggio_giorno_prima', 'Montaggio il giorno prima', { possibile: 'Possibile', richiesto: 'Richiesto dalla location', non_possibile: 'Non possibile', non_so: 'Non so' }],
     ['montaggio_dalle', 'Montaggio possibile dalle', null],
@@ -61,7 +63,7 @@
   function dettagliTecnici(d) {
     if (!d || typeof d !== 'object' || Array.isArray(d)) return null;
     const fmt = (v, map) => {
-      const one = (x) => (typeof map === 'function' ? map(x) : map && Object.prototype.hasOwnProperty.call(map, x) ? map[x] : String(x));
+      const one = (x) => (typeof map === 'function' ? map(x, d) : map && Object.prototype.hasOwnProperty.call(map, x) ? map[x] : String(x));
       return Array.isArray(v) ? v.map(one).join(', ') : one(v);
     };
     const rows = DETTAGLI.filter(([k]) => d[k] !== undefined && d[k] !== null && d[k] !== '').map(([k, label, map]) => [label, fmt(d[k], map)]);

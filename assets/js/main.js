@@ -99,8 +99,8 @@
       });
       tech.querySelectorAll('[data-if]').forEach((el) => {
         const [name, value] = el.dataset.if.split('=');
-        const picked = techForm.querySelector(`input[name="dt_${name}"]:checked`);
-        show(el, !!picked && picked.value === value);
+        const picked = [...techForm.querySelectorAll(`input[name="dt_${name}"]:checked`)];
+        show(el, picked.some((p) => p.value === value));
       });
       show(tech, any);
     };

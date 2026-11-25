@@ -10,6 +10,9 @@
   const MATERIALE = { nessuno: 'Nessun materiale', in_attesa: 'Materiale in attesa', da_confermare: 'Materiale da confermare', confermato: 'Materiale confermato', rifiutato: 'Materiale rifiutato' };
   const BADGE_MAT = { nessuno: 'completato', in_attesa: 'richiesta', da_confermare: 'offerta', confermato: 'confermato', rifiutato: 'annullato' };
   const LINGUE = { de: 'Tedesco', it: 'Italiano', fr: 'Francese', en: 'Inglese' };
+  // prese di corrente in location: tipo → quante (serve a Meekon per cavi e distribuzione)
+  const PRESE = { '230v': 'Normali 230 V', cee16: 'CEE 16 A', cee32: 'CEE 32 A', cee63: 'CEE 63 A', cee125: 'CEE 125 A' };
+  const testoPrese = (p) => (p && Object.keys(p).length ? Object.entries(p).map(([k, n]) => `${PRESE[k] || k} × ${n}`).join(', ') : '—');
 
   function create(ctx) {
     const { h, add, clear, api, ApiError, errorMessage, page, toast, field, busy, select, check, loading, failure, empty,
@@ -94,6 +97,7 @@
         anrede: inp('anrede', { maxlength: '200', placeholder: 'es. Liebe Anna, lieber Marco' }),
         evento_titolo: inp('evento_titolo', { maxlength: '200' }), luogo: inp('luogo', { maxlength: '300' }),
         data_inizio: dt('data_inizio'), data_fine: dt('data_fine'), montaggio_da: dt('montaggio_da'),
+        prese: Object.fromEntries(Object.keys(PRESE).map((k) => [k, h('input', { type: 'number', min: '0', max: '50', step: '1', inputmode: 'numeric', class: 'input--num', value: (o.prese && o.prese[k]) || '', disabled: !bozza, 'aria-label': `${PRESE[k]}: quante prese` })])),
         valida_fino: h('input', { type: 'date', value: o.valida_fino || '', disabled: !bozza }),
         lingua: select('lingua', Object.entries(LINGUE), o.lingua || 'de'),
         sconto_percento: inp('sconto_percento', { inputmode: 'decimal' }),
@@ -260,6 +264,7 @@
           cliente_indirizzo: f.cliente_indirizzo.value.trim() || null, cliente_email: f.cliente_email.value.trim() || null, cliente_telefono: f.cliente_telefono.value.trim() || null,
           anrede: f.anrede.value.trim() || null, evento_titolo: f.evento_titolo.value.trim() || null, luogo: f.luogo.value.trim() || null,
           data_inizio: f.data_inizio.value || null, data_fine: f.data_fine.value || null, montaggio_da: f.montaggio_da.value || null,
+          prese: Object.fromEntries(Object.entries(f.prese).map(([k, el]) => [k, Math.max(0, Math.min(50, Math.round(numero(el.value) || 0)))])),
           valida_fino: f.valida_fino.value || null, sconto_percento: numero(f.sconto_percento.value) || 0,
           prezzi_iva_inclusa: ivaInclusa.querySelector('input').checked,
           introduzione: f.introduzione.value.trim() || null, condizioni: f.condizioni.value.trim() || null,
@@ -357,7 +362,9 @@
             field('E-mail', f.cliente_email), field('Telefono', f.cliente_telefono), field('Saluto (Anrede)', f.anrede, { full: true }))),
         h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Evento')),
           h('div', { class: 'fields' }, field('Evento', f.evento_titolo, { full: true }), field('Luogo', f.luogo, { full: true }),
-            field('Inizio', f.data_inizio), field('Fine', f.data_fine), field('Montaggio da', f.montaggio_da))),
+            field('Inizio', f.data_inizio), field('Fine', f.data_fine), field('Montaggio da', f.montaggio_da),
+            h('fieldset', { class: 'field field--full prese' }, h('legend', null, 'Prese di corrente in location (quante per tipo)'),
+              h('div', { class: 'prese__lista' }, Object.entries(f.prese).map(([k, el]) => h('label', { class: 'prese__voce' }, h('span', null, PRESE[k]), el)))))),
         wide(h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Righe')),
           tabella(['Riga', 'Q.tà', 'Giorni', 'Prezzo cliente CHF', 'Importo CHF', ''], tbody), aggiungi, totBox, costoBox)),
         wide(h('section', { class: 'panel' }, h('div', { class: 'fields' },
@@ -479,6 +486,7 @@
             ['Cliente finale', o.cliente_azienda || o.cliente_nome || '—'],
             ['Evento', [o.evento_titolo, fmtRange(o.data_inizio, o.data_fine)].filter(Boolean).join(' · ')],
             ['Luogo', o.luogo || '—'],
+            ['Prese in location', testoPrese(o.prese)],
             ['Costo materiale (prezzo partner)', chf(det.costo_materiale)],
             o.evento_id ? ['Evento Meekon', h('a', { href: `#/evento/${encodeURIComponent(o.evento_id)}` }, 'Apri evento')] : null,
             o.nota_meekon ? ['Nota', o.nota_meekon] : null,

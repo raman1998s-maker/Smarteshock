@@ -98,6 +98,11 @@ export const dettagliTecniciSchema = {
   accesso: t.enumOf(['piano_terra', 'ascensore', 'scale', 'non_so']),
   scarico: t.enumOf(SI_NO_NONSO),
   prese: t.array(t.enumOf(['230v', 'cee16', 'cee32', 'cee63', 'cee125', 'non_so']), { max: 6 }), // CEE per amperaggio
+  prese_230v_n: t.int({ min: 1, max: 50 }), // quante prese di quel tipo
+  prese_cee16_n: t.int({ min: 1, max: 50 }), // quante prese di quel tipo
+  prese_cee32_n: t.int({ min: 1, max: 50 }), // quante prese di quel tipo
+  prese_cee63_n: t.int({ min: 1, max: 50 }), // quante prese di quel tipo
+  prese_cee125_n: t.int({ min: 1, max: 50 }), // quante prese di quel tipo
   prese_vicine: t.enumOf(SI_NO_NONSO), // "no" = a più di ~20 m
   montaggio_dalle: t.string({ max: 80 }),
   smontaggio_entro: t.string({ max: 80 }),
@@ -258,6 +263,16 @@ export const partnerProfiloSchema = {
   agb: t.string({ max: 30000, multiline: true }),
 };
 
+// prese di corrente in location: { "230v": n, "cee16": n, ... } (n = quante, 0 o vuoto = nessuna)
+export const PRESE = ['230v', 'cee16', 'cee32', 'cee63', 'cee125'];
+const preseSchema = (v, f) => {
+  if (v == null || v === '') return null;
+  if (typeof v !== 'object' || Array.isArray(v)) throw new HttpError(400, 'invalid_input', { field: f });
+  const c = validate(v, Object.fromEntries(PRESE.map((k) => [k, t.int({ min: 0, max: 50, empty: 0 })])));
+  const out = Object.fromEntries(Object.entries(c).filter(([, n]) => n > 0));
+  return Object.keys(out).length ? out : null;
+};
+
 export const partnerOffertaSchema = {
   stato: t.enumOf(['bozza', 'inviata', 'accettata', 'rifiutata', 'scaduta']),
   lingua: t.enumOf(LINGUE),
@@ -272,6 +287,7 @@ export const partnerOffertaSchema = {
   data_fine: t.datetime(),
   montaggio_da: t.datetime(),
   luogo: t.string({ max: 300 }),
+  prese: preseSchema,
   valida_fino: t.date(),
   iva_percento: t.decimal({ min: 0, max: 30, decimals: 2, empty: 8.1 }),
   prezzi_iva_inclusa: t.bool({ empty: true }),

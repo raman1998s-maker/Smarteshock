@@ -226,6 +226,7 @@
     },
     "note_fumo": "Certains détecteurs réagissent aussi au brouillard : nous le vérifions ensemble avec le lieu.",
     "note_mp4": "Les vidéos sont à envoyer en MP4 (pas en MOV), au plus tard 3 jours avant l'événement.",
+    "qty": "{} : combien de prises ?",
     "fornitori_intro": "Facultatif : indiquez seulement les personnes d'accord d'être contactées.",
     "roles": {
       "decorazioni": "Décoration / fleuriste",

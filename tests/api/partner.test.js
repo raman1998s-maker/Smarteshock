@@ -61,6 +61,17 @@ describe('partner: cosa può fare', () => {
     assert.equal(w.stato, undefined);
   });
 
+  test('prese in location: quante per tipo, gli zeri spariscono, tipi sconosciuti → 400', async () => {
+    const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/partner_offerte\?/, (c) => ({ status: 201, body: [{ id: OFF, ...c.body }] })]]);
+    let res = await offerte(req('/api/partner-offerte', { method: 'POST', cookie: DJ, body: { prese: { '230v': 4, cee32: 2, cee63: 0 } } }));
+    assert.equal(res.status, 201);
+    assert.deepEqual(writes(calls).at(-1).body.prese, { '230v': 4, cee32: 2 });
+    res = await offerte(req('/api/partner-offerte', { method: 'POST', cookie: DJ, body: { prese: { cee400: 1 } } }));
+    assert.equal(res.status, 400);
+    res = await offerte(req('/api/partner-offerte', { method: 'POST', cookie: DJ, body: { prese: { cee16: 99 } } }));
+    assert.equal(res.status, 400);
+  });
+
   test('righe materiale senza articolo → 400', async () => {
     const calls = mockFetch([staffRoute(P), ['POST', /^\/rest\/v1\/rpc\/imposta_righe_partner$/, () => ({ status: 204 })]]);
     let res = await righe(req(`/api/partner-offerte/${OFF}/righe`, { method: 'PUT', cookie: DJ, body: { righe: [{ tipo: 'materiale', descrizione: 'Truss' }] } }));

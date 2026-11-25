@@ -226,6 +226,7 @@
     },
     "note_fumo": "Alcuni rilevatori reagiscono anche alla nebbia: lo verifichiamo insieme alla location.",
     "note_mp4": "I video vanno inviati in formato MP4 (non MOV), al più tardi 3 giorni prima dell'evento.",
+    "qty": "{}: quante prese?",
     "fornitori_intro": "Facoltativo: indicate solo chi è d'accordo di essere contattato.",
     "roles": {
       "decorazioni": "Decorazioni / fiorista",

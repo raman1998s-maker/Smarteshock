@@ -1001,6 +1001,13 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .carico progress { width: 100%; height: 10px; accent-color: var(--color-primary); }
 .carico__veicolo--troppo progress { accent-color: var(--color-danger); }
 
+/* prese di corrente in location (offerta del partner) */
+.prese { border: 0; padding: 0; margin: 0; }
+.prese legend { font-size: var(--fs-sm); font-weight: 500; margin-bottom: var(--sp-1); }
+.prese__lista { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); }
+.prese__voce { display: inline-flex; align-items: center; gap: var(--sp-1); font-size: var(--fs-sm); }
+.prese__voce .input--num { width: 4.5em; }
+
 /* configuratore visivo (disegno dell'allestimento): disegno a linee, parti scelte in nero con accenti ciano */
 .cfg { border: 1px solid var(--color-line); border-radius: var(--radius-1); background: var(--color-surface); padding: var(--sp-3); margin: var(--sp-2) 0 var(--sp-4); }
 .cfg__svg { width: 100%; max-width: 860px; height: auto; display: block; margin: 0 auto; background: var(--c-paper-2); border-radius: var(--radius-1); }

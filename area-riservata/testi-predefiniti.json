@@ -1163,6 +1163,12 @@
    "fr": "Lesquelles ?",
    "it": "Quali?"
   },
+  "tech.qty": {
+   "de": "{}: wie viele Anschlüsse?",
+   "en": "{}: how many sockets?",
+   "fr": "{} : combien de prises ?",
+   "it": "{}: quante prese?"
+  },
   "tech.roles.decorazioni": {
    "de": "Dekoration / Floristik",
    "en": "Decoration / florist",
