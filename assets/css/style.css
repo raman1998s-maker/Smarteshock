@@ -667,6 +667,12 @@ p { margin: 0; text-wrap: pretty; }
   filter: grayscale(1); opacity: .62;
   transition: filter var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
 }
+.partner:has(.partner__role) { flex-direction: column; gap: var(--sp-2); }
+.partner:has(.partner__role) img { max-height: 120px; max-width: 220px; }
+.partner__role {
+  font: 500 var(--fs-2xs)/1.6 var(--font-text); letter-spacing: var(--tr-caps-sm); text-transform: uppercase;
+  color: var(--color-text-3);
+}
 .partner:hover, .partner:focus-visible { color: var(--color-text); }
 .partner:hover img, .partner:focus-visible img { filter: none; opacity: 1; }
 

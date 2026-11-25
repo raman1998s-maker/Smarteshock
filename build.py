@@ -455,6 +455,10 @@ def partners_html(rows, lang, t):
         logo = local_path(r.get("logo"), "partner.logo")
         link = safe_url(r.get("link"), "partner.link")
         inner = f'<img src="{logo}" alt="{name}" loading="lazy">' if logo else name
+        ruolo = tr(r.get("ruolo"), lang)
+        if ruolo:
+            # ruolo facoltativo sotto il logo (es. "Video team")
+            inner += f'<span class="partner__role">{E(ruolo)}</span>'
         if link:
             out.append(f'<li><a class="partner" href="{E(link)}" target="_blank" rel="noopener noreferrer">{inner}</a></li>')
         else:
