@@ -70,6 +70,34 @@
     "approvato": true
   },
   {
+    "file": "assets/video/dj-console-pista.mp4",
+    "tipo": "video",
+    "poster": "assets/img/dj-console-pista-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video: console DJ con frontale LED e ledwall, poi ospiti che ballano sotto i fasci di luce",
+      "de": "Video: DJ-Pult mit LED-Front und LED-Wand, danach tanzende Gäste unter Lichtstrahlen",
+      "fr": "Vidéo : console DJ à façade LED et mur LED, puis invités qui dansent sous les faisceaux lumineux",
+      "en": "Video: DJ booth with an LED front and LED wall, then guests dancing beneath light beams"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/laser-ledwall.mp4",
+    "tipo": "video",
+    "poster": "assets/img/laser-ledwall-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video: ledwall con grafiche animate del DJ e laser verdi sopra la pista",
+      "de": "Video: LED-Wand mit animierten Grafiken des DJs und grünen Lasern über der Tanzfläche",
+      "fr": "Vidéo : mur LED avec les animations du DJ et lasers verts au-dessus de la piste",
+      "en": "Video: LED wall with the DJ's animated graphics and green lasers above the dance floor"
+    },
+    "approvato": true
+  },
+  {
     "file": "assets/img/event-party.jpg",
     "tipo": "foto",
     "categoria": "feste",
