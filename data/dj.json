@@ -1,5 +1,59 @@
 [
   {
+    "nome": "DJ SaNtH",
+    "genere": {
+      "it": "SV Music",
+      "de": "SV Music",
+      "fr": "SV Music",
+      "en": "SV Music"
+    },
+    "logo": "assets/img/dj/sv-music-dj-santh.webp",
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "DJ ANO",
+    "genere": null,
+    "logo": null,
+    "nome_nel_riquadro": true,
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "DJ JENE",
+    "genere": null,
+    "logo": "assets/img/dj/dj-jene.webp",
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "The Crown Entertainment",
+    "genere": null,
+    "logo": "assets/img/dj/the-crown-entertainment.webp",
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "DJ Xplosive",
+    "genere": null,
+    "logo": "assets/img/dj/dj-xplosive.webp",
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "Nickberola",
+    "genere": null,
+    "logo": "assets/img/dj/nb-nickberola.webp",
+    "foto": null,
+    "link": null,
+    "approvato": true
+  },
+  {
     "nome": "DJ Prem",
     "genere": {
       "it": "Sound MaxX",
@@ -21,30 +75,9 @@
     "approvato": true
   },
   {
-    "nome": "DJ Xplosive",
-    "genere": null,
-    "logo": "assets/img/dj/dj-xplosive.webp",
-    "foto": null,
-    "link": null,
-    "approvato": true
-  },
-  {
     "nome": "Deejay Neezy",
     "genere": null,
     "logo": "assets/img/dj/deejay-neezy.webp",
-    "foto": null,
-    "link": null,
-    "approvato": true
-  },
-  {
-    "nome": "DJ SaNtH",
-    "genere": {
-      "it": "SV Music",
-      "de": "SV Music",
-      "fr": "SV Music",
-      "en": "SV Music"
-    },
-    "logo": "assets/img/dj/sv-music-dj-santh.webp",
     "foto": null,
     "link": null,
     "approvato": true
@@ -58,14 +91,6 @@
     "approvato": true
   },
   {
-    "nome": "The Crown Entertainment",
-    "genere": null,
-    "logo": "assets/img/dj/the-crown-entertainment.webp",
-    "foto": null,
-    "link": null,
-    "approvato": true
-  },
-  {
     "nome": "Bulletime",
     "genere": null,
     "logo": "assets/img/dj/bulletime.webp",
@@ -74,34 +99,9 @@
     "approvato": true
   },
   {
-    "nome": "Nickberola",
-    "genere": null,
-    "logo": "assets/img/dj/nb-nickberola.webp",
-    "foto": null,
-    "link": null,
-    "approvato": true
-  },
-  {
-    "nome": "DJ JENE",
-    "genere": null,
-    "logo": "assets/img/dj/dj-jene.webp",
-    "foto": null,
-    "link": null,
-    "approvato": true
-  },
-  {
     "nome": "DJ M-Jay",
     "genere": null,
     "logo": "assets/img/dj/dj-m-jay.webp",
-    "foto": null,
-    "link": null,
-    "approvato": true
-  },
-  {
-    "nome": "DJ ANO",
-    "genere": null,
-    "logo": null,
-    "nome_nel_riquadro": true,
     "foto": null,
     "link": null,
     "approvato": true
