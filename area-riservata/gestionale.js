@@ -1113,7 +1113,12 @@
           ? window.MeekonConfiguratore.crea({
             modelli, prezzo: (m) => Number(m.prezzo_giorno) || 0, fmt: fmtMoney,
             onAggiungi: (lista) => {
-              lista.forEach(({ modello: m, configurazione, quantita, misura }) => {
+              lista.forEach(({ modello: m, configurazione, quantita, misura, dj, nome }) => {
+                if (dj) { // portato dal DJ: solo nel disegno, senza prezzo né materiale dal magazzino
+                  righe.push({ articolo_id: null, modello_id: null, componenti: null, configurazione, titolo: nome.slice(0, 120),
+                    descrizione: [misura, 'Material des DJ'].filter(Boolean).join(' · ').slice(0, 500), quantita, giorni: giorniEvento, prezzo_unitario: 0, sconto_percento: 0, opzionale: false });
+                  return;
+                }
                 const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
                 righe.push({ articolo_id: null, modello_id: m.id, componenti: comp, configurazione, titolo: m.nome.slice(0, 120),
                   descrizione: [misura, m.descrizione || contenuto(comp)].filter(Boolean).join(' · ').slice(0, 500), quantita, giorni: giorniEvento,
@@ -1213,7 +1218,7 @@
         const res = OD.build({ h, add }, {
           tipo, lingua: lingua.value, numero: numeroOfferta, numeroOrdine: ev.numero_ordine, oggi: oggi(), valida: valida.value || null,
           offerta: o, evento: ev, cliente: cli, impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totali(),
-          parti: window.MeekonConfiguratore ? window.MeekonConfiguratore.partiDisegno(righe.filter((r) => r.modello_id), modelli) : [],
+          parti: window.MeekonConfiguratore ? window.MeekonConfiguratore.partiDisegno(righe, modelli) : [],
           anrede: anrede.value.trim(), intro: intro.value.trim(), condizioni: cond.value.trim(), link: linkCliente,
         });
         clear(doc);

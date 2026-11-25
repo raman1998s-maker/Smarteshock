@@ -1044,6 +1044,15 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .cfg__parte--scelta .cfg__scintilla { stroke: #E0A100; }
 .cfg__parte--scelta .cfg__nuvola { fill: var(--c-white); stroke: var(--c-stone-3); }
 .cfg__parte--off { cursor: default; opacity: .3; }
+/* materiale portato dal DJ: solo contorno tratteggiato, senza riempimento scuro */
+.cfg__parte--dj { stroke-dasharray: 4 3; }
+.cfg__parte--dj :is(.cfg__cassa, .cfg__testa, .cfg__apparecchio, .cfg__driver, .cfg__metallo, .cfg__piano) { fill: var(--c-white); }
+.cfg__parte--dj .cfg__lente { fill: var(--c-stone-2); }
+.cfg__parte--dj .cfg__fascio { display: none; }
+.cfg__corrente { margin: var(--sp-3) 0 0; padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-1); background: var(--c-paper); font-size: var(--fs-sm); }
+.cfg__corrente:empty { display: none; }
+.cfg__corrente--ok { background: var(--c-green-wash); color: var(--c-green-ink); }
+.cfg__corrente--poco { background: var(--c-red-wash); color: var(--c-red-ink); font-weight: 500; }
 .cfg__dj { fill: var(--c-anthracite); stroke: var(--c-ivory); stroke-width: 1; pointer-events: none; }
 .cfg__dj .cfg__cuffie { fill: none; stroke: var(--c-cyan-ink); stroke-width: 2.6; }
 .cfg__opzioni { display: grid; gap: var(--sp-3); margin-top: var(--sp-3); }

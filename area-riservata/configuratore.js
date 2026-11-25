@@ -12,27 +12,29 @@
 
   /** Parti: nome nelle lingue, tipo di opzione e valori predefiniti. */
   const PARTI_DEF = {
-    luci_truss: { nomi: { it: 'Struttura truss con luci', de: 'Traverse mit Licht', fr: 'Structure truss avec lumières', en: 'Truss with lights' } },
-    schermo_dietro: { nomi: { it: 'Schermo dietro', de: 'LED-Screen hinten', fr: 'Écran arrière', en: 'Back screen' }, tipo: 'moduli', w: 8, h: 3, maxW: 24, maxH: 6 },
-    schermo_davanti: { nomi: { it: 'Schermo davanti (DJ booth)', de: 'Front-Display (DJ-Pult)', fr: 'Écran frontal (DJ booth)', en: 'Front display (DJ booth)' }, tipo: 'moduli', w: 4, h: 1, maxW: 12, maxH: 2 },
-    regia: { nomi: { it: 'Mixer audio e console', de: 'Mischpult und Konsole', fr: 'Table de mixage et console', en: 'Audio mixer and console' } },
-    live_stream: { nomi: { it: 'Live stream', de: 'Livestream', fr: 'Live stream', en: 'Live stream' } },
-    microfono: { nomi: { it: 'Microfono', de: 'Mikrofon', fr: 'Micro', en: 'Microphone' }, tipo: 'numero', n: 1, max: 6 },
-    casse_top: { nomi: { it: 'Casse top', de: 'Lautsprecher (Tops)', fr: 'Enceintes (tops)', en: 'Top speakers' }, tipo: 'numero', n: 4, max: 8 },
-    sub: { nomi: { it: 'Subwoofer', de: 'Subwoofer', fr: 'Caissons de basses', en: 'Subwoofers' }, tipo: 'numero', n: 2, max: 6 },
-    monitor_dj: { nomi: { it: 'Monitor per il DJ', de: 'DJ-Monitor', fr: 'Retour DJ', en: 'DJ monitor' }, tipo: 'numero', n: 1, max: 2 },
-    luci_stativo: { nomi: { it: 'Luci su stativo', de: 'Licht auf Stativ', fr: 'Lumières sur pied', en: 'Lights on stands' }, tipo: 'numero', n: 2, max: 6 },
-    nebbia: { nomi: { it: 'Macchina della nebbia / fumo', de: 'Nebel- / Rauchmaschine', fr: 'Machine à brouillard / fumée', en: 'Fog / smoke machine' } },
-    effetti: { nomi: { it: 'Effetti speciali (spark, CO2, coriandoli)', de: 'Spezialeffekte (Spark, CO2, Konfetti)', fr: 'Effets spéciaux (spark, CO2, confettis)', en: 'Special effects (spark, CO2, confetti)' }, tipo: 'numero', n: 2, max: 8 },
-    dance_floor: { nomi: { it: 'LED dance floor', de: 'LED-Tanzfläche', fr: 'Piste de danse LED', en: 'LED dance floor' }, tipo: 'pannelli', w: 4, h: 4, maxW: 10, maxH: 10 },
+    // watt = consumo massimo indicativo per unità (modulo, pezzo, pannello); dj = il DJ può portarlo lui
+    truss: { nomi: { it: 'Struttura truss (portale)', de: 'Traverse (Portal)', fr: 'Structure truss (portique)', en: 'Truss (portal)' }, watt: 0 },
+    luci_truss: { nomi: { it: 'Luci sul truss (moving head)', de: 'Licht an der Traverse (Moving Heads)', fr: 'Lumières sur le truss (lyres)', en: 'Lights on the truss (moving heads)' }, tipo: 'numero', n: 4, max: 12, watt: 250, dj: true },
+    schermo_dietro: { nomi: { it: 'Schermo dietro', de: 'LED-Screen hinten', fr: 'Écran arrière', en: 'Back screen' }, tipo: 'moduli', w: 8, h: 3, maxW: 24, maxH: 6, watt: 200 },
+    schermo_davanti: { nomi: { it: 'Schermo davanti (DJ booth)', de: 'Front-Display (DJ-Pult)', fr: 'Écran frontal (DJ booth)', en: 'Front display (DJ booth)' }, tipo: 'moduli', w: 4, h: 1, maxW: 12, maxH: 2, watt: 200 },
+    regia: { nomi: { it: 'Mixer audio e console', de: 'Mischpult und Konsole', fr: 'Table de mixage et console', en: 'Audio mixer and console' }, watt: 300, dj: true },
+    live_stream: { nomi: { it: 'Live stream', de: 'Livestream', fr: 'Live stream', en: 'Live stream' }, watt: 300 },
+    microfono: { nomi: { it: 'Microfono', de: 'Mikrofon', fr: 'Micro', en: 'Microphone' }, tipo: 'numero', n: 1, max: 6, watt: 10, dj: true },
+    casse_top: { nomi: { it: 'Casse top', de: 'Lautsprecher (Tops)', fr: 'Enceintes (tops)', en: 'Top speakers' }, tipo: 'numero', n: 4, max: 8, watt: 500, dj: true },
+    sub: { nomi: { it: 'Subwoofer', de: 'Subwoofer', fr: 'Caissons de basses', en: 'Subwoofers' }, tipo: 'numero', n: 2, max: 6, watt: 1000, dj: true },
+    monitor_dj: { nomi: { it: 'Monitor per il DJ', de: 'DJ-Monitor', fr: 'Retour DJ', en: 'DJ monitor' }, tipo: 'numero', n: 1, max: 2, watt: 300, dj: true },
+    luci_stativo: { nomi: { it: 'Luci su stativo', de: 'Licht auf Stativ', fr: 'Lumières sur pied', en: 'Lights on stands' }, tipo: 'numero', n: 2, max: 6, watt: 250, dj: true },
+    nebbia: { nomi: { it: 'Macchina della nebbia / fumo', de: 'Nebel- / Rauchmaschine', fr: 'Machine à brouillard / fumée', en: 'Fog / smoke machine' }, watt: 1500 },
+    effetti: { nomi: { it: 'Effetti speciali (spark, CO2, coriandoli)', de: 'Spezialeffekte (Spark, CO2, Konfetti)', fr: 'Effets spéciaux (spark, CO2, confettis)', en: 'Special effects (spark, CO2, confetti)' }, tipo: 'numero', n: 2, max: 8, watt: 600 },
+    dance_floor: { nomi: { it: 'LED dance floor', de: 'LED-Tanzfläche', fr: 'Piste de danse LED', en: 'LED dance floor' }, tipo: 'pannelli', w: 4, h: 4, maxW: 10, maxH: 10, watt: 120 },
   };
   const NOMI = Object.fromEntries(Object.entries(PARTI_DEF).map(([k, v]) => [k, v.nomi]));
   const PARTI = Object.keys(PARTI_DEF).map((k) => [k, PARTI_DEF[k].nomi.it]);
   const ETICHETTE = {
-    it: { dj: 'DJ', setup: 'Il vostro allestimento', moduli: 'moduli', pannelli: 'pannelli', pz: 'pz.', giorno: 'giorno', unita: 'per unità' },
-    de: { dj: 'DJ', setup: 'Ihr Setup', moduli: 'Module', pannelli: 'Panels', pz: 'Stk.', giorno: 'Tag', unita: 'pro Einheit' },
-    fr: { dj: 'DJ', setup: 'Votre installation', moduli: 'modules', pannelli: 'panneaux', pz: 'pces', giorno: 'jour', unita: 'par unité' },
-    en: { dj: 'DJ', setup: 'Your setup', moduli: 'modules', pannelli: 'panels', pz: 'pcs', giorno: 'day', unita: 'per unit' },
+    it: { djm: 'Fornito dal DJ', setup: 'Il vostro allestimento', moduli: 'moduli', pannelli: 'pannelli', pz: 'pz.', giorno: 'giorno', unita: 'per unità' },
+    de: { djm: 'Material des DJ', setup: 'Ihr Setup', moduli: 'Module', pannelli: 'Panels', pz: 'Stk.', giorno: 'Tag', unita: 'pro Einheit' },
+    fr: { djm: 'Fourni par le DJ', setup: 'Votre installation', moduli: 'modules', pannelli: 'panneaux', pz: 'pces', giorno: 'jour', unita: 'par unité' },
+    en: { djm: 'Provided by the DJ', setup: 'Your setup', moduli: 'modules', pannelli: 'panels', pz: 'pcs', giorno: 'day', unita: 'per unit' },
   };
   const metri = (n, l) => (l === 'en' ? n.toFixed(1) : n.toFixed(1).replace('.', ','));
 
@@ -50,6 +52,13 @@
     if (d.tipo === 'numero') return Math.max(1, c.n);
     return 1;
   }
+  /** Consumo massimo indicativo in watt delle parti scelte (anche quelle del DJ: consumano corrente lo stesso). */
+  const consumo = (confs) => confs.reduce((t, c) => t + ((PARTI_DEF[c.parte] || {}).watt || 0) * unita(c), 0);
+  /** Potenza delle prese indicate: 230 V ≈ 10 A monofase; CEE = trifase 400 V. */
+  const POTENZA_PRESA = { '230v': 2300, cee16: 11000, cee32: 22000, cee63: 43000, cee125: 86000 };
+  const potenzaPrese = (p) => Object.entries(p || {}).reduce((t, [k, n]) => t + (POTENZA_PRESA[k] || 0) * (Number(n) || 0), 0);
+  const kw = (w) => (w / 1000).toFixed(1).replace('.', ',');
+
   /** Testo della misura per la riga dell'offerta (es. "4,0 × 3,0 m · 24 Module à 0,5 × 1 m"). */
   function misura(c, l = 'de') {
     const d = PARTI_DEF[c.parte] || {};
@@ -106,7 +115,7 @@
     const l = ETICHETTE[lingua] ? lingua : 'it';
     const nome = (k) => PARTI_DEF[k].nomi[l] || PARTI_DEF[k].nomi.it;
     const c = (k) => conf.get(k) || base(k);
-    const mostra = (k) => interattivo || conf.has(k);
+    const mostra = (k) => interattivo || conf.has(k) || (k === 'truss' && (conf.has('schermo_dietro') || conf.has('luci_truss')));
     // schermo dietro (in scala, base a 1 m da terra); la larghezza del disegno segue lo schermo
     const sd = c('schermo_dietro');
     const sdW = Math.max(sd.w * 0.5 * M, 60);
@@ -124,11 +133,14 @@
     const tX2 = sdX + sdW + 12;
     const tY = sdY - 58;
     const gruppi = {};
-    const nTeste = Math.max(4, Math.min(10, Math.round((tX2 - tX1) / 60)));
-    gruppi.luci_truss = [
+    // il truss regge lo schermo dietro e le luci: si disegna (scelto) appena c'è uno dei due
+    const trussOn = conf.has('truss') || conf.has('schermo_dietro') || conf.has('luci_truss');
+    gruppi.truss = [
       ...truss(tX1, tY, tX2 - tX1 + 14, 12, false), ...truss(tX1, tY, 14, SUOLO - tY, true), ...truss(tX2, tY, 14, SUOLO - tY, true),
-      Array.from({ length: nTeste }, (_, i) => movingHead(tX1 + 30 + i * ((tX2 - tX1 - 30) / Math.max(1, nTeste - 1)), tY + 12, `url(#${gid}b)`)),
-      txt(CX, tY - 10, nome('luci_truss'))];
+      txt(CX, tY - 10, nome('truss'))];
+    const nTeste = Math.max(1, c('luci_truss').n || 1);
+    const passoT = (tX2 - tX1 - 30) / Math.max(1, nTeste - 1);
+    gruppi.luci_truss = Array.from({ length: nTeste }, (_, i) => movingHead(nTeste === 1 ? CX : tX1 + 30 + i * passoT, tY + 12, `url(#${gid}b)`));
     const moduli = [];
     for (let i = 1; i < sd.w; i++) moduli.push(el('line', { x1: sdX + i * 0.5 * M, y1: sdY, x2: sdX + i * 0.5 * M, y2: sdY + sdH, class: 'cfg__modulo' }));
     for (let j = 1; j < sd.h; j++) moduli.push(el('line', { x1: sdX, y1: sdY + j * M, x2: sdX + sdW, y2: sdY + j * M, class: 'cfg__modulo' }));
@@ -213,11 +225,14 @@
     const yMin = Math.min(tY - 40, SUOLO - 128 - Math.max(0, Math.ceil(nTop / 2) - 1) * 44 - 30);
     svg.setAttribute('viewBox', `0 ${yMin} ${W} ${yB + 34 - yMin}`);
     // ordine di disegno: dietro → davanti
-    const ordine = ['luci_truss', 'schermo_dietro', 'luci_stativo', 'casse_top', 'sub', 'dance_floor', 'nebbia', 'effetti'];
+    const ordine = ['truss', 'luci_truss', 'schermo_dietro', 'luci_stativo', 'casse_top', 'sub', 'dance_floor', 'nebbia', 'effetti'];
     const gEls = {};
     const crea = (k) => {
       if (!mostra(k)) return null;
-      const g = el('g', { class: `cfg__parte${conf.has(k) ? ' cfg__parte--scelta' : ''}${attive && !attive.has(k) ? ' cfg__parte--off' : ''}`, 'data-parte': k }, el('title', null, nome(k)), gruppi[k]);
+      const scelta = conf.has(k) || (k === 'truss' && trussOn);
+      const delDJ = conf.has(k) && conf.get(k).dj;
+      const g = el('g', { class: `cfg__parte${scelta ? ' cfg__parte--scelta' : ''}${delDJ ? ' cfg__parte--dj' : ''}${attive && !attive.has(k) ? ' cfg__parte--off' : ''}`, 'data-parte': k },
+        el('title', null, delDJ ? `${nome(k)} (${(ETICHETTE[l] || ETICHETTE.it).djm})` : nome(k)), gruppi[k]);
       gEls[k] = g;
       return g;
     };
@@ -231,10 +246,19 @@
   /**
    * @param {object} o  { modelli: [...con .parte], prezzo: (modello) => prezzo per unità, fmt, onAggiungi: ([{ modello, configurazione, quantita, misura }]) => void }
    */
-  function crea({ modelli, prezzo, fmt, onAggiungi }) {
+  function crea({ modelli, prezzo, fmt, onAggiungi, prese }) {
     const perParte = new Map();
     modelli.forEach((m) => { if (m.parte && PARTI_DEF[m.parte] && !perParte.has(m.parte)) perParte.set(m.parte, m); });
-    const attive = new Set(perParte.keys());
+    // si possono scegliere le parti con un pacchetto Meekon e quelle che il DJ può portare da sé
+    const attive = new Set([...perParte.keys(), ...Object.keys(PARTI_DEF).filter((k) => PARTI_DEF[k].dj)]);
+    const nuova = (k) => ({ ...base(k), ...(perParte.has(k) ? {} : { dj: true }) });
+    // scegliendo schermo dietro o luci entra anche il truss (serve per appenderli), se Meekon lo ha a listino
+    const metti = (k) => {
+      conf.set(k, nuova(k));
+      if ((k === 'schermo_dietro' || k === 'luci_truss') && perParte.has('truss') && !conf.has('truss')) conf.set('truss', base('truss'));
+    };
+    const corrente = document.createElement('p');
+    corrente.className = 'cfg__corrente';
     const conf = new Map();
     const box = document.createElement('div');
     box.className = 'cfg';
@@ -248,7 +272,8 @@
     btn.className = 'btn btn--primary';
     btn.textContent = 'Aggiungi le parti scelte';
 
-    const totale = () => [...conf.values()].reduce((t, c) => t + (prezzo(perParte.get(c.parte)) || 0) * unita(c), 0);
+    const prezzoDi = (c) => (c.dj ? 0 : (prezzo(perParte.get(c.parte)) || 0) * unita(c));
+    const totale = () => [...conf.values()].reduce((t, c) => t + prezzoDi(c), 0);
     const numIn = (val, min, max, onv, label) => {
       const i = document.createElement('input');
       i.type = 'number'; i.min = String(min); i.max = String(max); i.value = String(val); i.className = 'input--num'; i.setAttribute('aria-label', label);
@@ -259,10 +284,10 @@
 
     // gruppi della lista accanto al disegno: l'allestimento di base e gli extra che il cliente può chiedere
     const GRUPPI = [
-      ['Allestimento', ['luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj']],
+      ['Allestimento', ['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj']],
       ['Extra su richiesta del cliente', ['dance_floor', 'effetti', 'nebbia', 'luci_stativo', 'microfono', 'live_stream']],
     ];
-    const TIPICO = ['luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj'];
+    const TIPICO = ['truss', 'luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'casse_top', 'sub', 'monitor_dj'];
 
     function opzioniParte(c, aggiornaInfo) {
       const d = PARTI_DEF[c.parte];
@@ -284,7 +309,7 @@
       tipico.type = 'button';
       tipico.className = 'btn btn--small';
       tipico.textContent = 'Allestimento tipico (4 top, 2 sub, 1 monitor, schermi)';
-      tipico.addEventListener('click', () => { TIPICO.filter((k) => attive.has(k)).forEach((k) => { if (!conf.has(k)) conf.set(k, base(k)); }); ridisegna(true); });
+      tipico.addEventListener('click', () => { TIPICO.filter((k) => perParte.has(k)).forEach((k) => { if (!conf.has(k)) metti(k); }); ridisegna(true); });
       opzioni.append(tipico);
       GRUPPI.forEach(([titoloGruppo, chiavi]) => {
         const disp = chiavi.filter((k) => attive.has(k));
@@ -300,7 +325,7 @@
           const cb = document.createElement('input');
           cb.type = 'checkbox';
           cb.checked = conf.has(k);
-          cb.addEventListener('change', () => { if (cb.checked) conf.set(k, base(k)); else conf.delete(k); ridisegna(true); });
+          cb.addEventListener('change', () => { if (cb.checked) metti(k); else conf.delete(k); ridisegna(true); });
           const info = document.createElement('span');
           info.className = 'cfg__info';
           const lb = etichetta(PARTI_DEF[k].nomi.it, cb);
@@ -312,9 +337,19 @@
             const ui = (window.MeekonI18n && window.MeekonI18n.lingua) || 'it';
             const e = ETICHETTE[ui] || ETICHETTE.it;
             const mis = c ? misura(c, ui) : '';
-            info.textContent = c ? `${mis ? `${mis} · ` : ''}${fmt(pz * unita(c))} CHF / ${e.giorno}` : `${fmt(pz)} CHF${PARTI_DEF[k].tipo ? ` ${e.unita}` : ''}`;
+            if (c) info.textContent = `${mis ? `${mis} · ` : ''}${c.dj ? e.djm : `${fmt(prezzoDi(c))} CHF / ${e.giorno}`}`;
+            else info.textContent = perParte.has(k) ? `${fmt(pz)} CHF${PARTI_DEF[k].tipo ? ` ${e.unita}` : ''}` : e.djm;
           };
           if (c) riga.append(...opzioniParte(c, aggiornaInfo));
+          // chi porta il materiale: Meekon (a listino) o il DJ (nel disegno, senza prezzo né magazzino)
+          if (c && PARTI_DEF[k].dj) {
+            const da = document.createElement('select');
+            da.setAttribute('aria-label', `${PARTI_DEF[k].nomi.it}: chi lo porta`);
+            [['meekon', 'Meekon'], ['dj', 'Del DJ']].forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; o.disabled = v === 'meekon' && !perParte.has(k); da.append(o); });
+            da.value = c.dj ? 'dj' : 'meekon';
+            da.addEventListener('change', () => { if (da.value === 'dj') c.dj = true; else delete c.dj; ridisegna(true); });
+            riga.append(etichetta('Materiale', da));
+          }
           aggiornaInfo();
           riga.append(info);
           fs.append(riga);
@@ -331,19 +366,35 @@
         g.setAttribute('role', 'button');
         g.setAttribute('aria-label', PARTI_DEF[k].nomi.it);
         g.setAttribute('aria-pressed', String(conf.has(k)));
-        const toggle = () => { if (conf.has(k)) conf.delete(k); else conf.set(k, base(k)); ridisegna(true); };
+        const toggle = () => { if (conf.has(k)) conf.delete(k); else metti(k); ridisegna(true); };
         g.addEventListener('click', toggle);
         g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
       });
       if (conOpzioni) pannelloOpzioni();
-      riepilogo.textContent = conf.size ? `${[...conf.values()].map((c) => perParte.get(c.parte).nome).join(' + ')} — ${fmt(totale())} CHF / giorno` : 'Cliccate sulle parti del disegno richieste dal cliente.';
+      riepilogo.textContent = conf.size ? `${[...conf.values()].map((c) => (c.dj ? `${PARTI_DEF[c.parte].nomi.it} (DJ)` : perParte.get(c.parte).nome)).join(' + ')} — ${fmt(totale())} CHF / giorno` : 'Cliccate sulle parti del disegno richieste dal cliente.';
       btn.disabled = !conf.size;
+      // consumo stimato confrontato con le prese indicate (se ci sono)
+      const w = consumo([...conf.values()]);
+      const p = typeof prese === 'function' ? prese() : null;
+      const disp = potenzaPrese(p);
+      corrente.classList.remove('cfg__corrente--ok', 'cfg__corrente--poco');
+      if (!w) corrente.textContent = '';
+      else if (disp) {
+        const ok = w <= disp;
+        corrente.classList.add(ok ? 'cfg__corrente--ok' : 'cfg__corrente--poco');
+        corrente.textContent = ok
+          ? `Consumo stimato ${kw(w)} kW (massimo): le prese indicate danno circa ${kw(disp)} kW, bastano.`
+          : `Attenzione: consumo stimato ${kw(w)} kW (massimo), le prese indicate danno solo circa ${kw(disp)} kW. Serve una presa CEE più grande o un generatore.`;
+      } else {
+        const cons = Object.entries(POTENZA_PRESA).find(([k, v]) => k !== '230v' && v >= w);
+        corrente.textContent = `Consumo stimato ${kw(w)} kW (massimo). Consigliata almeno una presa ${cons ? `CEE ${cons[0].slice(3)} A` : 'CEE 125 A o un generatore'}; indicate le prese della location per il controllo.`;
+      }
     }
 
     btn.addEventListener('click', () => {
       const lista = PARTI.map(([k]) => k).filter((k) => conf.has(k)).map((k) => {
         const c = { ...conf.get(k) };
-        return { modello: perParte.get(k), configurazione: c, quantita: unita(c), misura: misura(c, 'de') };
+        return { modello: c.dj ? null : perParte.get(k), dj: !!c.dj, nome: PARTI_DEF[k].nomi.de, configurazione: c, quantita: unita(c), misura: misura(c, 'de') };
       });
       onAggiungi(lista);
       conf.clear();
@@ -353,7 +404,8 @@
     const foot = document.createElement('div');
     foot.className = 'cfg__foot';
     foot.append(riepilogo, btn);
-    box.append(svg, opzioni, foot);
+    box.append(svg, opzioni, corrente, foot);
+    box.aggiorna = () => ridisegna(false); // es. quando cambiano le prese indicate
     return box;
   }
 
@@ -376,5 +428,5 @@
     return [...out.values()];
   }
 
-  window.MeekonConfiguratore = { crea, statico, misura, unita, base, partiDisegno, PARTI, NOMI, ETICHETTE, PARTI_DEF };
+  window.MeekonConfiguratore = { crea, statico, misura, unita, base, partiDisegno, consumo, potenzaPrese, PARTI, NOMI, ETICHETTE, PARTI_DEF };
 })();

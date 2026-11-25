@@ -236,6 +236,9 @@ describe('offerte', () => {
     let res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', quantita: 24, configurazione: { parte: 'schermo_dietro', w: 8, h: 3 } }] } }));
     assert.equal(res.status, 200);
     assert.deepEqual(calls.at(-1).body.p_righe[0].configurazione, { parte: 'schermo_dietro', w: 8, h: 3 });
+    res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'Casse', configurazione: { parte: 'casse_top', n: 4, dj: true } }] } }));
+    assert.equal(res.status, 200);
+    assert.deepEqual(calls.at(-1).body.p_righe[0].configurazione, { parte: 'casse_top', n: 4, dj: true });
     res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', configurazione: { parte: 'razzo', n: 1 } }] } }));
     assert.equal(res.status, 400);
     res = await righe(req(`/api/offerte/${OFF_ID}/righe`, { method: 'PUT', cookie: UFF, body: { righe: [{ descrizione: 'LED', configurazione: { parte: 'casse_top', n: 500 } }] } }));

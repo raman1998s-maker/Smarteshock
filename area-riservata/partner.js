@@ -227,13 +227,21 @@
             righe.push({ tipo: 'pacchetto', articolo_id: null, modello_id: m.id, componenti: comp, configurazione: scelta ? scelta.configurazione : null, titolo: m.nome.slice(0, 120),
               descrizione: desc.slice(0, 500), quantita: scelta ? scelta.quantita : 1, giorni: giorniEv(), prezzo_unitario: prezzoModello(m), sconto_percento: 0, opzionale: false });
           };
+          // materiale che il DJ porta da sé: compare nel disegno, nessun costo Meekon (riga di servizio, prezzo suo)
+          const aggiungiDelDJ = (s) => {
+            righe.push({ tipo: 'servizio', articolo_id: null, modello_id: null, componenti: null, configurazione: s.configurazione, titolo: s.nome.slice(0, 120),
+              descrizione: [s.misura, 'Eigenes Material des DJ'].filter(Boolean).join(' · ').slice(0, 500), quantita: s.quantita, giorni: giorniEv(), prezzo_unitario: 0, sconto_percento: 0, opzionale: false });
+          };
           // configuratore visivo dal disegno di Meekon: le parti collegate a un pacchetto si cliccano
           if (window.MeekonConfiguratore && modelli.some((m) => m.parte)) {
             configuratore = window.MeekonConfiguratore.crea({
               modelli, prezzo: prezzoModello, fmt: fmtMoney,
-              onAggiungi: (lista) => { lista.forEach((s) => aggiungiPacchetto(s.modello, s)); disegna(); ridisegnaTotali(); toast(`${lista.length} pacchetti aggiunti: decidete i prezzi per il cliente.`); },
+              prese: () => Object.fromEntries(Object.entries(f.prese).map(([k, el]) => [k, Number(el.value) || 0])),
+              onAggiungi: (lista) => { lista.forEach((s) => (s.dj ? aggiungiDelDJ(s) : aggiungiPacchetto(s.modello, s))); disegna(); ridisegnaTotali(); toast(`${lista.length} pacchetti aggiunti: decidete i prezzi per il cliente.`); },
             });
           }
+          // il controllo della corrente segue le prese indicate nel riquadro Evento
+          if (configuratore) Object.values(f.prese).forEach((el) => el.addEventListener('input', () => configuratore.aggiorna()));
           daModello = [selM, addM];
         }
         // configuratore visivo: schede con il disegno dell'allestimento, un clic aggiunge il pacchetto
@@ -294,7 +302,7 @@
           evento: { titolo: f.evento_titolo.value, data_inizio: f.data_inizio.value || null, data_fine: f.data_fine.value || null, montaggio_da: f.montaggio_da.value || null, localita: f.luogo.value },
           cliente: { nome: f.cliente_nome.value, azienda: f.cliente_azienda.value, indirizzo: f.cliente_indirizzo.value, email: f.cliente_email.value, telefono: f.cliente_telefono.value },
           impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totaliDi(righe, header()), partner: true,
-          parti: window.MeekonConfiguratore ? window.MeekonConfiguratore.partiDisegno(righe.filter((r) => r.tipo === 'pacchetto'), modelli) : [],
+          parti: window.MeekonConfiguratore ? window.MeekonConfiguratore.partiDisegno(righe, modelli) : [],
           anrede: f.anrede.value.trim(), intro: f.introduzione.value.trim(), condizioni: f.condizioni.value.trim(), link: null,
         });
         clear(doc);

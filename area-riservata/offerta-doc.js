@@ -295,7 +295,9 @@
           h('p', { class: 'doc__piccolo' }, d.parti.map((c) => {
             const n = window.MeekonConfiguratore.NOMI[c.parte] || {};
             const mis = window.MeekonConfiguratore.misura(c, d.lingua);
-            return `${n[d.lingua] || n.de || c.parte}${mis ? ` (${mis})` : ''}`;
+            const dj = c.dj ? (window.MeekonConfiguratore.ETICHETTE[d.lingua] || window.MeekonConfiguratore.ETICHETTE.de).djm : '';
+            const extra = [mis, dj].filter(Boolean).join(', ');
+            return `${n[d.lingua] || n.de || c.parte}${extra ? ` (${extra})` : ''}`;
           }).join(' · ')))
         : null,
       h('div', { class: 'doc__riquadri' },
