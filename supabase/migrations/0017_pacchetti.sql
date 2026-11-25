@@ -10,6 +10,8 @@
 alter table public.modelli
   add column if not exists prezzo_giorno numeric(12, 2) check (prezzo_giorno is null or prezzo_giorno >= 0),
   add column if not exists categoria text check (categoria is null or char_length(categoria) <= 60),
+  -- parte del disegno del configuratore a cui corrisponde il pacchetto (es. schermo_dietro)
+  add column if not exists parte text check (parte is null or parte in ('luci_truss', 'schermo_dietro', 'schermo_davanti', 'regia', 'live_stream', 'microfono', 'audio_sx', 'audio_dx', 'monitor_dj', 'luci_stativo', 'nebbia', 'effetti', 'dance_floor')),
   -- disegno dello schema di allestimento (data URL PNG/JPEG/WebP): i partner scelgono guardando il disegno
   add column if not exists immagine text check (immagine is null or (char_length(immagine) <= 900000 and immagine ~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$'));
 
@@ -43,17 +45,17 @@ begin
     raise exception 'input non valido' using errcode = '22023';
   end if;
   if v_id is null then
-    insert into public.modelli (nome, descrizione, per_partner, attivo, prezzo_giorno, categoria, immagine)
+    insert into public.modelli (nome, descrizione, per_partner, attivo, prezzo_giorno, categoria, immagine, parte)
       values (p_dati ->> 'nome', nullif(p_dati ->> 'descrizione', ''), coalesce((p_dati ->> 'per_partner')::boolean, true),
               coalesce((p_dati ->> 'attivo')::boolean, true), (p_dati ->> 'prezzo_giorno')::numeric, nullif(p_dati ->> 'categoria', ''),
-              nullif(p_dati ->> 'immagine', ''))
+              nullif(p_dati ->> 'immagine', ''), nullif(p_dati ->> 'parte', ''))
       returning id into v_id;
   else
     update public.modelli
       set nome = p_dati ->> 'nome', descrizione = nullif(p_dati ->> 'descrizione', ''),
           per_partner = coalesce((p_dati ->> 'per_partner')::boolean, true), attivo = coalesce((p_dati ->> 'attivo')::boolean, true),
           prezzo_giorno = (p_dati ->> 'prezzo_giorno')::numeric, categoria = nullif(p_dati ->> 'categoria', ''),
-          immagine = nullif(p_dati ->> 'immagine', '')
+          immagine = nullif(p_dati ->> 'immagine', ''), parte = nullif(p_dati ->> 'parte', '')
       where id = v_id;
     if not found then
       raise exception 'modello inesistente' using errcode = 'P0002';

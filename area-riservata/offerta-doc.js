@@ -118,6 +118,15 @@
       const b = blocco.trim();
       if (/^#\s/.test(b)) return null; // il titolo principale lo stampa già la pagina
       if (/^#{2,6}\s/.test(b)) return h('h3', null, inline(b.replace(/^#{2,6}\s+/, '')));
+      // tabella Markdown (es. scaglioni di annullamento)
+      const linee = b.split('\n').map((l) => l.trim());
+      if (linee.length > 1 && linee.every((l) => l.startsWith('|'))) {
+        const celle = (l) => l.replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+        const corpo = linee.filter((l) => !/^\|[\s:|-]+\|$/.test(l));
+        const [testa, ...righe] = corpo;
+        return h('table', { class: 'doc__agb-tabella' }, h('thead', null, h('tr', null, celle(testa).map((c) => h('th', null, inline(c))))),
+          h('tbody', null, righe.map((l) => h('tr', null, celle(l).map((c) => h('td', null, inline(c)))))));
+      }
       if (/^[-*]\s/m.test(b) && b.split('\n').every((l) => /^[-*]\s/.test(l.trim()))) return h('ul', null, b.split('\n').map((l) => h('li', null, inline(l.trim().replace(/^[-*]\s+/, '')))));
       return h('p', null, inline(b.replace(/\s*\n\s*/g, ' ')));
     }).filter(Boolean);
@@ -278,6 +287,13 @@
       mwst === 'si' && ivaInclusa ? h('p', { class: 'doc__davon' }, `${tx.davon(pc(t.iva_percento))}: CHF ${chfT(t.iva)}`) : null,
       mwst === 'no' ? h('p', { class: 'doc__davon' }, tx.nonIva) : null,
       opz.length ? h('div', { class: 'doc__opzionali' }, h('p', { class: 'doc__etichetta' }, tx.opzionali), tabella(opz)) : null,
+      // rappresentazione per il cliente: il disegno con solo le parti scelte (configuratore)
+      d.parti && d.parti.length && window.MeekonConfiguratore
+        ? h('section', { class: 'doc__setup' },
+          h('p', { class: 'doc__etichetta' }, (window.MeekonConfiguratore.ETICHETTE[d.lingua] || window.MeekonConfiguratore.ETICHETTE.de).setup),
+          window.MeekonConfiguratore.statico(d.parti, d.lingua),
+          h('p', { class: 'doc__piccolo' }, d.parti.map((k) => (window.MeekonConfiguratore.NOMI[k] || {})[d.lingua] || (window.MeekonConfiguratore.NOMI[k] || {}).de || k).join(' · ')))
+        : null,
       h('div', { class: 'doc__riquadri' },
         h('section', { class: 'doc__riquadro' }, h('p', { class: 'doc__etichetta' }, tx.pagamento),
           h('dl', null, pagamento.map(([k, v]) => [h('dt', null, k), h('dd', null, v)])),

@@ -194,6 +194,11 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 - Offerta Meekon accettata: pulsante "Lista materiale dall'offerta" (articoli + componenti dei pacchetti → lista materiale dell'evento).
 - PDF: righe raggruppate per categoria (Bild & LED-Screens, Licht, Ton, Video, Rigging & Bühne, Strom & Kabel, Effekte, altre, Leistungen) con subtotale; intestazione con titolo, numero/data/validità, Für/Von e riquadro evento; AGB in Markdown (titoli `##`, `**grassetto**`) nella lingua del PDF; fattura senza testo d'offerta né annullamento.
 
+### Configuratore visivo dell'allestimento (`area-riservata/configuratore.js`)
+- Disegno SVG (ridisegnato dallo schizzo di Raman, DJ al centro dietro la console) con le parti: truss con luci, schermo dietro, schermo davanti (DJ booth), mixer/console, live stream, microfono, audio sinistra/destra, monitor DJ, luci su stativo, nebbia/fumo, effetti speciali, dance floor. Ogni parte è collegata a un pacchetto tramite `modelli.parte` (scelta in Magazzino → Modelli).
+- Il partner clicca le parti richieste dal cliente e le aggiunge come pacchetti; i modelli con disegno ma senza parte compaiono come "installazioni particolari".
+- Nel PDF (offerte Meekon e dei partner) il riquadro "Ihr Setup" mostra il disegno con solo le parti scelte, con le etichette nella lingua dell'offerta.
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|

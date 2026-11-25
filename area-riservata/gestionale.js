@@ -424,6 +424,8 @@
         const nome = h('input', { type: 'text', maxlength: '120', value: m ? m.nome : '', list: 'mk-nomi-modello', required: true });
         const prezzo = h('input', { inputmode: 'decimal', value: m && m.prezzo_giorno != null ? String(m.prezzo_giorno) : '', placeholder: 'es. 1200' });
         const cat = h('input', { type: 'text', maxlength: '60', value: (m && m.categoria) || '', list: 'mk-cat-modello', placeholder: 'es. LED' });
+        const PARTI = (window.MeekonConfiguratore && window.MeekonConfiguratore.PARTI) || [];
+        const parte = select('parte', [['', '— nessuna —'], ...PARTI], (m && m.parte) || '');
         // disegno dell'allestimento (foto o scansione del disegno a mano), ridotto a 1400 px
         let immagine = (m && m.immagine) || null;
         const anteprimaImg = h('div', { class: 'partner-logo' });
@@ -474,6 +476,7 @@
           h('div', { class: 'fields' }, field('Nome', nome, { full: true }),
             field('Prezzo del pacchetto (CHF al giorno)', prezzo, { hint: 'Nell\'offerta il pacchetto è una riga con questo prezzo; i singoli articoli restano per magazzino e peso.' }),
             field('Gruppo nel PDF', cat, { hint: 'es. LED, Licht, Audio' }),
+            field('Parte nel disegno del configuratore', parte, { hint: 'Il DJ partner sceglie questo pacchetto cliccando su questa parte del disegno.' }),
             field('Disposizione / cosa comprende (testo per il cliente)', desc, { full: true }), h('div', { class: 'field' }, pp, att),
             h('div', { class: 'field field--full' }, h('label', null, 'Disegno dell\'allestimento (per i partner)'), anteprimaImg,
               h('div', { class: 'toolbar' }, fileImg, h('button', { class: 'btn btn--ghost btn--sm', type: 'button', onclick: () => { immagine = null; mostraImg(); } }, 'Togli disegno')))),
@@ -487,7 +490,7 @@
           if (!nome.value.trim()) { nome.setAttribute('aria-invalid', 'true'); nome.focus(); return; }
           const pz = numero(prezzo.value);
           if (Number.isNaN(pz)) { prezzo.setAttribute('aria-invalid', 'true'); prezzo.focus(); return; }
-          const body = { nome: nome.value.trim(), descrizione: desc.value.trim() || null, per_partner: pp.querySelector('input').checked, attivo: att.querySelector('input').checked, prezzo_giorno: pz, categoria: cat.value.trim() || null, immagine, voci };
+          const body = { nome: nome.value.trim(), descrizione: desc.value.trim() || null, per_partner: pp.querySelector('input').checked, attivo: att.querySelector('input').checked, prezzo_giorno: pz, categoria: cat.value.trim() || null, immagine, parte: parte.value || null, voci };
           busy(save, async () => {
             try { await api(m ? `modelli/${encodeURIComponent(m.id)}` : 'modelli', { method: m ? 'PUT' : 'POST', body }); toast('Modello salvato.'); carica(); } catch (err) { toast(errorMessage(err), 'error'); }
           });
@@ -1193,6 +1196,7 @@
         const res = OD.build({ h, add }, {
           tipo, lingua: lingua.value, numero: numeroOfferta, numeroOrdine: ev.numero_ordine, oggi: oggi(), valida: valida.value || null,
           offerta: o, evento: ev, cliente: cli, impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totali(),
+          parti: [...new Set(righe.filter((r) => r.modello_id && !r.opzionale).map((r) => (modelli.find((m) => m.id === r.modello_id) || {}).parte).filter(Boolean))],
           anrede: anrede.value.trim(), intro: intro.value.trim(), condizioni: cond.value.trim(), link: linkCliente,
         });
         clear(doc);

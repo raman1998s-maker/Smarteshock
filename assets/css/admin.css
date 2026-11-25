@@ -1001,6 +1001,32 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
 .carico progress { width: 100%; height: 10px; accent-color: var(--color-primary); }
 .carico__veicolo--troppo progress { accent-color: var(--color-danger); }
 
+/* configuratore visivo (disegno dell'allestimento) */
+.cfg { border: 1px solid var(--color-line); border-radius: var(--radius-1); background: var(--color-surface); padding: var(--sp-3); margin: var(--sp-2) 0 var(--sp-4); }
+.cfg__svg { width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; }
+.cfg__parte { cursor: pointer; fill: #fff; stroke: var(--c-ink-text); stroke-width: 1.6; stroke-linejoin: round; outline: none; }
+.cfg__parte line { stroke: var(--c-ink-text); }
+.cfg__parte .cfg__truss { fill: var(--c-stone-2, #ddd); }
+.cfg__parte .cfg__schermo { fill: #1b1d21; }
+.cfg__parte .cfg__pista { fill: var(--c-paper, #f6f4ef); }
+.cfg__testo { fill: var(--c-ink-text); stroke: none; font: 500 12px var(--font-text); pointer-events: none; }
+.cfg__piccolo { font-size: 9.5px; }
+.cfg__parte .cfg__schermo + .cfg__testo, .cfg__parte:has(.cfg__schermo) .cfg__testo { fill: #fff; }
+.cfg__parte:hover, .cfg__parte:focus-visible { stroke: var(--color-primary); }
+.cfg__parte:hover *, .cfg__parte:focus-visible * { stroke: var(--color-primary); }
+.cfg__parte--scelta { stroke: var(--color-primary); }
+.cfg__parte--scelta rect, .cfg__parte--scelta circle, .cfg__parte--scelta polygon { fill: var(--c-cyan); }
+.cfg__parte--scelta .cfg__schermo { fill: var(--color-primary); }
+.cfg__parte--off { cursor: default; opacity: .35; }
+.cfg__parte .cfg__chiaro { fill: #fff; }
+.cfg__parte .cfg__nuvola { fill: #eef1f4; stroke-dasharray: 3 2; }
+.cfg__parte .cfg__scintilla { stroke: #e0a100; stroke-width: 2; }
+.cfg__dj { fill: var(--c-ink-text); stroke: none; pointer-events: none; }
+.cfg__dj .cfg__cuffie { fill: none; stroke: var(--c-ink-text); stroke-width: 2.4; }
+.cfg__dj .cfg__testo { fill: var(--c-ink-text); }
+.cfg__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-top: var(--sp-3); }
+.cfg__riepilogo { margin: 0; font-size: var(--fs-sm); color: var(--color-text-2); }
+
 /* area partner: anteprima del logo */
 .modelli-visivi { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-3); margin: var(--sp-3) 0; }
 .modello-visivo { display: grid; gap: var(--sp-1); padding: var(--sp-2); text-align: left; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-1); cursor: pointer; font: inherit; }
@@ -1099,6 +1125,18 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc__totale strong { font-size: 14pt; font-weight: 500; }
   .doc__davon { width: 85mm; margin: 1.5mm 0 0 auto !important; text-align: right; font-size: 8pt; color: #6A6969; }
   .doc__opzionali { margin-top: 5mm; }
+  .doc__setup { margin: 6mm 0 2mm; padding: 4mm 5mm; border: .3mm solid #E5E1D8; border-radius: 2.5mm; break-inside: avoid; }
+  .doc__setup .cfg__svg--pdf { display: block; width: 100%; max-height: 95mm; margin: 2mm auto; }
+  /* nel PDF le parti scelte si mostrano con i colori normali (le altre non ci sono) */
+  .doc__setup .cfg__parte--scelta rect, .doc__setup .cfg__parte--scelta circle, .doc__setup .cfg__parte--scelta polygon { fill: #fff; }
+  .doc__setup .cfg__parte--scelta { stroke: #161616; }
+  .doc__setup .cfg__parte--scelta * { stroke: #161616; }
+  .doc__setup .cfg__parte--scelta .cfg__schermo { fill: #1b1d21; }
+  .doc__setup .cfg__parte--scelta .cfg__truss { fill: #ddd; }
+  .doc__setup .cfg__parte--scelta .cfg__pista { fill: #F2ECE1; }
+  .doc__setup .cfg__testo { stroke: none; }
+  .doc__setup .cfg__chiaro { fill: #fff; }
+  .doc__setup .cfg__scintilla { stroke: #e0a100; }
   .doc__riquadri { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin: 6mm 0 4mm; break-inside: avoid; }
   .doc__riquadro { padding: 3.5mm 4mm; background: #F2ECE1; border-radius: 2.5mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .doc__riquadro dl { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: .6mm 4mm; margin: 0 0 1.8mm; }
@@ -1115,6 +1153,9 @@ fieldset.lang-field { margin: 0; padding: 0; border: 0; min-width: 0; }
   .doc__agb-testo h3 { font-size: 7.8pt; font-weight: 600; margin: 2.5mm 0 1mm; break-after: avoid; }
   .doc__agb-testo p { margin: 0 0 1.5mm !important; }
   .doc__agb-testo ul { margin: 0 0 1.5mm; padding-left: 4mm; }
+  .doc__agb-tabella { width: 100%; border-collapse: collapse; margin: 0 0 2mm; break-inside: avoid; }
+  .doc__agb-tabella th, .doc__agb-tabella td { text-align: left; padding: .6mm 1mm; border-bottom: .2mm solid #E5E1D8; font-size: 7.2pt; }
+  .doc__agb-tabella th { font-weight: 600; }
   @page {
     size: A4; margin: 14mm 15mm 20mm;
     @bottom-left { content: var(--mk-piede-1, "") "\A" var(--mk-piede-2, ""); white-space: pre-wrap; font: 400 6.5pt/1.35 "Jost", sans-serif; color: #6A6969; vertical-align: top; padding-top: 3mm; }

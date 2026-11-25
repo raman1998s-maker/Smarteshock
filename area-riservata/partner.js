@@ -201,6 +201,7 @@
         // modello di allestimento (es. schermo dietro con luci sopra): aggiunge tutto il materiale
         let daModello = null;
         let visivo = null;
+        let configuratore = null;
         let selM = null;
         let addM = null;
         if (modelli.length) {
@@ -210,18 +211,28 @@
           addM.addEventListener('click', () => {
             const m = modelli.find((x) => x.id === selM.value);
             if (!m) { selM.focus(); return; }
-            // un pacchetto = una riga con prezzo unico; gli articoli restano come componenti per Meekon
-            const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
-            righe.push({ tipo: 'pacchetto', articolo_id: null, modello_id: m.id, componenti: comp, titolo: m.nome.slice(0, 120),
-              descrizione: (m.descrizione || contenuto(comp)).slice(0, 500), quantita: 1, giorni: giorniEv(), prezzo_unitario: prezzoModello(m), sconto_percento: 0, opzionale: false });
+            aggiungiPacchetto(m);
             selM.value = '';
             disegna(); ridisegnaTotali();
             toast(`Modello "${m.nome}" aggiunto: decidete i prezzi per il cliente.`);
           });
+          const aggiungiPacchetto = (m) => {
+            // un pacchetto = una riga con prezzo unico; gli articoli restano come componenti per Meekon
+            const comp = m.voci.map((v) => ({ articolo_id: v.articolo_id, quantita: v.quantita }));
+            righe.push({ tipo: 'pacchetto', articolo_id: null, modello_id: m.id, componenti: comp, titolo: m.nome.slice(0, 120),
+              descrizione: (m.descrizione || contenuto(comp)).slice(0, 500), quantita: 1, giorni: giorniEv(), prezzo_unitario: prezzoModello(m), sconto_percento: 0, opzionale: false });
+          };
+          // configuratore visivo dal disegno di Meekon: le parti collegate a un pacchetto si cliccano
+          if (window.MeekonConfiguratore && modelli.some((m) => m.parte)) {
+            configuratore = window.MeekonConfiguratore.crea({
+              modelli, prezzo: prezzoModello, fmt: fmtMoney,
+              onAggiungi: (lista) => { lista.forEach(aggiungiPacchetto); disegna(); ridisegnaTotali(); toast(`${lista.length} pacchetti aggiunti: decidete i prezzi per il cliente.`); },
+            });
+          }
           daModello = [selM, addM];
         }
         // configuratore visivo: schede con il disegno dell'allestimento, un clic aggiunge il pacchetto
-        const conDisegno = modelli.filter((m) => m.immagine);
+        const conDisegno = modelli.filter((m) => m.immagine && !m.parte);
         if (conDisegno.length) {
           visivo = h('div', { class: 'modelli-visivi' }, conDisegno.map((m) => {
             const b = h('button', { class: 'modello-visivo', type: 'button', title: m.descrizione || m.nome },
@@ -231,7 +242,9 @@
             return b;
           }));
         }
-        aggiungi = h('div', null, visivo ? h('p', { class: 'muted' }, 'Scegliete l\'allestimento dal disegno, oppure dalla lista:') : null, visivo,
+        aggiungi = h('div', null,
+          configuratore ? [h('p', { class: 'muted' }, 'Cliccate sul disegno le parti che vi servono:'), configuratore] : null,
+          visivo ? h('p', { class: 'muted' }, 'Installazioni particolari:') : null, visivo,
           h('div', { class: 'toolbar' }, daModello, scelta, addMat, addServ));
         [f.data_inizio, f.data_fine].forEach((el) => el.addEventListener('change', async () => { await caricaCatalogo(); disegna(); ridisegnaTotali(); }));
       }
@@ -275,6 +288,7 @@
           evento: { titolo: f.evento_titolo.value, data_inizio: f.data_inizio.value || null, data_fine: f.data_fine.value || null, montaggio_da: f.montaggio_da.value || null, localita: f.luogo.value },
           cliente: { nome: f.cliente_nome.value, azienda: f.cliente_azienda.value, indirizzo: f.cliente_indirizzo.value, email: f.cliente_email.value, telefono: f.cliente_telefono.value },
           impostazioni: imp, righe: righe.map((r) => ({ ...r, categoria: categoriaDi(r) })), totali: totaliDi(righe, header()), partner: true,
+          parti: [...new Set(righe.filter((r) => r.tipo === 'pacchetto' && !r.opzionale).map((r) => (modelli.find((m) => m.id === r.modello_id) || {}).parte).filter(Boolean))],
           anrede: f.anrede.value.trim(), intro: f.introduzione.value.trim(), condizioni: f.condizioni.value.trim(), link: null,
         });
         clear(doc);
