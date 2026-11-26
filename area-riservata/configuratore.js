@@ -320,7 +320,9 @@
     btn.className = 'btn btn--primary';
     btn.textContent = 'Aggiungi le parti scelte';
 
-    const prezzoDi = (c) => (c.dj ? 0 : (prezzo(perParte.get(c.parte)) || 0) * unita(c));
+    // le parti senza pacchetto Meekon (solo del DJ) non hanno prezzo: non chiamare prezzo() senza modello
+    const prezzoParte = (k) => (perParte.has(k) ? Number(prezzo(perParte.get(k))) || 0 : 0);
+    const prezzoDi = (c) => (c.dj ? 0 : prezzoParte(c.parte) * unita(c));
     const totale = () => [...conf.values()].reduce((t, c) => t + prezzoDi(c), 0);
     const numIn = (val, min, max, onv, label) => {
       const i = document.createElement('input');
@@ -381,7 +383,7 @@
           riga.append(lb);
           const c = conf.get(k);
           const aggiornaInfo = () => {
-            const pz = prezzo(perParte.get(k)) || 0;
+            const pz = prezzoParte(k);
             const ui = (window.MeekonI18n && window.MeekonI18n.lingua) || 'it';
             const e = ETICHETTE[ui] || ETICHETTE.it;
             const mis = c ? misura(c, ui) : '';
