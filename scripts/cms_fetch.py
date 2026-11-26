@@ -310,8 +310,11 @@ def load_cms(dest_media_dir, public_prefix="assets/media", i18n_path=None):
         nome = _text(r.get("nome"), 120)
         if not nome:
             raise ValueError("nome mancante")
-        foto = dl.get(r["foto_path"], IMAGE_PATH_RE) if r.get("foto_path") else None
-        return {"nome": nome, "genere": _langs(r, "genere", 120), "foto": foto, "link": _link(r.get("link")), "approvato": True}
+        img = dl.get(r["foto_path"], IMAGE_PATH_RE) if r.get("foto_path") else None
+        # foto_e_logo (predefinito sì): logo centrato nel riquadro, come i loghi dei DJ sul sito
+        logo = r.get("foto_e_logo") is not False
+        return {"nome": nome, "genere": _langs(r, "genere", 120), "foto": None if logo else img, "logo": img if logo else None,
+                "link": _link(r.get("link")), "approvato": True}
 
     # --- partner
     def partner(r):
@@ -319,7 +322,7 @@ def load_cms(dest_media_dir, public_prefix="assets/media", i18n_path=None):
         if not nome:
             raise ValueError("nome mancante")
         logo = dl.get(r["logo_path"], IMAGE_PATH_RE) if r.get("logo_path") else None
-        return {"nome": nome, "logo": logo, "link": _link(r.get("link")), "approvato": True}
+        return {"nome": nome, "logo": logo, "ruolo": _langs(r, "ruolo", 60), "link": _link(r.get("link")), "approvato": True}
 
     result = {
         "galleria": each(_rest(base, key, "media_galleria",
@@ -328,8 +331,8 @@ def load_cms(dest_media_dir, public_prefix="assets/media", i18n_path=None):
         "sale": each(_rest(base, key, "sale",
                            ["nome", "luogo", "paese", "tipo_it", "tipo_de", "tipo_fr", "tipo_en", "ordine", "pubblicato"]), "sala", sala),
         "dj": each(_rest(base, key, "dj",
-                         ["nome", "genere_it", "genere_de", "genere_fr", "genere_en", "foto_path", "link", "ordine", "pubblicato"]), "dj", dj),
-        "partner": each(_rest(base, key, "partner", ["nome", "logo_path", "link", "ordine", "pubblicato"]), "partner", partner),
+                         ["nome", "genere_it", "genere_de", "genere_fr", "genere_en", "foto_path", "foto_e_logo", "link", "ordine", "pubblicato"]), "dj", dj),
+        "partner": each(_rest(base, key, "partner", ["nome", "logo_path", "ruolo_it", "ruolo_de", "ruolo_fr", "ruolo_en", "link", "ordine", "pubblicato"]), "partner", partner),
     }
 
     # --- testi

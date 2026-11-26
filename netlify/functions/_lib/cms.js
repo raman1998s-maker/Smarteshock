@@ -112,7 +112,7 @@ export const SEZIONI = Object.freeze({
   },
   dj: {
     tabella: 'dj',
-    select: 'id,nome,genere_it,genere_de,genere_fr,genere_en,foto_path,link,ordine,pubblicato,created_at,updated_at,updated_by',
+    select: 'id,nome,genere_it,genere_de,genere_fr,genere_en,foto_path,foto_e_logo,link,ordine,pubblicato,created_at,updated_at,updated_by',
     schema: {
       nome: t.string({ max: 120, required: true }),
       genere_it: t.string({ max: 120 }),
@@ -120,6 +120,7 @@ export const SEZIONI = Object.freeze({
       genere_fr: t.string({ max: 120 }),
       genere_en: t.string({ max: 120 }),
       foto_path: t.string({ max: 80, pattern: IMAGE_PATH_RE }),
+      foto_e_logo: t.bool(), // l'immagine è un logo (centrato), non una foto
       link: httpsLink(),
       ordine: ordine(),
       pubblicato: pubblicato(),
@@ -127,10 +128,14 @@ export const SEZIONI = Object.freeze({
   },
   partner: {
     tabella: 'partner',
-    select: 'id,nome,logo_path,link,ordine,pubblicato,created_at,updated_at,updated_by',
+    select: 'id,nome,logo_path,ruolo_it,ruolo_de,ruolo_fr,ruolo_en,link,ordine,pubblicato,created_at,updated_at,updated_by',
     schema: {
       nome: t.string({ max: 120, required: true }),
       logo_path: t.string({ max: 80, pattern: IMAGE_PATH_RE }),
+      ruolo_it: t.string({ max: 60 }),
+      ruolo_de: t.string({ max: 60 }),
+      ruolo_fr: t.string({ max: 60 }),
+      ruolo_en: t.string({ max: 60 }),
       link: httpsLink(),
       ordine: ordine(),
       pubblicato: pubblicato(),

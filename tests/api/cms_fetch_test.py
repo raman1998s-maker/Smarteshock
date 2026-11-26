@@ -49,7 +49,8 @@ TABLES = {
         {"nome": "Sala US", "luogo": "", "paese": "US", "pubblicato": True},
     ],
     "dj": [
-        {"nome": "DJ Uno", "genere_it": "House", "foto_path": f"dj/{U1}.png", "link": "https://example.com/dj", "pubblicato": True},
+        {"nome": "DJ Uno", "genere_it": "House", "foto_path": f"dj/{U1}.png", "foto_e_logo": False, "link": "https://example.com/dj", "pubblicato": True},
+        {"nome": "DJ Logo", "foto_path": f"dj/{U1}.png", "pubblicato": True},
         {"nome": "DJ Cattivo", "link": "javascript:alert(1)", "pubblicato": True},
     ],
     "partner": [{"nome": "Partner", "logo_path": None, "link": None, "pubblicato": True}],
@@ -163,10 +164,14 @@ class LoadCmsTest(unittest.TestCase):
 
         self.assertEqual(out["sale"], [{"nome": "Sala Uno", "luogo": "Lugano", "paese": "CH",
                                         "tipo": {"it": "Sala", "de": "Sala", "fr": "Sala", "en": "Sala"}, "approvato": True}])
-        self.assertEqual(len(out["dj"]), 1)
+        self.assertEqual(len(out["dj"]), 2)
         self.assertEqual(out["dj"][0]["link"], "https://example.com/dj")
         self.assertTrue(out["dj"][0]["foto"].endswith(".png"))
-        self.assertEqual(out["partner"], [{"nome": "Partner", "logo": None, "link": None, "approvato": True}])
+        self.assertIsNone(out["dj"][0]["logo"])
+        # senza foto_e_logo l'immagine è un logo (come i loghi dei DJ sul sito)
+        self.assertTrue(out["dj"][1]["logo"].endswith(".png"))
+        self.assertIsNone(out["dj"][1]["foto"])
+        self.assertEqual(out["partner"], [{"nome": "Partner", "logo": None, "ruolo": {"it": "", "de": "", "fr": "", "en": ""}, "link": None, "approvato": True}])
         self.assertEqual(out["testi"], {"hero.title": {"it": "Nuovo titolo", "en": "New title"}})
 
     def test_richieste_solo_pubblicate_e_chiave_solo_negli_header(self):

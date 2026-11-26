@@ -825,7 +825,7 @@
         if (isVideo && v.poster_path) thumbMedia(thumb, v.poster_path);
         else thumbMedia(thumb, v.file_path, { video: isVideo, onDuration: setDur });
       } else if (key === 'dj') {
-        if (v.foto_path) { thumbMedia(thumb, v.foto_path); typeLabel.textContent = 'Foto'; } else typeLabel.textContent = 'Senza foto';
+        if (v.foto_path) { thumbMedia(thumb, v.foto_path); typeLabel.textContent = v.foto_e_logo === false ? 'Foto' : 'Logo'; } else typeLabel.textContent = 'Senza immagine';
       } else if (key === 'partner') {
         if (v.logo_path) { thumbMedia(thumb, v.logo_path); typeLabel.textContent = 'Logo'; } else typeLabel.textContent = 'Senza logo';
       } else {
@@ -1102,6 +1102,7 @@
 
       const inputs = {};
       const langs = {};
+      let logoSw = null; // DJ: interruttore "l'immagine è un logo"
       const gridF = h('div', { class: 'fields' });
       let paths = {};
       let pending = 0; // caricamenti in corso
@@ -1147,13 +1148,20 @@
         if (isDj) {
           langs.genere = langField({ legend: 'Genere musicale', prefix: 'genere', values: langVals(v, 'genere'), max: 120, required: [], hint: 'Es. House, Commerciale, Anni 80.' });
           fieldsBox.append(langs.genere.el);
+          // logo (centrato, sfondo trasparente) o foto (ritagliata): predefinito logo, come sul sito
+          logoSw = switchEl(v.foto_e_logo !== false, "L'immagine è un logo (non una foto)");
+          fieldsBox.append(h('div', { class: 'field' }, logoSw.el,
+            h('p', { class: 'field__hint' }, 'Acceso: il logo è mostrato intero al centro del riquadro. Spento: la foto riempie il riquadro.')));
+        } else {
+          langs.ruolo = langField({ legend: 'Ruolo (facoltativo)', prefix: 'ruolo', values: langVals(v, 'ruolo'), max: 60, required: [], hint: 'Scritto sotto il logo, es. Video team.' });
+          fieldsBox.append(langs.ruolo.el);
         }
         const pk = isDj ? 'foto_path' : 'logo_path';
         paths[pk] = v[pk] || null;
         setPreview(paths[pk], { label: paths[pk] ? '' : (isDj ? 'Senza foto' : 'Senza logo') });
         fieldsBox.append(imageSlot({
-          label: isDj ? 'Foto del DJ' : 'Logo del partner', cartella: key, current: () => paths[pk], keepAlpha: !isDj,
-          help: isDj ? 'Meglio una foto verticale. Senza foto il sito mostra le iniziali.' : 'Meglio un logo PNG o WebP con sfondo trasparente.',
+          label: isDj ? 'Logo o foto del DJ' : 'Logo del partner', cartella: key, current: () => paths[pk], keepAlpha: true,
+          help: isDj ? 'Logo PNG o WebP con sfondo trasparente, oppure una foto verticale. Senza immagine il sito mostra le iniziali.' : 'Meglio un logo PNG o WebP con sfondo trasparente.',
           onSet: (p, blob) => { paths[pk] = p; if (p) setPreview(null, { blob }); else setPreview(null, { label: isDj ? 'Senza foto' : 'Senza logo' }); },
           removeLabel: isDj ? 'Rimuovi la foto' : 'Rimuovi il logo',
         }));
@@ -1226,6 +1234,7 @@
         if (inputs.categoria) data.categoria = inputs.categoria.value;
         if (inputs.formato) data.formato = inputs.formato.value;
         for (const [k, p] of Object.entries(paths)) data[k] = p || null;
+        if (logoSw) data.foto_e_logo = logoSw.input.checked;
         data.pubblicato = sw.input.checked;
         if (isNew) {
           const arr = S.data[key] || [];
