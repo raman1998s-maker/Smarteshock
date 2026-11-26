@@ -1719,8 +1719,44 @@
           h('td', { 'data-label': 'Telefono' }, tel),
           h('td', { 'data-label': '' }, save));
       });
+      // invito di una persona nuova: l'account e la riga staff li crea il server, qui si riceve il link da mandarle
+      const inv = {
+        nome: h('input', { type: 'text', maxlength: '120', autocomplete: 'off' }),
+        email: h('input', { type: 'email', maxlength: '254', autocomplete: 'off' }),
+        ruolo: select('ruolo', Object.entries(RUOLI), 'tecnico'),
+        lingua: select('lingua', [['it', 'Italiano'], ['de', 'Deutsch'], ['en', 'English']], 'de'),
+      };
+      const esito = h('div');
+      const invita = h('button', { class: 'btn btn--primary', type: 'submit' }, 'Crea invito');
+      const formInvito = h('form', { novalidate: true },
+        h('div', { class: 'fields' }, field('Nome e cognome', inv.nome), field('E-mail', inv.email), field('Ruolo', inv.ruolo), field('Lingua del gestionale', inv.lingua)),
+        h('div', { class: 'panel__foot' }, invita), esito);
+      formInvito.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clear(esito);
+        if (!inv.nome.value.trim()) { inv.nome.setAttribute('aria-invalid', 'true'); inv.nome.focus(); return; }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inv.email.value.trim())) { inv.email.setAttribute('aria-invalid', 'true'); inv.email.focus(); return; }
+        busy(invita, async () => {
+          try {
+            const r = await api('utenti-invito', { method: 'POST', body: { nome: inv.nome.value.trim(), email: inv.email.value.trim(), ruolo: inv.ruolo.value, lingua: inv.lingua.value } });
+            const nome = inv.nome.value.trim();
+            const copia = h('button', { class: 'btn btn--sm', type: 'button' }, 'Copia link');
+            copia.addEventListener('click', async () => { try { await navigator.clipboard.writeText(r.link); toast('Link copiato.'); } catch (err) { toast('Copiate il link a mano.', 'error'); } });
+            const campo = h('input', { type: 'text', readonly: true, value: r.link, 'aria-label': 'Link di invito', 'data-no-tr': '' });
+            esito.append(h('div', { class: 'alert alert--ok', role: 'status' },
+              h('p', null, h('strong', null, `Invito creato per ${nome}.`), ' Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo 24 ore.'),
+              h('div', { class: 'toolbar' }, campo, copia)));
+            inv.nome.value = ''; inv.email.value = '';
+          } catch (err) {
+            esito.append(alertBox(err instanceof ApiError && err.status === 409 ? 'Esiste già un account con questa e-mail.' : errorMessage(err)));
+          }
+        });
+      });
       page({ title: 'Utenti e ruoli', sub: 'Chi può fare cosa nel gestionale' },
         h('section', { class: 'panel' }, tabella(['Nome', 'Ruolo', 'Attivo', 'Telefono', ''], righe)),
+        h('section', { class: 'panel' }, h('div', { class: 'panel__head' }, h('h2', null, 'Aggiungi una persona')),
+          h('p', { class: 'muted' }, "Inserite nome, e-mail e ruolo: il gestionale crea l'account e vi dà un link di invito da mandare alla persona."),
+          formInvito),
         h('section', { class: 'panel' },
           h('div', { class: 'panel__head' }, h('h2', null, 'Cosa vede ogni ruolo')),
           dl([
@@ -1731,7 +1767,7 @@
             ['Partner (DJ)', 'Solo la propria area: le sue offerte a suo nome, il suo profilo e il catalogo Meekon con il prezzo partner. Non vede eventi, clienti né altri partner.'],
             ['Disattivato', 'Non entra più, ma il suo nome resta negli eventi passati.'],
           ]),
-          h('p', { class: 'muted' }, 'Per aggiungere una persona: create il suo account in Supabase (Authentication → Users → Add user, con la sua e-mail), poi aggiungete la riga nella tabella "staff" con lo stesso id, il nome e il ruolo. Da qui potete poi cambiare ruolo e stato.')));
+          h('p', { class: 'muted' }, "Dopo l'invito potete cambiare qui ruolo e stato. Ricaricate la pagina per vedere la persona nuova nell'elenco.")));
     }
 
     return { viewAgenda, viewAssenze, viewMagazzino, viewModelli, viewDifettoso, viewVeicoli, viewImporta, viewOfferta, viewUtenti, viewImpostazioni, viewPaga, offertePanel, compensiPanel, caricoPanel, calendarLink, sceltaModello };
