@@ -18,6 +18,16 @@
   node_bundler = "esbuild"
 
 # ---------------------------------------------------------------------
+# Dominio principale: meekondisplay.ch (www → apex lo fa già Netlify).
+# Il vecchio indirizzo .netlify.app rimanda al dominio, così Google vede un solo sito.
+# ---------------------------------------------------------------------
+[[redirects]]
+  from = "https://meekondisplay.netlify.app/*"
+  to = "https://meekondisplay.ch/:splat"
+  status = 301
+  force = true
+
+# ---------------------------------------------------------------------
 # File interni del repository: mai serviti dal sito (publish = ".")
 # ---------------------------------------------------------------------
 [[redirects]]
