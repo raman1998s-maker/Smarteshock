@@ -4,7 +4,7 @@
 //   l'admin manda il link via WhatsApp o e-mail) e la riga in public.staff con nome e ruolo.
 // - La chiave service_role è quella che Supabase mette da sé nelle Edge Functions:
 //   non sta nel repository, non sta su Netlify, non arriva mai al browser.
-// Chiamata solo dalla Netlify Function /api/staff/invita (Authorization: Bearer <JWT dell'admin>).
+// Chiamata solo dalla Netlify Function /api/utenti-invito (Authorization: Bearer <JWT dell'admin>).
 
 const RUOLI = ['admin', 'ufficio', 'tecnico', 'base', 'partner'];
 const LINGUE = ['it', 'de', 'en']; // come staff.lingua
