@@ -208,6 +208,12 @@ Dal 25.11.2026 l'area riservata è il gestionale dell'azienda. **Dove sopra c'è
 ### Prese di corrente in location (`0018_prese.sql`)
 - Offerta del partner: `partner_offerte.prese` jsonb `{ "230v": n, "cee16": n, "cee32": n, "cee63": n, "cee125": n }` (solo i tipi presenti, 1–50; gli zeri si tolgono in `preseSchema`). Il partner lo compila nel riquadro Evento; la gestione lo vede nella richiesta di materiale, per preparare cavi e distribuzione.
 
+### Invito di persone nuove (Utenti e ruoli, solo admin)
+- L'admin inserisce nome, e-mail, ruolo e lingua; `POST /api/utenti-invito` (Netlify, auth admin) passa il token dell'admin alla Supabase Edge Function `invita-utente` (`supabase/functions/invita-utente`).
+- La Edge Function ricontrolla che chi chiama sia admin attivo (con il suo token), crea l'account con `auth/v1/admin/generate_link` (tipo `invite`, nessuna e-mail inviata da Supabase) e la riga in `staff`; se la riga non si crea, cancella l'account. Usa la `SUPABASE_SERVICE_ROLE_KEY` che Supabase mette da sé nelle Edge Functions: non sta nel repository, né su Netlify, né nel browser.
+- Il link (valido una volta, 24 ore) porta a `/area-riservata/password.html`: la pagina legge `#access_token`, lo toglie dall'indirizzo e lo manda una sola volta a `POST /api/auth/password`, che imposta la password (`PUT auth/v1/user`) e chiude la sessione del link. Poi la persona entra dalla pagina di accesso.
+- In Supabase: Authentication → URL Configuration → Redirect URLs deve contenere `https://<dominio>/area-riservata/password.html` (la Edge Function accetta solo meekondisplay.netlify.app e meekondisplay.ch).
+
 ### API del gestionale
 | Metodo e percorso | Chi | File |
 |---|---|---|

@@ -119,9 +119,35 @@ export function createSupabase(env) {
     return data;
   }
 
+  /**
+   * Chiamata a una Supabase Edge Function con il JWT dell'utente (la funzione ricontrolla i permessi).
+   * Restituisce { status, data } senza lanciare per i 4xx: chi chiama decide cosa dire al client.
+   */
+  async function edge(name, { token, body }) {
+    const res = await doFetch(`${base}/functions/v1/${name}`, {
+      method: 'POST',
+      headers: headers(token, { 'Content-Type': 'application/json' }),
+      body: JSON.stringify(body ?? {}),
+    });
+    return { status: res.status, data: await readBody(res) };
+  }
+
   return {
     rest,
     storage,
+    edge,
+    /** Cambia la password dell'utente del token (link di invito o di recupero). false se il token non vale. */
+    async updatePassword(accessToken, password) {
+      const res = await doFetch(`${base}/auth/v1/user`, {
+        method: 'PUT',
+        headers: headers(accessToken, { 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ password }),
+      });
+      if (res.status >= 500) throw new HttpError(502, 'upstream_error');
+      if (res.status === 429) throw new HttpError(429, 'too_many_requests');
+      if (res.status === 422) throw new HttpError(400, 'invalid_input', { field: 'password' }); // password troppo debole
+      return res.ok;
+    },
     /** Login con e-mail e password; null se le credenziali non sono valide. */
     signInWithPassword: (email, password) => authToken('password', { email, password }),
     /** Rinnova la sessione; null se il refresh token non è valido. */
