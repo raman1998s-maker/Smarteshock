@@ -838,6 +838,10 @@ def main():
             if not isinstance(rows, list):
                 raise SystemExit(f"CMS: la sezione {n} non è un elenco")
             data[n] = [r for r in rows if isinstance(r, dict) and r.get("approvato") is True]
+            # DJ e partner: finché nel CMS non c'è nessuna voce si usano quelli del repository (data/*.json),
+            # così il sito online non resta senza loghi
+            if n in ("dj", "partner") and not data[n]:
+                data[n] = load_data(n)
         apply_cms_texts(all_t, cms.get("testi"), set(defaults["testi"]))
     for lang in LANGS:
         t = all_t[lang]
