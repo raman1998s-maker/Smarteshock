@@ -114,6 +114,7 @@
     "lead": "Compilate il modulo: vi risponderemo con una proposta su misura, senza impegno.",
     "phone": "Telefono",
     "whatsapp": "Scriveteci su WhatsApp",
+    "address": "Indirizzo",
     "langs": "Parliamo italiano, tedesco, francese e inglese."
   },
   "whatsapp": { "label": "Scriveteci su WhatsApp" },
@@ -244,122 +245,155 @@
     "meta_title": "Informativa privacy — Meekon Displays",
     "meta_description": "Come Meekon Displays tratta i dati personali raccolti tramite il sito e i contatti diretti, secondo la legge svizzera sulla protezione dei dati (LPD) e il GDPR.",
     "eyebrow": "Protezione dei dati",
-    "title": "Informativa privacy",
-    "updated": "Ultimo aggiornamento: 24 novembre 2026",
-    "intro": "Questa informativa spiega quali dati personali raccogliamo, perché lo facciamo e quali diritti avete. Vale per questo sito e per i contatti diretti con noi. Si basa sulla legge federale svizzera sulla protezione dei dati (LPD) e tiene conto del Regolamento generale sulla protezione dei dati dell'UE (GDPR), perché lavoriamo anche con clienti in Italia, Germania e Francia.",
+    "title": "Informativa sulla privacy",
+    "updated": "Ultimo aggiornamento: 25 novembre 2026",
+    "intro": "Questa informativa spiega quali dati personali trattiamo, perché lo facciamo, a chi li trasmettiamo e quali diritti avete. Vale per questo sito, per richieste, offerte e contratti e per i contatti diretti con noi. Si basa sulla legge federale svizzera sulla protezione dei dati (LPD). Poiché ci rivolgiamo anche a clienti nell'UE, tiene conto inoltre del Regolamento generale sulla protezione dei dati dell'UE (GDPR), nella misura in cui è applicabile.",
     "sections": [
       {
-        "h": "1. Chi è responsabile",
+        "h": "1. Titolare del trattamento",
         "p": [
-          "Titolare del trattamento: Meekon Displays, Arul Mayuran.",
-          "Per ogni domanda sulla protezione dei dati scriveteci a info@meekondisplay.ch.",
-          "Su richiesta via e-mail vi comunichiamo anche il nostro indirizzo postale."
+          "Il titolare del trattamento è:",
+          "Meekon Display, titolare Arulmayuran Vamadevan (ditta individuale)",
+          "Lukasstrasse 18, 9000 St. Gallen, Svizzera",
+          "E-mail: info@meekondisplay.ch",
+          "Per qualsiasi domanda sulla protezione dei dati potete contattarci a questo indirizzo."
         ]
       },
       {
-        "h": "2. Quali dati raccogliamo",
+        "h": "2. Quali dati trattiamo",
         "p": [
-          "Modulo di richiesta: nome, e-mail, telefono, tipo e data dell'evento, località, paese, numero di ospiti, servizi desiderati, messaggio e lingua.",
-          "Dettagli tecnici sul luogo (facoltativi): informazioni sulla sala e sull'allestimento e, se volete, nome e contatto di altri fornitori dell'evento (per esempio fiorista, fotografo, DJ o band, wedding planner, referente della location), che usiamo solo per coordinarci con loro. Indicateli solo se queste persone ne sono informate.",
-          "Nome ed e-mail sono necessari per rispondervi. Gli altri campi sono facoltativi, ma ci aiutano a preparare una proposta adatta.",
-          "Contatti diretti: se ci scrivete o ci chiamate per telefono, WhatsApp, e-mail o Instagram, trattiamo i dati che ci inviate (per esempio nome, numero, indirizzo e-mail e contenuto dei messaggi).",
-          "Dati tecnici: quando visitate il sito, il fornitore di hosting registra dati tecnici come l'indirizzo IP e la data e l'ora dell'accesso."
+          "Modulo di richiesta: nome, e-mail, telefono, tipo e data dell'evento, luogo, paese, numero di ospiti, servizi desiderati, messaggio e lingua. Nome ed e-mail ci servono per rispondervi. Gli altri dati sono facoltativi, ma ci aiutano a preparare un'offerta adatta.",
+          "Informazioni tecniche sul luogo (facoltative): informazioni sulla sala e sull'allestimento e, se lo desiderate, nome e contatto di altri fornitori dell'evento (per esempio fiorista, fotografo, DJ o band, wedding planner, referente della location). Li usiamo solo per coordinarci con loro. Comunicate questi dati solo se le persone interessate ne sono informate.",
+          "Offerte e contratti: dati sull'offerta e sull'incarico (servizi, prezzi, data e luogo dell'evento, referente sul posto, indirizzo di fatturazione). Se accettate un'offerta online, salviamo come prova della conclusione del contratto: nome, e-mail, data e ora dell'accettazione, indirizzo IP, l'offerta accettata e la versione delle CG accettate.",
+          "Dati di pagamento: fatture, pagamenti ricevuti, modalità di pagamento ed eventualmente dati bancari per i rimborsi. Non salviamo dati di carte di credito.",
+          "Foto e video degli eventi: riprese della nostra tecnica e dell'allestimento. Pubblichiamo riprese in cui le persone sono riconoscibili solo con il vostro consenso esplicito (e quello delle persone interessate).",
+          "Contatti diretti: se ci contattate per telefono, e-mail, servizi di messaggistica o social network, trattiamo i dati che ci inviate (per esempio nome, numero, indirizzo e-mail, nome del profilo e contenuto dei messaggi).",
+          "Dati tecnici: quando visitate il sito, il nostro fornitore di hosting salva dati tecnici come l'indirizzo IP e la data e l'ora dell'accesso."
         ]
       },
       {
-        "h": "3. Per quali scopi",
+        "h": "3. Per quali scopi usiamo i dati",
         "p": [
           "Usiamo i vostri dati per:",
-          "rispondere alla vostra richiesta;",
-          "preparare un'offerta;",
-          "organizzare ed eseguire l'evento;",
-          "tenere la contabilità e rispettare gli obblighi di legge;",
-          "proteggere il sito da abusi e attacchi (dati tecnici).",
+          {
+            "ul": [
+              "rispondere alla vostra richiesta;",
+              "preparare un'offerta e documentare la conclusione del contratto;",
+              "organizzare e svolgere l'evento, anche in coordinamento con la location e con altri fornitori;",
+              "emettere fatture, registrare i pagamenti e tenere la contabilità;",
+              "adempiere obblighi di legge e tutelare i nostri diritti;",
+              "con il vostro consenso, pubblicare foto o video come referenza;",
+              "proteggere il sito da abusi e attacchi (dati tecnici)."
+            ]
+          },
           "Non vendiamo i vostri dati e non li usiamo per pubblicità."
         ]
       },
       {
-        "h": "4. Base giuridica",
+        "h": "4. Basi giuridiche",
         "p": [
-          "Secondo il GDPR trattiamo i dati sulle seguenti basi: misure precontrattuali ed esecuzione del contratto (art. 6 cpv. 1 lett. b), per richieste, offerte ed eventi; obbligo legale (art. 6 cpv. 1 lett. c), per la contabilità; interesse legittimo (art. 6 cpv. 1 lett. f), per la sicurezza del sito.",
-          "In Svizzera trattiamo i dati nel rispetto dei principi della LPD: in modo lecito, trasparente, proporzionato e solo per gli scopi indicati qui."
+          "In Svizzera trattiamo i dati secondo i principi della LPD: in modo lecito, secondo buona fede, trasparente, proporzionato e solo per gli scopi indicati qui.",
+          "Se si applica il GDPR, ci basiamo su: misure precontrattuali ed esecuzione del contratto (art. 6 par. 1 lett. b GDPR) per richieste, offerte, contratti ed eventi; obbligo legale (art. 6 par. 1 lett. c GDPR) per contabilità e conservazione; interesse legittimo (art. 6 par. 1 lett. f GDPR) per la sicurezza del sito, la prova della conclusione del contratto e la tutela dei nostri diritti; consenso (art. 6 par. 1 lett. a GDPR) per la pubblicazione di riprese con persone riconoscibili."
         ]
       },
       {
-        "h": "5. Telefono, WhatsApp, e-mail e Instagram",
+        "h": "5. Contatto per telefono, e-mail, messaggistica e social network",
         "p": [
-          "Se ci contattate tramite WhatsApp o Instagram (servizi di Meta) o tramite la nostra e-mail, gestita con Google Workspace (servizio di Google), valgono anche le condizioni e le informative privacy di questi fornitori.",
-          "Questi fornitori possono trattare i dati anche al di fuori della Svizzera e dell'UE.",
-          "Vi consigliamo di non inviare per questi canali dati particolarmente sensibili."
+          "Se ci contattate tramite un servizio di messaggistica o un social network indicato sul nostro sito come canale di contatto, siete voi a scegliere questo canale. Per questo servizio valgono inoltre le condizioni e le norme sulla privacy del relativo fornitore, che può trattare i dati sotto la propria responsabilità.",
+          "Questi fornitori e il nostro servizio e-mail possono trattare dati anche fuori dalla Svizzera e dall'UE, in particolare negli USA (vedi punto 7).",
+          "Vi consigliamo di non inviare tramite questi canali dati particolarmente sensibili (per esempio dati sulla salute)."
         ]
       },
       {
-        "h": "6. Fornitori che trattano dati per noi",
+        "h": "6. Destinatari dei dati",
         "p": [
-          "Ci affidiamo a fornitori esterni che trattano i dati solo per nostro conto e secondo le nostre istruzioni:",
-          "Netlify: hosting del sito e delle funzioni che ricevono il modulo. Sede negli Stati Uniti.",
-          "Supabase: database delle richieste e dell'area riservata. Server nell'UE."
+          "Trasmettiamo dati personali solo se necessario per gli scopi indicati, alle seguenti categorie di destinatari:",
+          {
+            "ul": [
+              "fornitori di hosting del sito e della banca dati;",
+              "servizi e-mail e di comunicazione;",
+              "fornitori di servizi informatici (per esempio per manutenzione e backup);",
+              "fornitori di servizi di pagamento e banche;",
+              "fiduciaria e contabilità;",
+              "assicurazioni (per esempio in caso di danno);",
+              "ditte partner che in caso di imprevisto forniscono prestazioni sostitutive o mettono a disposizione materiale;",
+              "la location e altri fornitori del vostro evento, se necessario per il coordinamento;",
+              "autorità e tribunali, se siamo obbligati per legge o per far valere i nostri diritti."
+            ]
+          },
+          "I fornitori che trattano dati per nostro conto possono usarli solo secondo le nostre istruzioni e non per scopi propri."
         ]
       },
       {
-        "h": "7. Trasferimento di dati all'estero",
+        "h": "7. Comunicazione di dati all'estero",
         "p": [
-          "I dati del database restano su server nell'UE, che la Svizzera riconosce come area con una protezione dei dati adeguata.",
-          "Netlify ha sede negli Stati Uniti. Per eventuali trasferimenti verso gli Stati Uniti ci basiamo su garanzie adeguate, come le clausole contrattuali standard e, se applicabile, il Swiss-US Data Privacy Framework o l'EU-US Data Privacy Framework.",
-          "Su richiesta vi diamo maggiori informazioni sulle garanzie utilizzate."
+          "La nostra banca dati si trova su server nell'UE (Germania). Il nostro fornitore di hosting ha sede negli USA e può distribuire i dati tramite server in diversi paesi. I servizi e-mail, di messaggistica e di comunicazione possono trattare dati negli USA e in altri paesi.",
+          "I dati personali possono quindi essere comunicati nei seguenti paesi: Stati dell'UE e del SEE, in particolare la Germania, e gli USA; per i servizi di comunicazione, in singoli casi, anche altri paesi.",
+          "Secondo il Consiglio federale, gli Stati dell'UE e del SEE garantiscono una protezione dei dati adeguata. Per i paesi senza protezione adeguata, in particolare gli USA, ci basiamo sulla certificazione del destinatario secondo lo Swiss-US Data Privacy Framework (o EU-US Data Privacy Framework), se presente, oppure su clausole contrattuali standard. In singoli casi la comunicazione avviene perché è direttamente legata alla conclusione o all'esecuzione di un contratto con voi, oppure perché avete scelto voi il canale di comunicazione.",
+          "Su richiesta vi diamo volentieri ulteriori informazioni su queste garanzie."
         ]
       },
       {
         "h": "8. Per quanto tempo conserviamo i dati",
         "p": [
-          "Le richieste senza seguito vengono cancellate al più tardi dopo 24 mesi.",
-          "I dati di offerte e contratti vengono conservati per 10 anni, come previsto dagli obblighi contabili (Codice delle obbligazioni svizzero, art. 958f).",
-          "I log tecnici vengono conservati dal fornitore di hosting solo per il tempo necessario alla sicurezza."
+          {
+            "ul": [
+              "Cancelliamo le richieste che non portano a un incarico al più tardi dopo 24 mesi.",
+              "Conserviamo offerte, contratti, prove dell'accettazione online, fatture e dati di pagamento per 10 anni, per l'obbligo di tenuta della contabilità (art. 958f del Codice delle obbligazioni svizzero).",
+              "Rimuoviamo foto e video pubblicati con persone riconoscibili se revocate il vostro consenso.",
+              "Il fornitore di hosting conserva i protocolli tecnici solo per il tempo necessario alla sicurezza."
+            ]
+          },
+          "Conserviamo i dati più a lungo solo se necessario per tutelare i nostri diritti in una controversia in corso."
         ]
       },
       {
         "h": "9. Cookie e memoria del browser",
         "p": [
           "Il sito pubblico non usa cookie di profilazione, statistiche, pubblicità o strumenti di tracciamento.",
-          "I caratteri sono ospitati sul sito stesso: la vostra visita non genera richieste a Google o ad altri servizi esterni.",
-          "Il sito salva nel vostro browser solo la lingua scelta (memoria locale). Potete cancellarla in qualsiasi momento dalle impostazioni del browser.",
-          "L'area riservata ai dipendenti usa solo cookie tecnici necessari per il login, che scadono al logout o dopo 7 giorni senza utilizzo."
+          "I caratteri tipografici si trovano sul nostro sito: la vostra visita non genera richieste a servizi esterni di caratteri.",
+          "Il sito salva nel vostro browser solo la lingua scelta (memoria locale). Potete cancellare questa informazione in qualsiasi momento nelle impostazioni del browser.",
+          "L'area interna per i collaboratori usa solo cookie tecnici necessari per il login. Scadono al logout o dopo 7 giorni di inattività."
         ]
       },
       {
         "h": "10. Sicurezza",
         "p": [
-          "Il sito funziona solo con connessione cifrata (HTTPS).",
-          "L'accesso ai dati delle richieste è riservato a chi ne ha bisogno per il proprio lavoro e richiede un login.",
-          "Non prendiamo decisioni basate unicamente su un trattamento automatizzato e non creiamo profili."
+          "Il sito è raggiungibile solo tramite una connessione cifrata (HTTPS).",
+          "Ai dati di richieste, contratti e pagamenti hanno accesso solo le persone che ne hanno bisogno per il loro lavoro, e solo con login.",
+          "Non prendiamo decisioni basate esclusivamente su un trattamento automatizzato e non creiamo profili."
         ]
       },
       {
         "h": "11. I vostri diritti",
         "p": [
           "Avete il diritto di:",
-          "ottenere informazioni e accedere ai dati che vi riguardano;",
-          "far correggere dati inesatti;",
-          "chiedere la cancellazione dei dati;",
-          "opporvi al trattamento;",
-          "ricevere i dati che ci avete fornito in un formato elettronico di uso comune (portabilità);",
-          "revocare in qualsiasi momento un consenso dato, senza effetto sui trattamenti già avvenuti.",
-          "Per esercitare i vostri diritti scriveteci a info@meekondisplay.ch. Per proteggere i vostri dati possiamo chiedervi di confermare la vostra identità. Restano riservati gli obblighi di conservazione previsti dalla legge."
+          {
+            "ul": [
+              "ottenere informazioni sui vostri dati;",
+              "far correggere dati inesatti;",
+              "chiedere la cancellazione dei vostri dati;",
+              "opporvi al trattamento;",
+              "ricevere i dati che ci avete fornito in un formato elettronico di uso comune (consegna o portabilità dei dati);",
+              "revocare in qualsiasi momento un consenso dato, senza effetto sul trattamento precedente."
+            ]
+          },
+          "Per esercitare i vostri diritti scriveteci a info@meekondisplay.ch. Per proteggere i vostri dati possiamo chiedervi di confermare la vostra identità. Restano riservati gli obblighi legali di conservazione."
         ]
       },
       {
         "h": "12. Reclami",
         "p": [
-          "Se ritenete che trattiamo i vostri dati in modo non corretto, potete presentare un reclamo all'Incaricato federale della protezione dei dati e della trasparenza (IFPDT) in Svizzera.",
-          "Se vivete in un paese dell'UE, potete rivolgervi anche all'autorità di protezione dei dati del vostro paese.",
-          "Ci farebbe piacere, però, poter chiarire prima la questione direttamente con voi."
+          "Se ritenete che non trattiamo correttamente i vostri dati, potete presentare reclamo all'Incaricato federale della protezione dei dati e della trasparenza (IFPDT) in Svizzera.",
+          "Se abitate in un paese dell'UE, potete rivolgervi anche all'autorità di protezione dei dati del vostro paese.",
+          "Saremmo però lieti di chiarire prima la questione direttamente con voi."
         ]
       },
       {
         "h": "13. Modifiche",
         "p": [
-          "Possiamo aggiornare questa informativa, per esempio se cambiano i nostri servizi o la legge.",
-          "Vale sempre la versione pubblicata su questa pagina, con la data dell'ultimo aggiornamento."
+          "Possiamo modificare questa informativa, per esempio se cambiano i nostri servizi, i nostri fornitori o la legge.",
+          "Vale sempre la versione pubblicata su questa pagina con la data dell'ultimo aggiornamento."
         ]
       }
     ],

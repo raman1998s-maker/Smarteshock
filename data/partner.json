@@ -1,5 +1,44 @@
 [
-  { "nome": "Nome del partner — da inserire (esempio 1)", "logo": null, "link": null, "approvato": false },
-  { "nome": "Nome del partner — da inserire (esempio 2)", "logo": null, "link": null, "approvato": false },
-  { "nome": "Nome del partner — da inserire (esempio 3)", "logo": null, "link": null, "approvato": false }
+  {
+    "nome": "Venus",
+    "ruolo": {
+      "it": "Video team",
+      "de": "Videoteam",
+      "fr": "Équipe vidéo",
+      "en": "Video team"
+    },
+    "logo": "assets/img/partner/venus.webp",
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "Akshayan",
+    "ruolo": {
+      "it": "Video team",
+      "de": "Videoteam",
+      "fr": "Équipe vidéo",
+      "en": "Video team"
+    },
+    "logo": "assets/img/partner/akshayan.webp",
+    "link": null,
+    "approvato": true
+  },
+  {
+    "nome": "Nome del partner — da inserire (esempio 1)",
+    "logo": null,
+    "link": null,
+    "approvato": false
+  },
+  {
+    "nome": "Nome del partner — da inserire (esempio 2)",
+    "logo": null,
+    "link": null,
+    "approvato": false
+  },
+  {
+    "nome": "Nome del partner — da inserire (esempio 3)",
+    "logo": null,
+    "link": null,
+    "approvato": false
+  }
 ]

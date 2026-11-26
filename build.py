@@ -430,10 +430,17 @@ def djs_html(rows, lang, t):
         name = r.get("nome", "")
         foto = local_path(r.get("foto"), "dj.foto")
         link = safe_url(r.get("link"), "dj.link")
-        media = (
-            f'<img class="dj__photo" src="{foto}" alt="" loading="lazy" width="800" height="1000">'
-            if foto else f'<div class="dj__initials" aria-hidden="true">{E(initials(name))}</div>'
-        )
+        logo = local_path(r.get("logo"), "dj.logo")
+        if logo:
+            # logo del DJ (PNG/WebP trasparente) centrato nello stesso riquadro della foto
+            media = f'<div class="dj__logo"><img src="{logo}" alt="{E(name)}" loading="lazy" decoding="async"></div>'
+        elif foto:
+            media = f'<img class="dj__photo" src="{foto}" alt="" loading="lazy" width="800" height="1000">'
+        elif r.get("nome_nel_riquadro"):
+            # nessun logo disponibile: il nome scritto nel riquadro, stesso stile delle iniziali
+            media = f'<div class="dj__initials dj__initials--name" aria-hidden="true">{E(name)}</div>'
+        else:
+            media = f'<div class="dj__initials" aria-hidden="true">{E(initials(name))}</div>'
         genre = tr(r.get("genere"), lang)
         out.append(
             '<li class="dj">' + media
@@ -455,6 +462,10 @@ def partners_html(rows, lang, t):
         logo = local_path(r.get("logo"), "partner.logo")
         link = safe_url(r.get("link"), "partner.link")
         inner = f'<img src="{logo}" alt="{name}" loading="lazy">' if logo else name
+        ruolo = tr(r.get("ruolo"), lang)
+        if ruolo:
+            # ruolo facoltativo sotto il logo (es. "Video team")
+            inner += f'<span class="partner__role">{E(ruolo)}</span>'
         if link:
             out.append(f'<li><a class="partner" href="{E(link)}" target="_blank" rel="noopener noreferrer">{inner}</a></li>')
         else:
@@ -489,6 +500,14 @@ def jsonld(lang, t):
         "description": t["meta"]["description"],
         "telephone": "+41799450000",
         "email": "info@meekondisplay.ch",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Lukasstrasse 18",
+            "postalCode": "9000",
+            "addressLocality": "St. Gallen",
+            "addressRegion": "SG",
+            "addressCountry": "CH",
+        },
         "sameAs": ["https://www.instagram.com/meekon_display/"],
         "areaServed": [{"@type": "Country", "name": n} for n in ["Switzerland", "Italy", "Germany", "France"]],
         "knowsLanguage": LANGS,
@@ -681,7 +700,7 @@ PRIVACY_PAGE = """<!doctype html>
       <img src="/assets/img/logo.png" alt="Meekon Displays" width="595" height="246" loading="lazy">
       <p class="footer__claim">{claim}</p>
       <nav class="lang lang--footer" aria-label="{lang_label}">{langlinks}</nav>
-      <p class="footer__small">© {year} Meekon Displays · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
+      <p class="footer__small">© {year} Meekon Displays · Lukasstrasse 18, 9000 St. Gallen · meekondisplay.ch · <a href="{privacy_href}" aria-current="page">{footer_privacy}</a></p>
     </div>
   </footer>
 </body>
@@ -698,7 +717,11 @@ def privacy_page(lang, t, all_t, year):
     for i, sec in enumerate(sections, 1):
         anchor = f"s{i}"
         toc.append(f'<li><a href="#{anchor}">{E(sec["h"])}</a></li>')
-        paras = "".join(f"\n          <p>{E(p)}</p>" for p in sec["p"])
+        paras = "".join(
+            "\n          <ul>" + "".join(f"<li>{E(li)}</li>" for li in p["ul"]) + "</ul>"
+            if isinstance(p, dict) else f"\n          <p>{E(p)}</p>"
+            for p in sec["p"]
+        )
         body.append(
             f'        <section class="prose__section" id="{anchor}" aria-labelledby="{anchor}-h">\n'
             f'          <h2 id="{anchor}-h">{E(sec["h"])}</h2>{paras}\n        </section>'

@@ -114,6 +114,7 @@
     "lead": "Fill in the form and we will reply with a tailored, no-obligation proposal.",
     "phone": "Phone",
     "whatsapp": "Message us on WhatsApp",
+    "address": "Address",
     "langs": "We speak Italian, German, French and English."
   },
   "whatsapp": { "label": "Message us on WhatsApp" },
@@ -244,122 +245,155 @@
     "meta_title": "Privacy notice — Meekon Displays",
     "meta_description": "How Meekon Displays handles personal data collected through the website and direct contact, in line with the Swiss Federal Act on Data Protection (FADP) and the GDPR.",
     "eyebrow": "Data protection",
-    "title": "Privacy notice",
-    "updated": "Last updated: 24 November 2026",
-    "intro": "This notice explains what personal data we collect, why we do so and what rights you have. It applies to this website and to direct contact with us. It is based on the Swiss Federal Act on Data Protection (FADP) and takes the EU General Data Protection Regulation (GDPR) into account, as we also work with clients in Italy, Germany and France.",
+    "title": "Privacy Policy",
+    "updated": "Last updated: 25 November 2026",
+    "intro": "This privacy policy explains which personal data we process, why we do so, to whom we disclose it and what rights you have. It applies to this website, to enquiries, quotes and contracts, and to direct contact with us. It is based on the Swiss Federal Act on Data Protection (FADP). Because we also address customers in the EU, it additionally takes into account the EU General Data Protection Regulation (GDPR), where applicable.",
     "sections": [
       {
-        "h": "1. Who is responsible",
+        "h": "1. Controller",
         "p": [
-          "Data controller: Meekon Displays, Arul Mayuran.",
-          "For any question about data protection, please write to info@meekondisplay.ch.",
-          "On request by e-mail, we will also provide our postal address."
+          "The controller responsible for data processing is:",
+          "Meekon Display, owner Arulmayuran Vamadevan (sole proprietorship)",
+          "Lukasstrasse 18, 9000 St. Gallen, Switzerland",
+          "Email: info@meekondisplay.ch",
+          "For any questions about data protection, you can reach us at this address."
         ]
       },
       {
-        "h": "2. What data we collect",
+        "h": "2. What data we process",
         "p": [
-          "Enquiry form: name, e-mail, phone, type and date of the event, location, country, number of guests, services required, message and language.",
-          "Technical details about the venue (optional): information about the room and the set-up and, if you wish, the name and contact of other suppliers for the event (for example florist, photographer, DJ or band, wedding planner, venue contact), which we use only to coordinate with them. Please only include them if those people are aware of it.",
-          "We need your name and e-mail to reply. The other fields are optional, but help us prepare a suitable proposal.",
-          "Direct contact: if you contact us by phone, WhatsApp, e-mail or Instagram, we process the data you send us (for example your name, number, e-mail address and the content of your messages).",
-          "Technical data: when you visit the website, our hosting provider records technical data such as your IP address and the date and time of access."
+          "Enquiry form: name, email, phone, type and date of the event, location, country, number of guests, requested services, message and language. We need your name and email to reply to you. The other details are optional but help us prepare a suitable quote.",
+          "Technical details about the venue (optional): information about the room and the setup and, if you wish, the name and contact details of other suppliers for the event (for example florist, photographer, DJ or band, wedding planner, venue contact person). We use these only to coordinate with them. Please only provide such details if the persons concerned are aware of it.",
+          "Quotes and contracts: details of the quote and the order (services, prices, date and place of the event, contact person on site, billing address). If you accept a quote online, we store the following as proof that the contract was concluded: name, email, date and time of acceptance, IP address, the accepted quote and the version of the accepted Terms and Conditions.",
+          "Payment data: invoices, payments received, payment method and, where applicable, bank details for refunds. We do not store credit card data.",
+          "Photos and videos of events: pictures of our equipment and setup. We only publish pictures in which people can be recognised with your express consent (and that of the persons concerned).",
+          "Direct contact: if you contact us by phone, email, messaging services or social networks, we process the data you send us (for example name, number, email address, profile name and content of the messages).",
+          "Technical data: when you visit the website, our hosting provider stores technical data such as the IP address and the date and time of access."
         ]
       },
       {
-        "h": "3. Why we use your data",
+        "h": "3. What we use the data for",
         "p": [
           "We use your data to:",
-          "reply to your enquiry;",
-          "prepare a quote;",
-          "organise and deliver the event;",
-          "keep our accounts and meet our legal obligations;",
-          "protect the website against misuse and attacks (technical data).",
-          "We do not sell your data or use it for advertising."
+          {
+            "ul": [
+              "answer your enquiry;",
+              "prepare a quote and document the conclusion of the contract;",
+              "organise and carry out the event, including in coordination with the venue and other suppliers;",
+              "issue invoices, record payments and keep our accounts;",
+              "comply with legal obligations and protect our rights;",
+              "with your consent, publish photos or videos as references;",
+              "protect the website against misuse and attacks (technical data)."
+            ]
+          },
+          "We do not sell your data and do not use it for advertising."
         ]
       },
       {
-        "h": "4. Legal basis",
+        "h": "4. Legal bases",
         "p": [
-          "Under the GDPR, we process data on the following bases: pre-contractual steps and performance of a contract (Art. 6(1)(b)) for enquiries, quotes and events; legal obligation (Art. 6(1)(c)) for accounting; legitimate interests (Art. 6(1)(f)) for website security.",
-          "In Switzerland, we process data in line with the principles of the FADP: lawfully, transparently, proportionately and only for the purposes set out here."
+          "In Switzerland, we process data in accordance with the principles of the FADP: lawfully, in good faith, transparently, proportionately and only for the purposes stated here.",
+          "Where the GDPR applies, we rely on: pre-contractual measures and performance of a contract (Art. 6(1)(b) GDPR) for enquiries, quotes, contracts and events; legal obligation (Art. 6(1)(c) GDPR) for accounting and record keeping; legitimate interest (Art. 6(1)(f) GDPR) for website security, proof of the conclusion of the contract and the protection of our rights; consent (Art. 6(1)(a) GDPR) for publishing pictures with recognisable persons."
         ]
       },
       {
-        "h": "5. Phone, WhatsApp, e-mail and Instagram",
+        "h": "5. Contact by phone, email, messaging services and social networks",
         "p": [
-          "If you contact us via WhatsApp or Instagram (Meta services) or by e-mail (our e-mail is managed with Google Workspace, a Google service), the terms and privacy policies of those providers also apply.",
-          "These providers may process data outside Switzerland and the EU.",
-          "We recommend that you do not send particularly sensitive data through these channels."
+          "If you contact us through a messaging service or social network shown on our website as a contact option, you choose this channel yourself. The terms and privacy rules of the respective provider, which may process data under its own responsibility, also apply to that service.",
+          "These providers and our email service may also process data outside Switzerland and the EU, in particular in the USA (see section 7).",
+          "We recommend that you do not send sensitive data (for example health data) through these channels."
         ]
       },
       {
-        "h": "6. Providers that process data for us",
+        "h": "6. Recipients of data",
         "p": [
-          "We use external providers that process data only on our behalf and according to our instructions:",
-          "Netlify: hosting of the website and of the functions that receive the form. Based in the United States.",
-          "Supabase: database for enquiries and the staff area. Servers in the EU."
+          "We only disclose personal data where this is necessary for the stated purposes, to the following categories of recipients:",
+          {
+            "ul": [
+              "providers of website and database hosting;",
+              "email and communication services;",
+              "IT service providers (for example for maintenance and backups);",
+              "payment service providers and banks;",
+              "fiduciary and accounting services;",
+              "insurance companies (for example in the event of damage);",
+              "partner companies that provide replacement services or equipment if we are unable to perform;",
+              "the venue and other suppliers for your event, where needed for coordination;",
+              "authorities and courts, if we are legally required to do so or to enforce our rights."
+            ]
+          },
+          "Service providers that process data on our behalf may only use it in accordance with our instructions and not for their own purposes."
         ]
       },
       {
-        "h": "7. Transfers abroad",
+        "h": "7. Disclosure of data abroad",
         "p": [
-          "Database records remain on servers in the EU, which Switzerland recognises as providing adequate data protection.",
-          "Netlify is based in the United States. For any transfers to the United States, we rely on appropriate safeguards such as standard contractual clauses and, where applicable, the Swiss-US Data Privacy Framework or the EU-US Data Privacy Framework.",
-          "On request, we are happy to give you more information about these safeguards."
+          "Our database is located on servers in the EU (Germany). Our hosting provider is based in the USA and may deliver data via servers in various countries. Email, messaging and communication services may process data in the USA and other countries.",
+          "Personal data may therefore be disclosed to the following countries: EU and EEA states, in particular Germany, and the USA; for communication services, in individual cases, other countries as well.",
+          "According to the Swiss Federal Council, EU and EEA states provide an adequate level of data protection. For countries without adequate data protection, in particular the USA, we rely on the recipient's certification under the Swiss-US Data Privacy Framework (or EU-US Data Privacy Framework), where available, or on standard contractual clauses. In individual cases, the disclosure takes place because it is directly connected with the conclusion or performance of a contract with you, or because you have chosen the communication channel yourself.",
+          "We will gladly provide further information about these safeguards on request."
         ]
       },
       {
         "h": "8. How long we keep data",
         "p": [
-          "Enquiries that do not lead to a booking are deleted after 24 months at the latest.",
-          "Data relating to quotes and contracts is kept for 10 years to meet accounting obligations (Swiss Code of Obligations, Art. 958f).",
-          "Technical logs are kept by the hosting provider only as long as needed for security."
+          {
+            "ul": [
+              "We delete enquiries that do not lead to an order after 24 months at the latest.",
+              "We keep quotes, contracts, records of online acceptance, invoices and payment data for 10 years because of the statutory bookkeeping obligation (Art. 958f of the Swiss Code of Obligations).",
+              "We remove published photos and videos with recognisable persons if you withdraw your consent.",
+              "The hosting provider keeps technical logs only as long as necessary for security."
+            ]
+          },
+          "We only keep data longer if this is necessary to protect our rights in an ongoing dispute."
         ]
       },
       {
         "h": "9. Cookies and browser storage",
         "p": [
-          "The public website uses no profiling cookies, no analytics, no advertising and no tracking tools.",
-          "Fonts are hosted on our own website: your visit sends no requests to Google or other external services.",
-          "The website stores only your chosen language in your browser (local storage). You can delete it at any time in your browser settings.",
-          "The staff area uses only technical cookies required for login, which expire when you log out or after 7 days without use."
+          "The public website does not use profiling cookies, analytics, advertising or tracking tools.",
+          "The fonts are hosted on our own website: your visit does not trigger any requests to external font services.",
+          "The website only stores the language you have chosen in your browser (local storage). You can delete this information at any time in your browser settings.",
+          "The internal staff area only uses technical cookies required for login. They expire when you log out or after 7 days of inactivity."
         ]
       },
       {
         "h": "10. Security",
         "p": [
-          "The website is only available over an encrypted connection (HTTPS).",
-          "Access to enquiry data is limited to people who need it for their work and requires a login.",
-          "We do not make decisions based solely on automated processing and we do not create profiles."
+          "The website can only be accessed via an encrypted connection (HTTPS).",
+          "Only persons who need enquiry, contract and payment data for their work have access to it, and only with a login.",
+          "We do not make decisions based solely on automated processing and do not create profiles."
         ]
       },
       {
         "h": "11. Your rights",
         "p": [
           "You have the right to:",
-          "obtain information about and access to your data;",
-          "have inaccurate data corrected;",
-          "request that your data be deleted;",
-          "object to processing;",
-          "receive the data you have given us in a common electronic format (portability);",
-          "withdraw consent at any time, without affecting processing that has already taken place.",
-          "To exercise your rights, please write to info@meekondisplay.ch. To protect your data, we may ask you to confirm your identity. Statutory retention obligations remain unaffected."
+          {
+            "ul": [
+              "obtain information about your data;",
+              "have incorrect data corrected;",
+              "request the deletion of your data;",
+              "object to the processing;",
+              "receive the data you have provided to us in a common electronic format (data delivery or portability);",
+              "withdraw any consent given at any time, without affecting processing carried out before the withdrawal."
+            ]
+          },
+          "To exercise your rights, write to us at info@meekondisplay.ch. To protect your data, we may ask you to confirm your identity. Statutory retention obligations remain reserved."
         ]
       },
       {
         "h": "12. Complaints",
         "p": [
-          "If you believe we are not handling your data correctly, you can lodge a complaint with the Federal Data Protection and Information Commissioner (FDPIC) in Switzerland.",
+          "If you believe that we are not processing your data correctly, you can lodge a complaint with the Federal Data Protection and Information Commissioner (FDPIC) in Switzerland.",
           "If you live in an EU country, you can also contact the data protection authority in your country.",
-          "We would, however, welcome the chance to resolve the matter directly with you first."
+          "However, we would be glad to resolve the matter directly with you first."
         ]
       },
       {
         "h": "13. Changes",
         "p": [
-          "We may update this notice, for example if our services or the law change.",
-          "The version published on this page, with the date of the last update, always applies."
+          "We may amend this privacy policy, for example if our services, our service providers or the law change.",
+          "The version published on this page, with the date of the last update, applies."
         ]
       }
     ],
