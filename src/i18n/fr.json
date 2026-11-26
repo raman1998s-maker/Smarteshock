@@ -5,7 +5,7 @@
   "hint_link": "Voir la version française",
   "meta": {
     "title": "Meekon Displays — Technique événementielle : écrans LED, lumière, son, streaming",
-    "description": "Technique événementielle en Suisse et, sur demande, en Italie, Allemagne et France : écrans LED, digital banner, lumière, son, DJ, streaming et dance floor."
+    "description": "Technique événementielle en Suisse et, sur demande, en Italie, Allemagne et France : écrans LED, lumière, son, DJ et streaming. Aussi au World Economic Forum (WEF) de Davos."
   },
   "a11y": { "skip": "Aller au contenu", "nav": "Navigation principale", "lang": "Langue", "menu": "Ouvrir le menu", "close": "Fermer le menu" },
   "nav": { "events": "Événements", "services": "Prestations", "work": "Réalisations", "venues": "Lieux", "djs": "DJ", "method": "Méthode", "contact": "Contact", "cta": "Demander une offre" },
@@ -47,9 +47,11 @@
   "s7": { "t": "Dance floor", "d": "Une piste de danse montée sur mesure pour votre salle, pour l'ouverture du bal et pour toute la fête.", "list": ["Piste de danse modulaire", "Dimensions adaptées à la salle", "Montage et démontage", "Coordination avec la lumière et les effets"] },
   "s8": { "t": "Digital banner", "d": "Des écrans verticaux pour accueillir les invités à l'entrée ou animer les vitrines, avec les contenus de votre choix.", "list": ["Totems numériques pour l'entrée", "Écrans pour vitrines", "Accueil, programme et orientation", "Chargement des contenus"] },
   "davos": {
-    "eyebrow": "WEF Davos · Corporate",
+    "eyebrow": "World Economic Forum (WEF) · Davos · Corporate",
     "title": "Support technique pour délégations et entreprises",
-    "text": "Pendant le World Economic Forum de Davos et lors d'événements d'entreprise, nous accompagnons délégations, représentants et entreprises avec une technique fiable et un service discret, en quatre langues.",
+    "text": "Pendant le World Economic Forum (WEF) de Davos et lors d'événements d'entreprise, nous accompagnons délégations, représentants et entreprises avec une technique fiable et un service discret, en quatre langues. Dans la vidéo : une salle que nous avons équipée au WEF, avec lumières et lyres asservies sur structure.",
+    "video": "Vidéo du World Economic Forum (WEF) de Davos : salle en lumière bleue et violette avec lyres asservies sur structure et mange-debout, équipée par Meekon Displays",
+    "video_title": "Meekon Displays au World Economic Forum (WEF) de Davos",
     "list": ["Écrans, téléviseurs et projecteurs pour présentations", "Micros et son pour conférences et panels", "Captation et streaming en direct", "Montage discret et assistance sur place"],
     "cta": "Planifier votre événement"
   },

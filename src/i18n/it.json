@@ -5,7 +5,7 @@
   "hint_link": "Passa all'italiano",
   "meta": {
     "title": "Meekon Displays — Tecnica per eventi: schermi LED, luci, audio, streaming",
-    "description": "Tecnica per eventi in Svizzera e, su richiesta, in Italia, Germania e Francia: schermi LED, digital banner, luci, audio, DJ, streaming, effetti e dance floor."
+    "description": "Tecnica per eventi in Svizzera e, su richiesta, in Italia, Germania e Francia: schermi LED, luci, audio, DJ e streaming. Anche al World Economic Forum (WEF) di Davos."
   },
   "a11y": { "skip": "Vai al contenuto", "nav": "Navigazione principale", "lang": "Lingua", "menu": "Apri il menu", "close": "Chiudi il menu" },
   "nav": { "events": "Eventi", "services": "Servizi", "work": "Lavori", "venues": "Location", "djs": "DJ", "method": "Metodo", "contact": "Contatti", "cta": "Richiedi un'offerta" },
@@ -47,9 +47,11 @@
   "s7": { "t": "Dance floor", "d": "Una pista da ballo montata su misura per la vostra sala, per il primo ballo e per tutta la festa.", "list": ["Pista da ballo modulare", "Dimensioni adattate alla sala", "Montaggio e smontaggio", "Coordinamento con luci ed effetti"] },
   "s8": { "t": "Digital banner", "d": "Schermi verticali per accogliere gli ospiti all'ingresso o dare vita alle vetrine, con i contenuti che volete voi.", "list": ["Totem digitali per l'ingresso", "Schermi per vetrine", "Benvenuto, programma e indicazioni", "Caricamento dei contenuti"] },
   "davos": {
-    "eyebrow": "WEF Davos · Corporate",
+    "eyebrow": "World Economic Forum (WEF) · Davos · Corporate",
     "title": "Supporto tecnico per rappresentanti e aziende",
-    "text": "Durante il World Economic Forum di Davos e per eventi aziendali affianchiamo delegazioni, rappresentanti e aziende con tecnica affidabile e un servizio discreto, in quattro lingue.",
+    "text": "Durante il World Economic Forum (WEF) di Davos e per eventi aziendali affianchiamo delegazioni, rappresentanti e aziende con tecnica affidabile e un servizio discreto, in quattro lingue. Nel video: una sala che abbiamo allestito al WEF, con luci e teste mobili su traliccio.",
+    "video": "Video dal World Economic Forum (WEF) di Davos: sala in luce blu e viola con teste mobili su traliccio e tavoli da cocktail, allestita da Meekon Displays",
+    "video_title": "Meekon Displays al World Economic Forum (WEF) di Davos",
     "list": ["Schermi, TV e beamer per presentazioni", "Microfoni e audio per conferenze e panel", "Riprese e streaming live", "Montaggio discreto e assistenza sul posto"],
     "cta": "Pianificate il vostro evento"
   },

@@ -5,7 +5,7 @@
   "hint_link": "Switch to English",
   "meta": {
     "title": "Meekon Displays — Event technology: LED screens, lighting, sound, streaming",
-    "description": "Event technology across Switzerland and, on request, Italy, Germany and France: LED walls, digital banners, lighting, sound, DJ, streaming and dance floors."
+    "description": "Event technology across Switzerland and, on request, Italy, Germany and France: LED walls, lighting, sound, DJ and streaming. Also at the World Economic Forum (WEF) in Davos."
   },
   "a11y": { "skip": "Skip to content", "nav": "Main navigation", "lang": "Language", "menu": "Open menu", "close": "Close menu" },
   "nav": { "events": "Events", "services": "Services", "work": "Work", "venues": "Venues", "djs": "DJs", "method": "Approach", "contact": "Contact", "cta": "Request a quote" },
@@ -47,9 +47,11 @@
   "s7": { "t": "Dance floor", "d": "A dance floor built to fit your venue, for the first dance and the whole party.", "list": ["Modular dance floor", "Sized to fit the venue", "Set-up and dismantling", "Coordinated with lighting and effects"] },
   "s8": { "t": "Digital banner", "d": "Portrait screens to welcome guests at the entrance or bring shop windows to life, with the content you choose.", "list": ["Digital totems for the entrance", "Shop window screens", "Welcome, programme and directions", "Content upload"] },
   "davos": {
-    "eyebrow": "WEF Davos · Corporate",
+    "eyebrow": "World Economic Forum (WEF) · Davos · Corporate",
     "title": "Technical support for delegations and companies",
-    "text": "During the World Economic Forum in Davos and at corporate events, we support delegations, representatives and companies with dependable technology and discreet service, in four languages.",
+    "text": "During the World Economic Forum (WEF) in Davos and at corporate events, we support delegations, representatives and companies with dependable technology and discreet service, in four languages. In the video: a hall we equipped at the WEF, with lighting and moving heads on truss.",
+    "video": "Video from the World Economic Forum (WEF) in Davos: hall in blue and violet light with moving heads on truss and cocktail tables, equipped by Meekon Displays",
+    "video_title": "Meekon Displays at the World Economic Forum (WEF) in Davos",
     "list": ["Screens, TVs and projectors for presentations", "Microphones and sound for conferences and panels", "Live camera and streaming", "Discreet set-up and on-site support"],
     "cta": "Plan your event"
   },

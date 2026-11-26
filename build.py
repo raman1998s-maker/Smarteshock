@@ -512,7 +512,21 @@ def jsonld(lang, t):
         "areaServed": [{"@type": "Country", "name": n} for n in ["Switzerland", "Italy", "Germany", "France"]],
         "knowsLanguage": LANGS,
     }
-    out = json.dumps(data, ensure_ascii=False, indent=2)
+    # video del WEF (sezione Davos) come VideoObject, per i risultati video dei motori di ricerca
+    video = {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": t["davos"]["video_title"],
+        "description": t["davos"]["video"],
+        "thumbnailUrl": SITE + "/assets/img/wef-davos-poster.jpg",
+        "contentUrl": SITE + "/assets/video/wef-davos.mp4",
+        "uploadDate": "2025-08-20",
+        "inLanguage": lang,
+        "locationCreated": {"@type": "Place", "name": "World Economic Forum, Davos",
+                            "address": {"@type": "PostalAddress", "addressLocality": "Davos", "addressCountry": "CH"}},
+        "publisher": {"@type": "Organization", "name": "Meekon Displays", "logo": {"@type": "ImageObject", "url": SITE + "/assets/img/logo.png"}},
+    }
+    out = json.dumps([data, video], ensure_ascii=False, indent=2)
     # "</" non deve mai comparire dentro <script>; dentro le stringhe JSON anche { } = > &
     # diventano \\uXXXX (un testo del CMS con "{{" o "onclick=" non deve far fallire check_page)
     out = out.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026").replace("=", "\\u003d")
@@ -838,9 +852,9 @@ def main():
             if not isinstance(rows, list):
                 raise SystemExit(f"CMS: la sezione {n} non è un elenco")
             data[n] = [r for r in rows if isinstance(r, dict) and r.get("approvato") is True]
-            # DJ e partner: finché nel CMS non c'è nessuna voce si usano quelli del repository (data/*.json),
+            # galleria, DJ e partner: finché nel CMS non c'è nessuna voce si usano quelli del repository (data/*.json),
             # così il sito online non resta senza loghi
-            if n in ("dj", "partner") and not data[n]:
+            if n in ("galleria", "dj", "partner") and not data[n]:
                 data[n] = load_data(n)
         apply_cms_texts(all_t, cms.get("testi"), set(defaults["testi"]))
     for lang in LANGS:

@@ -78,22 +78,34 @@
    "it": "Pianificate il vostro evento"
   },
   "davos.eyebrow": {
-   "de": "WEF Davos · Corporate",
-   "en": "WEF Davos · Corporate",
-   "fr": "WEF Davos · Corporate",
-   "it": "WEF Davos · Corporate"
+   "de": "World Economic Forum (WEF) · Davos · Corporate",
+   "en": "World Economic Forum (WEF) · Davos · Corporate",
+   "fr": "World Economic Forum (WEF) · Davos · Corporate",
+   "it": "World Economic Forum (WEF) · Davos · Corporate"
   },
   "davos.text": {
-   "de": "Während des World Economic Forum in Davos und bei Firmenanlässen begleiten wir Delegationen, Vertreter und Unternehmen mit zuverlässiger Technik und diskretem Service, in vier Sprachen.",
-   "en": "During the World Economic Forum in Davos and at corporate events, we support delegations, representatives and companies with dependable technology and discreet service, in four languages.",
-   "fr": "Pendant le World Economic Forum de Davos et lors d'événements d'entreprise, nous accompagnons délégations, représentants et entreprises avec une technique fiable et un service discret, en quatre langues.",
-   "it": "Durante il World Economic Forum di Davos e per eventi aziendali affianchiamo delegazioni, rappresentanti e aziende con tecnica affidabile e un servizio discreto, in quattro lingue."
+   "de": "Während des World Economic Forum (WEF) in Davos und bei Firmenanlässen begleiten wir Delegationen, Vertreter und Unternehmen mit zuverlässiger Technik und diskretem Service, in vier Sprachen. Im Video: ein Saal, den wir am WEF mit Licht und Moving Heads an der Traverse ausgestattet haben.",
+   "en": "During the World Economic Forum (WEF) in Davos and at corporate events, we support delegations, representatives and companies with dependable technology and discreet service, in four languages. In the video: a hall we equipped at the WEF, with lighting and moving heads on truss.",
+   "fr": "Pendant le World Economic Forum (WEF) de Davos et lors d'événements d'entreprise, nous accompagnons délégations, représentants et entreprises avec une technique fiable et un service discret, en quatre langues. Dans la vidéo : une salle que nous avons équipée au WEF, avec lumières et lyres asservies sur structure.",
+   "it": "Durante il World Economic Forum (WEF) di Davos e per eventi aziendali affianchiamo delegazioni, rappresentanti e aziende con tecnica affidabile e un servizio discreto, in quattro lingue. Nel video: una sala che abbiamo allestito al WEF, con luci e teste mobili su traliccio."
   },
   "davos.title": {
    "de": "Technischer Support für Delegationen und Unternehmen",
    "en": "Technical support for delegations and companies",
    "fr": "Support technique pour délégations et entreprises",
    "it": "Supporto tecnico per rappresentanti e aziende"
+  },
+  "davos.video": {
+   "de": "Video vom World Economic Forum (WEF) in Davos: Saal in blauem und violettem Licht mit Moving Heads an der Traverse und Stehtischen, ausgestattet von Meekon Displays",
+   "en": "Video from the World Economic Forum (WEF) in Davos: hall in blue and violet light with moving heads on truss and cocktail tables, equipped by Meekon Displays",
+   "fr": "Vidéo du World Economic Forum (WEF) de Davos : salle en lumière bleue et violette avec lyres asservies sur structure et mange-debout, équipée par Meekon Displays",
+   "it": "Video dal World Economic Forum (WEF) di Davos: sala in luce blu e viola con teste mobili su traliccio e tavoli da cocktail, allestita da Meekon Displays"
+  },
+  "davos.video_title": {
+   "de": "Meekon Displays am World Economic Forum (WEF) in Davos",
+   "en": "Meekon Displays at the World Economic Forum (WEF) in Davos",
+   "fr": "Meekon Displays au World Economic Forum (WEF) de Davos",
+   "it": "Meekon Displays al World Economic Forum (WEF) di Davos"
   },
   "djs.empty": {
    "de": "Die Liste der DJs ist in Vorbereitung.",
@@ -378,10 +390,10 @@
    "it": "Di un evento riuscito si ricordano le emozioni, non i cavi. Per questo curiamo ogni dettaglio tecnico, dalla disposizione del palco all'ultimo microfono, con <em>discrezione e precisione</em>."
   },
   "meta.description": {
-   "de": "Eventtechnik in der ganzen Schweiz, auf Anfrage in Italien, Deutschland und Frankreich: LED-Wände, Digital banner, Licht, Ton, DJ, Streaming und Dance floor.",
-   "en": "Event technology across Switzerland and, on request, Italy, Germany and France: LED walls, digital banners, lighting, sound, DJ, streaming and dance floors.",
-   "fr": "Technique événementielle en Suisse et, sur demande, en Italie, Allemagne et France : écrans LED, digital banner, lumière, son, DJ, streaming et dance floor.",
-   "it": "Tecnica per eventi in Svizzera e, su richiesta, in Italia, Germania e Francia: schermi LED, digital banner, luci, audio, DJ, streaming, effetti e dance floor."
+   "de": "Eventtechnik in der ganzen Schweiz, auf Anfrage in Italien, Deutschland und Frankreich: LED-Wände, Licht, Ton, DJ und Streaming. Auch am World Economic Forum (WEF) in Davos.",
+   "en": "Event technology across Switzerland and, on request, Italy, Germany and France: LED walls, lighting, sound, DJ and streaming. Also at the World Economic Forum (WEF) in Davos.",
+   "fr": "Technique événementielle en Suisse et, sur demande, en Italie, Allemagne et France : écrans LED, lumière, son, DJ et streaming. Aussi au World Economic Forum (WEF) de Davos.",
+   "it": "Tecnica per eventi in Svizzera e, su richiesta, in Italia, Germania e Francia: schermi LED, luci, audio, DJ e streaming. Anche al World Economic Forum (WEF) di Davos."
   },
   "meta.title": {
    "de": "Meekon Displays — Eventtechnik: LED-Wände, Licht, Ton, Streaming",
