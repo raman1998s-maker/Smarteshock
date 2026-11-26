@@ -98,6 +98,76 @@
     "approvato": true
   },
   {
+    "file": "assets/video/festa-ledwall-pista.mp4",
+    "tipo": "video",
+    "poster": "assets/img/festa-ledwall-pista-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video di una festa: DJ alla console davanti al ledwall, poi ospiti in pista sotto il ledwall con il logo Meekon Displays",
+      "de": "Video einer Party: DJs am Pult vor der LED-Wand, danach Gäste auf der Tanzfläche unter der LED-Wand mit dem Logo von Meekon Displays",
+      "fr": "Vidéo d'une fête : DJ à la console devant le mur LED, puis invités sur la piste sous le mur LED avec le logo Meekon Displays",
+      "en": "Video of a party: DJs at the booth in front of the LED wall, then guests dancing beneath the LED wall showing the Meekon Displays logo"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/festa-pista-luci.mp4",
+    "tipo": "video",
+    "poster": "assets/img/festa-pista-luci-poster.jpg",
+    "categoria": "feste",
+    "formato": "wide",
+    "alt": {
+      "it": "Video di una festa: ospiti che ballano tra fasci di luce, con ledwall e strutture illuminate",
+      "de": "Video einer Party: Gäste tanzen zwischen Lichtstrahlen, mit LED-Wand und beleuchteten Traversen",
+      "fr": "Vidéo d'une fête : invités dansant entre les faisceaux lumineux, avec mur LED et structures éclairées",
+      "en": "Video of a party: guests dancing among light beams, with an LED wall and illuminated truss"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/ledwall-ritratto-console.mp4",
+    "tipo": "video",
+    "poster": "assets/img/ledwall-ritratto-console-poster.jpg",
+    "categoria": "matrimoni",
+    "formato": "reel",
+    "alt": {
+      "it": "Video di un matrimonio: ritratto della sposa sul ledwall e frontale LED della console del DJ",
+      "de": "Video einer Hochzeit: Porträt der Braut auf der LED-Wand und LED-Front am DJ-Pult",
+      "fr": "Vidéo d'un mariage : portrait de la mariée sur le mur LED et façade LED de la console du DJ",
+      "en": "Video of a wedding: portrait of the bride on the LED wall and an LED front on the DJ booth"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/ingresso-archi-led.mp4",
+    "tipo": "video",
+    "poster": "assets/img/ingresso-archi-led-poster.jpg",
+    "categoria": "matrimoni",
+    "formato": "reel",
+    "alt": {
+      "it": "Video: corridoio d'ingresso con archi di schermi LED, fiori bianchi e logo proiettato a terra",
+      "de": "Video: Eingangskorridor mit Bögen aus LED-Bildschirmen, weissen Blumen und projiziertem Logo am Boden",
+      "fr": "Vidéo : couloir d'entrée avec des arches d'écrans LED, fleurs blanches et logo projeté au sol",
+      "en": "Video: entrance corridor with LED screen arches, white flowers and a logo projected on the floor"
+    },
+    "approvato": true
+  },
+  {
+    "file": "assets/video/schermo-console-dj.mp4",
+    "tipo": "video",
+    "poster": "assets/img/schermo-console-dj-poster.jpg",
+    "categoria": "feste",
+    "formato": "reel",
+    "alt": {
+      "it": "Video: schermo LED sul palco con luci sopra e console DJ illuminata in sala",
+      "de": "Video: LED-Bildschirm auf der Bühne mit Licht darüber und beleuchtetem DJ-Pult im Saal",
+      "fr": "Vidéo : écran LED sur scène avec éclairage au-dessus et console DJ illuminée dans la salle",
+      "en": "Video: LED screen on stage with lighting above and an illuminated DJ booth in the hall"
+    },
+    "approvato": true
+  },
+  {
     "file": "assets/img/event-party.jpg",
     "tipo": "foto",
     "categoria": "feste",
@@ -126,13 +196,13 @@
   {
     "file": "assets/img/event-wedding.jpg",
     "tipo": "foto",
-    "categoria": "matrimoni",
+    "categoria": "aziende",
     "formato": "tall",
     "alt": {
-      "it": "Sala ricevimento in luce blu e viola, con teste mobili su struttura",
-      "de": "Festsaal in blauem und violettem Licht, mit Moving Heads an der Traverse",
-      "fr": "Salle de réception en lumière bleue et violette, lyres asservies sur structure",
-      "en": "Reception hall in blue and violet light, with moving heads on truss"
+      "it": "World Economic Forum (WEF) di Davos: sala in luce blu e viola con teste mobili su traliccio, allestita da Meekon Displays",
+      "de": "World Economic Forum (WEF) in Davos: Saal in blauem und violettem Licht mit Moving Heads an der Traverse, ausgestattet von Meekon Displays",
+      "fr": "World Economic Forum (WEF) de Davos : salle en lumière bleue et violette avec lyres asservies sur structure, équipée par Meekon Displays",
+      "en": "World Economic Forum (WEF) in Davos: hall in blue and violet light with moving heads on truss, equipped by Meekon Displays"
     },
     "approvato": true
   },
@@ -146,32 +216,6 @@
       "de": "Moving Heads zeichnen Lichtstrahlen über die Gäste",
       "fr": "Lyres asservies dessinant des faisceaux au-dessus des invités",
       "en": "Moving heads drawing light beams above the guests"
-    },
-    "approvato": true
-  },
-  {
-    "file": "assets/img/event-led-closeup.jpg",
-    "tipo": "foto",
-    "categoria": "matrimoni",
-    "formato": "tall",
-    "alt": {
-      "it": "Ritratto della sposa su ledwall, sopra la console del DJ",
-      "de": "Porträt der Braut auf der LED-Wand, über dem DJ-Pult",
-      "fr": "Portrait de la mariée sur mur LED, au-dessus de la console du DJ",
-      "en": "Portrait of the bride on an LED wall, above the DJ booth"
-    },
-    "approvato": true
-  },
-  {
-    "file": "assets/img/event-stage.jpg",
-    "tipo": "foto",
-    "categoria": "palco",
-    "formato": "tall",
-    "alt": {
-      "it": "Palco con schermo e console del DJ illuminata",
-      "de": "Bühne mit Bildschirm und beleuchtetem DJ-Pult",
-      "fr": "Scène avec écran et console DJ éclairée",
-      "en": "Stage with a screen and an illuminated DJ booth"
     },
     "approvato": true
   },
