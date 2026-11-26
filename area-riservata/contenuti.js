@@ -675,6 +675,8 @@
           S.pub.timer = window.setTimeout(tick, 1000);
         } else if (err instanceof ApiError && err.status === 403) {
           S.pub.error = { title: 'Non avete i permessi per pubblicare', text: 'Serve un account amministratore.' };
+        } else if (err instanceof ApiError && err.status === 500 && err.data && err.data.error === 'server_misconfigured') {
+          S.pub.error = { title: 'La pubblicazione non è configurata', text: 'Su Netlify manca il collegamento per ricostruire il sito (variabile NETLIFY_BUILD_HOOK). Va impostato una volta da chi gestisce Netlify.' };
         } else if (err instanceof ApiError && err.status >= 500) {
           S.pub.error = { title: 'La pubblicazione non è partita', text: 'Il servizio che ricostruisce il sito non ha risposto. Riprovate tra qualche minuto.' };
         } else {
