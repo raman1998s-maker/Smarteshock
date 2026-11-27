@@ -12,7 +12,12 @@
   const login = document.getElementById('pw-login');
   const submit = form.querySelector('button[type="submit"]');
 
+  // link nuovi: ?th=<token hash>&t=invite|recovery (il token si consuma solo al salvataggio)
+  // link vecchi: #access_token=… (già verificato da Supabase all'apertura)
+  const query = new URLSearchParams(window.location.search);
   const frammento = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const tokenHash = query.get('th');
+  const tipo = query.get('t') === 'recovery' ? 'recovery' : 'invite';
   const token = frammento.get('access_token');
   const erroreLink = frammento.get('error_description') || frammento.get('error');
   history.replaceState(null, '', window.location.pathname);
@@ -27,7 +32,7 @@
     form.hidden = true;
     login.hidden = false;
   };
-  if (!token || erroreLink) { linkNonValido(); return; }
+  if ((!token && !tokenHash) || erroreLink) { linkNonValido(); return; }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -39,7 +44,7 @@
     try {
       const res = await fetch('/api/auth/password', {
         method: 'POST', credentials: 'same-origin', headers: HEADERS,
-        body: JSON.stringify({ access_token: token, password: pw1.value }),
+        body: JSON.stringify(tokenHash ? { token_hash: tokenHash, type: tipo, password: pw1.value } : { access_token: token, password: pw1.value }),
       });
       if (res.ok) {
         pw1.value = ''; pw2.value = '';

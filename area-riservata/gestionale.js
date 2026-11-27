@@ -1744,7 +1744,8 @@
             copia.addEventListener('click', async () => { try { await navigator.clipboard.writeText(r.link); toast('Link copiato.'); } catch (err) { toast('Copiate il link a mano.', 'error'); } });
             const campo = h('input', { type: 'text', readonly: true, value: r.link, 'aria-label': 'Link di invito', 'data-no-tr': '' });
             esito.append(h('div', { class: 'alert alert--ok', role: 'status' },
-              h('p', null, h('strong', null, `Invito creato per ${nome}.`), ' Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo 24 ore.'),
+              h('p', null, h('strong', null, r.gia_registrato ? `${nome} ha già un account: ecco un link per scegliere una nuova password.` : `Invito creato per ${nome}.`),
+                ' Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo circa 60 minuti: mandatelo subito.'),
               h('div', { class: 'toolbar' }, campo, copia)));
             inv.nome.value = ''; inv.email.value = '';
           } catch (err) {

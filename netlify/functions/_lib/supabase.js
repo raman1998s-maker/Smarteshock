@@ -136,6 +136,21 @@ export function createSupabase(env) {
     rest,
     storage,
     edge,
+    /**
+     * Verifica un token monouso del link (token hash di invito o di recupero) e restituisce l'access token,
+     * oppure null se il link non vale più. Il token si consuma qui, non all'apertura del link.
+     */
+    async verifyTokenHash(tokenHash, type) {
+      const res = await doFetch(`${base}/auth/v1/verify`, {
+        method: 'POST',
+        headers: headers(null, { 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ type, token_hash: tokenHash }),
+      });
+      if (res.status >= 500) throw new HttpError(502, 'upstream_error');
+      if (res.status === 429) throw new HttpError(429, 'too_many_requests');
+      const data = await readBody(res);
+      return res.ok && data && typeof data.access_token === 'string' ? data.access_token : null;
+    },
     /** Cambia la password dell'utente del token (link di invito o di recupero). false se il token non vale. */
     async updatePassword(accessToken, password) {
       const res = await doFetch(`${base}/auth/v1/user`, {

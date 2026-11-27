@@ -3,6 +3,7 @@
 window.MEEKON_I18N = window.MEEKON_I18N || {};
 window.MEEKON_I18N.en = {
  " Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo 24 ore.": " Send this link (WhatsApp or e-mail): they will choose a password and log in with their e-mail. The link works only once and expires after 24 hours.",
+ " Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo circa 60 minuti: mandatelo subito.": " Send this link (WhatsApp or e-mail): they will choose a password and log in with their e-mail. The link works only once and expires after about 60 minutes: send it right away.",
  "\"Total inkl. 8,1 % MWST\" si può scrivere solo con un numero IVA. Senza numero: \"nicht mehrwertsteuerpflichtig\". Finché non si sceglie, il PDF scrive solo \"Total\".": "\"Total inkl. 8,1 % MWST\" can only be printed with a VAT number. Without a number: \"nicht mehrwertsteuerpflichtig\". Until you choose, the PDF only shows \"Total\".",
  "% dovuta": "% due",
  "(vincolanti per le AGB)": "(binding for the T&C)",
@@ -1094,6 +1095,7 @@ window.MEEKON_I18N.en = {
  "{0} danneggiati": "{0} damaged",
  "{0} di {1} articoli": "{0} of {1} items",
  "{0} di {1} caricati": "{0} of {1} uploaded",
+ "{0} ha già un account: ecco un link per scegliere una nuova password.": "{0} already has an account: here is a link to choose a new password.",
  "{0} ha segnato un'assenza in queste date. Assegnare comunque?": "{0} has recorded an absence on these dates. Assign anyway?",
  "{0} pacchetti aggiunti: controllate quantità e prezzi.": "{0} packages added: check quantities and prices.",
  "{0} pacchetti aggiunti: decidete i prezzi per il cliente.": "{0} packages added: set the prices for the customer.",

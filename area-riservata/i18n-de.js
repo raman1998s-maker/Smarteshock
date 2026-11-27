@@ -3,6 +3,7 @@
 window.MEEKON_I18N = window.MEEKON_I18N || {};
 window.MEEKON_I18N.de = {
  " Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo 24 ore.": " Schicken Sie ihr/ihm diesen Link (WhatsApp oder E-Mail): Sie/er wählt das Passwort und meldet sich mit der eigenen E-Mail an. Der Link gilt nur einmal und läuft nach 24 Stunden ab.",
+ " Mandategli questo link (WhatsApp o e-mail): sceglierà la sua password ed entrerà con la sua e-mail. Il link vale una sola volta e scade dopo circa 60 minuti: mandatelo subito.": " Schicken Sie diesen Link (WhatsApp oder E-Mail): Die Person wählt ihr Passwort und meldet sich mit der eigenen E-Mail an. Der Link gilt nur einmal und läuft nach etwa 60 Minuten ab: Schicken Sie ihn sofort.",
  "\"Total inkl. 8,1 % MWST\" si può scrivere solo con un numero IVA. Senza numero: \"nicht mehrwertsteuerpflichtig\". Finché non si sceglie, il PDF scrive solo \"Total\".": "\"Total inkl. 8,1 % MWST\" darf nur mit einer MWST-Nummer stehen. Ohne Nummer: \"nicht mehrwertsteuerpflichtig\". Solange nichts gewählt ist, steht im PDF nur \"Total\".",
  "% dovuta": "% fällig",
  "(vincolanti per le AGB)": "(verbindlich für die AGB)",
@@ -1097,6 +1098,7 @@ window.MEEKON_I18N.de = {
  "{0} danneggiati": "{0} beschädigt",
  "{0} di {1} articoli": "{0} von {1} Artikeln",
  "{0} di {1} caricati": "{0} von {1} hochgeladen",
+ "{0} ha già un account: ecco un link per scegliere una nuova password.": "{0} hat bereits ein Konto: Hier ist ein Link, um ein neues Passwort zu wählen.",
  "{0} ha segnato un'assenza in queste date. Assegnare comunque?": "{0} hat an diesen Daten eine Abwesenheit eingetragen. Trotzdem zuteilen?",
  "{0} pacchetti aggiunti: controllate quantità e prezzi.": "{0} Pakete hinzugefügt: Prüfen Sie Mengen und Preise.",
  "{0} pacchetti aggiunti: decidete i prezzi per il cliente.": "{0} Pakete hinzugefügt: Legen Sie die Preise für den Kunden fest.",

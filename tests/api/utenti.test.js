@@ -48,6 +48,22 @@ describe('scelta della password', () => {
     assert.deepEqual(put.body, { password: 'una-password-lunga' });
   });
 
+  test('link nuovo (token hash): il token si verifica solo al salvataggio, poi si imposta la password', async () => {
+    const tok = fakeJwt('nuovo');
+    const calls = mockFetch([
+      ['POST', /^\/auth\/v1\/verify$/, (c) => (c.body.token_hash === 'abcdef123456' && c.body.type === 'invite' ? { status: 200, body: { access_token: tok, refresh_token: 'r' } } : { status: 403, body: {} })],
+      ['PUT', /^\/auth\/v1\/user$/, () => ({ status: 200, body: { id: 'nuovo' } })],
+      ['POST', /^\/auth\/v1\/logout/, () => ({ status: 204 })],
+    ]);
+    let res = await password(req('/api/auth/password', { method: 'POST', body: { token_hash: 'abcdef123456', type: 'invite', password: 'una-password-lunga' } }));
+    assert.equal(res.status, 200);
+    assert.equal(calls.find((c) => c.method === 'PUT').headers.get('authorization'), `Bearer ${tok}`);
+    res = await password(req('/api/auth/password', { method: 'POST', body: { token_hash: 'gia-usato-123', type: 'invite', password: 'una-password-lunga' } }));
+    assert.equal(res.status, 401);
+    res = await password(req('/api/auth/password', { method: 'POST', body: { token_hash: 'abcdef123456', type: 'magic', password: 'una-password-lunga' } }));
+    assert.equal(res.status, 400);
+  });
+
   test('password corta o token strano → 400; link scaduto → 401', async () => {
     mockFetch([['PUT', /^\/auth\/v1\/user$/, () => ({ status: 401, body: {} })]]);
     assert.equal((await password(req('/api/auth/password', { method: 'POST', body: { access_token: fakeJwt('x'), password: 'corta' } }))).status, 400);

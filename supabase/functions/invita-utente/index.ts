@@ -2,6 +2,10 @@
 // - Chi chiama deve essere un admin attivo (controllato con il SUO token, quindi con la RLS).
 // - Crea l'account con un link di invito (generate_link, nessuna e-mail inviata da Supabase:
 //   l'admin manda il link via WhatsApp o e-mail) e la riga in public.staff con nome e ruolo.
+//   Se l'e-mail ha già un account (es. link precedente scaduto o aperto da altri), genera un link
+//   per scegliere una nuova password (recovery) e completa la riga staff se manca.
+// - Il link porta direttamente alla nostra pagina con il "token hash" (?th=…&t=…): il token si consuma
+//   solo quando la persona salva la password, non quando un'app di chat apre il link per l'anteprima.
 // - La chiave service_role è quella che Supabase mette da sé nelle Edge Functions:
 //   non sta nel repository, non sta su Netlify, non arriva mai al browser.
 // Chiamata solo dalla Netlify Function /api/utenti-invito (Authorization: Bearer <JWT dell'admin>).
@@ -56,30 +60,38 @@ Deno.serve(async (req) => {
   if (!LINGUE.includes(lingua)) return risposta(400, { error: 'invalid_input', field: 'lingua' });
   if (typeof redirectTo !== 'string' || !REDIRECT_OK.test(redirectTo)) return risposta(400, { error: 'invalid_input', field: 'redirect_to' });
 
-  // 3. account + link di invito (se l'e-mail esiste già: 409)
-  const link = await sb('/auth/v1/admin/generate_link', {
+  // 3. account + link di invito; se l'e-mail ha già un account → link per una nuova password
+  const genera = (type: string) => sb('/auth/v1/admin/generate_link', {
     method: 'POST', key: SERVICE,
-    body: JSON.stringify({ type: 'invite', email, redirect_to: redirectTo, data: { nome } }),
+    body: JSON.stringify({ type, email, redirect_to: redirectTo, ...(type === 'invite' ? { data: { nome } } : {}) }),
   });
+  let tipo = 'invite';
+  let link = await genera(tipo);
   if (!link.ok) {
     const msg = JSON.stringify(link.data ?? '').toLowerCase();
-    if (link.status === 422 || msg.includes('already') || msg.includes('exists')) return risposta(409, { error: 'conflict', field: 'email' });
-    return risposta(502, { error: 'upstream_error' });
+    if (!(link.status === 422 || msg.includes('already') || msg.includes('exists'))) return risposta(502, { error: 'upstream_error' });
+    tipo = 'recovery';
+    link = await genera(tipo);
+    if (!link.ok) return risposta(502, { error: 'upstream_error' });
   }
   const user = link.data?.user ?? link.data;
   const userId = typeof user?.id === 'string' ? user.id : null;
-  const actionLink = link.data?.properties?.action_link ?? link.data?.action_link ?? null;
-  if (!userId || typeof actionLink !== 'string') return risposta(502, { error: 'upstream_error' });
+  const hash = link.data?.properties?.hashed_token ?? link.data?.hashed_token ?? null;
+  if (!userId || typeof hash !== 'string' || !/^[A-Za-z0-9_-]{10,200}$/.test(hash)) return risposta(502, { error: 'upstream_error' });
+  const nuovoLink = `${redirectTo}?th=${encodeURIComponent(hash)}&t=${tipo}`;
 
   // 4. riga in staff (con la chiave di servizio: la RLS non permette insert agli utenti)
-  const staff = await sb('/rest/v1/staff', {
-    method: 'POST', key: SERVICE, headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ id: userId, nome, ruolo, lingua, attivo: true }),
-  });
-  if (!staff.ok) {
-    // niente account senza riga staff: si annulla l'invito
-    await sb(`/auth/v1/admin/users/${userId}`, { method: 'DELETE', key: SERVICE });
-    return risposta(502, { error: 'upstream_error' });
+  const esiste = await sb(`/rest/v1/staff?id=eq.${userId}&select=id`, { method: 'GET', key: SERVICE });
+  if (!(Array.isArray(esiste.data) && esiste.data.length === 1)) {
+    const staff = await sb('/rest/v1/staff', {
+      method: 'POST', key: SERVICE, headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ id: userId, nome, ruolo, lingua, attivo: true }),
+    });
+    if (!staff.ok) {
+      // niente account nuovo senza riga staff: si annulla l'invito
+      if (tipo === 'invite') await sb(`/auth/v1/admin/users/${userId}`, { method: 'DELETE', key: SERVICE });
+      return risposta(502, { error: 'upstream_error' });
+    }
   }
-  return risposta(201, { id: userId, link: actionLink });
+  return risposta(201, { id: userId, link: nuovoLink, gia_registrato: tipo === 'recovery' });
 });
